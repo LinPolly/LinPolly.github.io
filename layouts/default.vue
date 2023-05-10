@@ -11,7 +11,6 @@ useHead({
 
 <template>
   <v-app>
-    <sidebar></sidebar>
     <v-main>
       <v-container fluid>
         <slot />
