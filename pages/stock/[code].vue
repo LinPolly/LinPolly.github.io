@@ -38,7 +38,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
         </v-col>
     </v-row>
     <v-row>
-        <h2>{{ date }}與{{ prevDate(date) }}比較</h2>
+        <h2>{{ formatDate(date) }}與{{ formatDate(prevDate(date)) }}比較</h2>
     </v-row>
     <v-row style="height: 300px;">
         <Bar :data="compareData"
@@ -185,7 +185,7 @@ export default {
             if (this.stocks == null) return data
 
             data.labels = []
-            data.datasets[0].label = this.date
+            data.datasets[0].label = this.formatDate(this.date)
             data.datasets[0].data = []
 
             var s = this.stocks.find(x => this.formatDate(x.date) == this.formatDate(this.date))
@@ -238,7 +238,7 @@ export default {
             if (this.stocks == null) return data
 
             var sdt = this.prevDate(this.date)
-            var edt = this.date
+            var edt = this.formatDate(this.date)
 
             data.labels = []
             data.datasets[0].data = []
@@ -282,13 +282,13 @@ export default {
     },
     watch: {
         'd': function (newValue) {
-            this.date = newValue
+            this.date = this.formatDate(newValue)
         },
         'date': function () {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-            if (urlParams.get('d') != this.date) {
-                urlParams.set('d', this.date);
+            if (urlParams.get('d') != this.formatDate(this.date)) {
+                urlParams.set('d', this.formatDate(this.date));
                 var route = useRoute()
                 const code = route.params.code as string
                 history.pushState(null, '', `/stock/${code}?${urlParams.toString()}`);
