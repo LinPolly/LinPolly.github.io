@@ -2,15 +2,18 @@
   "name": "nuxt-app",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "build:gh-pages": "cross-env DEPLOY_ENV=GH_PAGES nuxt build",
+    "generate:gh-pages": "cross-env DEPLOY_ENV=GH_PAGES nuxt generate",
+    "deploy": "push-dir --dir=dist --branch=gh-pages --cleanup",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
     "@types/node": "^18",
-    "nuxt": "^3.4.3"
+    "nuxt": "^3.4.3",
+    "cross-env": "^7.0.3",
+    "push-dir": "^0.4.1"
   },
   "dependencies": {
     "@master/css": "^1.37.8",
@@ -20,6 +23,6 @@
     "vuetify": "^3.2.2"
   },
   "engines": {
-    "node": ">=19"
+    "node": ">=16 <=19"
   }
 }
