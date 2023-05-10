@@ -170,6 +170,7 @@ export default {
                 }
             }).forEach(x => data.push(x))
 
+            // @ts-ignore
             return data
         },
         chartData() {
