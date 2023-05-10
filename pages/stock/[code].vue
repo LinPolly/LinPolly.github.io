@@ -1,9 +1,6 @@
 <script setup lang="ts">
 var route = useRoute()
 const code = route.params.code as string
-if (code == '') {
-    throw createError({ statusCode: 404, message: 'Page not found' })
-}
 useHead({
     title: code,
     link: [
