@@ -1,5 +1,8 @@
 <script setup lang="ts">
 useHead({
+  meta: [
+    { "http-equiv": 'Permissions-Policy', content: 'interest-cohort=()' }
+  ],
   link: [
     { rel: 'canonical', href: 'https://linpolly.github.io/' }
   ]
