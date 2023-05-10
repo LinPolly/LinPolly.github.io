@@ -8,10 +8,11 @@
         <v-text-field v-model="date" type="date" label="資料日期" style="padding-left: 8px;padding-right: 8px;"></v-text-field>
         <v-btn class="bg-primary" @click="date = nextDate(date)" :disabled="date == nextDate(date)">後一日</v-btn>
     </v-app-bar>
-    <v-row>
+    <v-row style="height: 700px">
         <Bar class="v-col-12 v-col-sm-6" :data="chartData" :options="chartOptions"></Bar>
-        <v-data-table class="v-col-12 v-col-sm-6" height="600px" :headers="headers" :items="tableData"
-            item-value="name"></v-data-table>
+        <v-col cols="12" sm="6">
+            <v-data-table height="600px" :headers="headers" :items="tableData" item-value="name"></v-data-table>
+        </v-col>
     </v-row>
     <v-row>
         <h2>{{ date }}與{{ prevDate(date) }}比較</h2>
