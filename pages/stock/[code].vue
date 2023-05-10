@@ -1,5 +1,8 @@
 <template>
-    <h1>00878 每日成分股異動 {{ stocks[0]?.date }} - {{ stocks.at(stocks.length - 1)?.date }}</h1>
+    <h1>00878 每日成分股異動 {{ (stocks?.length ?? 0) > 0 ? stocks[0]?.date : '' }} - {{ (stocks?.length ?? 0) ?
+        stocks.at(stocks.length
+            -
+            1)?.date : '' }}</h1>
     <v-app-bar style="padding-top: 8px;">
         <v-btn class="bg-secondary" @click="date = prevDate(date)" :disabled="date == prevDate(date)">前一日</v-btn>
         <v-text-field v-model="date" type="date" label="資料日期" style="padding-left: 8px;padding-right: 8px;"></v-text-field>
@@ -75,9 +78,10 @@ export default {
             if (day.length < 2)
                 day = '0' + day;
 
-            return [year, month, day].join('-');
+            return `${year}-${month}-${day}`;
         },
         prevDate(date: any) {
+            if (this.stocks == null) return date
             var nowIndex = this.stocks.findIndex(x => this.formatDate(x.date) == date)
             if (nowIndex == 0)
                 return date
@@ -87,6 +91,8 @@ export default {
             return this.formatDate(this.stocks[nowIndex - 1]?.date)
         },
         nextDate(date: any) {
+            if (this.stocks == null) return date
+
             var nowIndex = this.stocks.findIndex(x => this.formatDate(x.date) == date)
             if (nowIndex == this.stocks.length - 1)
                 return date
@@ -108,7 +114,10 @@ export default {
             this.stocks = data.value
         },
         async init() {
-            await Promise.all([this.loadInfo(), this.loadData()])
+            await Promise.all([
+                this.loadInfo(),
+                this.loadData()
+            ])
             var route = useRoute()
             if (route.query.d) {
                 this.date = this.formatDate(Date.parse(route.query.d as string))
@@ -123,8 +132,10 @@ export default {
         },
         tableData() {
             var data = []
+            if (this.stocks == null) return data
+
             var s = this.stocks.find(x => this.formatDate(x.date) == this.formatDate(this.date))
-            s?.stock.sort((a, b) => b.weights - a.weights).map(x => {
+            s?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => {
                 return {
                     name: this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code,
                     volumn: this.formatAsCurrency(x.volumn, 0),
@@ -146,17 +157,17 @@ export default {
                     }
                 ]
             }
-
+            if (this.stocks == null) return data
 
             data.labels = []
             data.datasets[0].label = this.date
             data.datasets[0].data = []
 
             var s = this.stocks.find(x => this.formatDate(x.date) == this.formatDate(this.date))
-            s?.stock.sort((a, b) => b.weights - a.weights).map(x => this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code)
+            s?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code)
                 .forEach(x => data.labels.push(x));
 
-            s?.stock.sort((a, b) => b.weights - a.weights).map(x => x.weights).forEach(x => data.datasets[0].data.push(x))
+            s?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => x.weights).forEach(x => data.datasets[0].data.push(x))
             return data
         },
         chartOptions() {
@@ -176,7 +187,7 @@ export default {
                 stacked: false,
                 plugins: {
                     legend: {
-                        position: 'right',
+                        position: 'top',
                     },
                 }
             }
@@ -199,6 +210,7 @@ export default {
                     }
                 ]
             }
+            if (this.stocks == null) return data
 
             var sdt = this.prevDate(this.date)
             var edt = this.date
@@ -209,10 +221,10 @@ export default {
             var ed = this.stocks.find(x => this.formatDate(x.date) == this.formatDate(edt))
             var sd = this.stocks.find(x => this.formatDate(x.date) == this.formatDate(sdt))
 
-            ed?.stock.sort((a, b) => b.weights - a.weights).map(x => this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code)
+            ed?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code)
                 .forEach(x => data.labels.push(x));
 
-            ed?.stock.sort((a, b) => b.weights - a.weights).map(x => {
+            ed?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => {
                 var f = sd?.stock.find(y => x.code == y.code)
                 return x.volumn - (f?.volumn ?? 0)
             }).forEach(x => {
