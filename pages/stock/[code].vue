@@ -17,10 +17,10 @@ useHead({
         <v-btn class="bg-primary" @click="date = nextDate(date)" :disabled="date == nextDate(date)">後一日</v-btn>
     </v-app-bar>
     <v-row>
-        <v-col cols="12" md="6">
+        <v-col cols="12" sm="6">
             <Bar :data="chartData" :options="chartOptions"></Bar>
         </v-col>
-        <v-col cols="12" md="6">
+        <v-col cols="12" sm="6">
             <v-data-table height="600px" :headers="headers" :items="tableData" item-value="name"></v-data-table>
         </v-col>
     </v-row>
