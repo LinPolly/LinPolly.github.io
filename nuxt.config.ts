@@ -1,11 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const routerBase = process.env.DEPLOY_ENV === 'GH_PAGES' ? {
-    app: {
-        baseURL: '/LinPolly.github.io/'
-    }
-} : {}
-export default defineNuxtConfig({
-    ...routerBase,
+export default defineNuxtConfig({    
+    ssr: false,
     css: [
         'vuetify/lib/styles/main.css',
         '@mdi/font/css/materialdesignicons.min.css'
