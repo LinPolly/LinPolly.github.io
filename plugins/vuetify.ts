@@ -7,7 +7,7 @@ import * as labs from 'vuetify/labs/components'
 export default defineNuxtPlugin(nuxtApp => {
     const vuetify = createVuetify({
         theme: {
-            defaultTheme: 'dark'
+            defaultTheme: 'light'
         },
         ssr: true,
         components: {

@@ -4,7 +4,7 @@ useHead({
     lang: "zh-Hant-TW",
   },
   titleTemplate: (name) => {
-    return name ? `${name} - ` : "綜合查詢";
+    return name ? `${name} - ` : "R";
   },
 });
 </script>
