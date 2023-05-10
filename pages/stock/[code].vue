@@ -1,14 +1,3 @@
-<script setup lang="ts">
-var route = useRoute()
-const code = route.params.code as string
-useHead({
-    title: code,
-    link: [
-        { rel: 'canonical', href: `https://linpolly.github.io/stock/${code}` }
-    ]
-})
-</script>
-
 <template>
     <h1>00878 每日成分股異動 {{ stocks[0]?.date }} - {{ stocks.at(stocks.length - 1)?.date }}</h1>
     <v-app-bar style="padding-top: 8px;">

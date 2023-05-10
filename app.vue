@@ -1,3 +1,11 @@
+<script setup lang="ts">
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://linpolly.github.io/' }
+  ]
+})
+</script>
+
 <template>
   <NuxtLayout>
     <NuxtPage />
