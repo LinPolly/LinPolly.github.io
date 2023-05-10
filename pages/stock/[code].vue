@@ -1,24 +1,48 @@
+<script setup lang="ts">
+import VueDatePicker from '@vuepic/vue-datepicker';
+import { Bar } from 'vue-chartjs'
+import '@vuepic/vue-datepicker/dist/main.css'
+</script>
+
 <template>
     <h1>00878 每日成分股異動 {{ (stocks?.length ?? 0) > 0 ? stocks[0]?.date : '' }} - {{ (stocks?.length ?? 0) ?
         stocks.at(stocks.length
             -
             1)?.date : '' }}</h1>
-    <v-app-bar style="padding-top: 8px;">
-        <v-btn class="bg-secondary" @click="date = prevDate(date)" :disabled="date == prevDate(date)">前一日</v-btn>
-        <v-text-field v-model="date" type="date" label="資料日期" style="padding-left: 8px;padding-right: 8px;"></v-text-field>
-        <v-btn class="bg-primary" @click="date = nextDate(date)" :disabled="date == nextDate(date)">後一日</v-btn>
+    <v-app-bar :style="{ 'padding-top': '8px', 'height': `${appbarHeight}px` }">
+        <v-btn class="bg-secondary"
+            @click="date = prevDate(date)"
+            :disabled="date == prevDate(date)">前一日</v-btn>
+        <VueDatePicker v-model="date"
+            :enable-time-picker="false"
+            :clearable="false"
+            auto-apply
+            @open="appbarHeight = 422"
+            @closed="appbarHeight = 72"
+            :min-date="stocks != null && stocks[0] != null ? stocks[0].date : ''"
+            :max-date="stocks != null && stocks[0] != null ? stocks[stocks.length - 1].date : ''" />
+        <v-btn class="bg-primary"
+            @click="date = nextDate(date)"
+            :disabled="date == nextDate(date)">後一日</v-btn>
     </v-app-bar>
     <v-row style="height: 700px">
-        <Bar class="v-col-12 v-col-sm-6" :data="chartData" :options="chartOptions"></Bar>
-        <v-col cols="12" sm="6">
-            <v-data-table height="600px" :headers="headers" :items="tableData" item-value="name"></v-data-table>
+        <Bar class="v-col-12 v-col-sm-6"
+            :data="chartData"
+            :options="chartOptions"></Bar>
+        <v-col cols="12"
+            sm="6">
+            <v-data-table height="600px"
+                :headers="headers"
+                :items="tableData"
+                item-value="name"></v-data-table>
         </v-col>
     </v-row>
     <v-row>
         <h2>{{ date }}與{{ prevDate(date) }}比較</h2>
     </v-row>
     <v-row style="height: 300px;">
-        <Bar :data="compareData" :options="compareOptions"></Bar>
+        <Bar :data="compareData"
+            :options="compareOptions"></Bar>
     </v-row>
 </template>
 
@@ -33,7 +57,6 @@ import {
     LinearScale,
 
 } from 'chart.js'
-import { Bar } from 'vue-chartjs'
 import { Stock } from '~/models/stock/stock.js';
 import { Info } from '~/models/stock/info';
 
@@ -42,6 +65,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 export default {
     data() {
         return {
+            appbarHeight: 72,
             headers: [
                 {
                     title: '名稱',
@@ -117,7 +141,10 @@ export default {
                 this.loadData()
             ])
             var route = useRoute()
-            if (route.query.d) {
+            if (route.query.d
+                && route.query.d != undefined
+                && route.query.d != null
+                && !Number.isNaN(Date.parse(route.query.d as string))) {
                 this.date = this.formatDate(Date.parse(route.query.d as string))
             } else {
                 this.date = this.formatDate(this.stocks[this.stocks.length - 1].date)
@@ -269,7 +296,7 @@ export default {
         }
     },
     components: {
-        Bar
+        Bar, VueDatePicker
     },
     beforeMount() {
         this.init()

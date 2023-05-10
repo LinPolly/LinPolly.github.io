@@ -5,13 +5,17 @@ const routerBase = process.env.DEPLOY_ENV === 'GH_PAGES' ? {
     },
 } : {}
 export default defineNuxtConfig({
-    ...routerBase,    
+    ...routerBase,
     css: [
         'vuetify/lib/styles/main.css',
         '@mdi/font/css/materialdesignicons.min.css'
     ],
     build: {
-        transpile: ['vuetify', 'chart.js'],
+        transpile: [
+            'vuetify',
+            'chart.js',
+            '@vuepic/vue-datepicker'
+        ],
     },
     modules: [
     ],
