@@ -9,12 +9,9 @@
         <v-btn class="bg-primary" @click="date = nextDate(date)" :disabled="date == nextDate(date)">後一日</v-btn>
     </v-app-bar>
     <v-row>
-        <v-col cols="12" sm="6">
-            <Bar :data="chartData" :options="chartOptions"></Bar>
-        </v-col>
-        <v-col cols="12" sm="6">
-            <v-data-table height="600px" :headers="headers" :items="tableData" item-value="name"></v-data-table>
-        </v-col>
+        <Bar class="v-col-12 v-col-sm-6" :data="chartData" :options="chartOptions"></Bar>
+        <v-data-table class="v-col-12 v-col-sm-6" height="600px" :headers="headers" :items="tableData"
+            item-value="name"></v-data-table>
     </v-row>
     <v-row>
         <h2>{{ date }}與{{ prevDate(date) }}比較</h2>
