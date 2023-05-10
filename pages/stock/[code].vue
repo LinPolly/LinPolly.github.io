@@ -156,7 +156,9 @@ export default {
             return this.$route.query.d
         },
         tableData() {
+            // @ts-ignore
             var data = []
+            // @ts-ignore
             if (this.stocks == null) return data
 
             var s = this.stocks.find(x => this.formatDate(x.date) == this.formatDate(this.date))
