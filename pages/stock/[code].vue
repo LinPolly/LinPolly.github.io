@@ -25,7 +25,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
             @click="date = nextDate(date)"
             :disabled="date == nextDate(date)">後一日</v-btn>
     </v-app-bar>
-    <v-row style="height: 700px">
+    <v-row style="height: 700px;flex-direction: column;">
         <Bar class="v-col-12 v-col-sm-6"
             :data="chartData"
             :options="chartOptions"></Bar>
