@@ -4,7 +4,7 @@ useHead({
     lang: "zh-Hant-TW",
   },
   titleTemplate: (name) => {
-    return name ? `${name} - ` : "R";
+    return name ? `${name} - FFF` : "FFF";
   },
 });
 </script>

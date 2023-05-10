@@ -1,0 +1,33 @@
+export interface Info {
+    公司代號: string;
+    公司名稱: string;
+    公司簡稱: string;
+    外國企業註冊地國: string;
+    產業別: number;
+    住址: string;
+    營利事業統一編號: number;
+    董事長: string;
+    總經理: string;
+    發言人: string;
+    發言人職稱: string;
+    代理發言人: string;
+    總機電話: number | string;
+    成立日期: number;
+    上市日期: number;
+    普通股每股面額: string;
+    實收資本額: number;
+    私募股數: number;
+    特別股: number;
+    編制財務報表類型: number;
+    股票過戶機構: string;
+    過戶電話: number | string;
+    過戶地址: string;
+    簽證會計師事務所: string;
+    簽證會計師1: string;
+    簽證會計師2: string;
+    英文簡稱: number | string;
+    英文通訊地址: string;
+    傳真機號碼: number | string;
+    電子郵件信箱: number | string;
+    網址: string;
+}
