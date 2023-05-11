@@ -12,8 +12,8 @@ import '@vuepic/vue-datepicker/dist/main.css'
     <v-app-bar :style="{ 'padding-top': '8px', 'height': `${appbarHeight}px` }">
         <v-btn class="bg-secondary"
             @click="date = prevDate(date)"
-            :disabled="date == prevDate(date)">前一日</v-btn>
-        <VueDatePicker v-model="date"
+            :disabled="formatDate(date) == prevDate(date)">前一日</v-btn>
+        <VueDatePicker v-model="selectDate"
             :enable-time-picker="false"
             :clearable="false"
             auto-apply
@@ -23,7 +23,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
             :max-date="stocks != null && stocks[0] != null ? stocks[stocks.length - 1].date : ''" />
         <v-btn class="bg-primary"
             @click="date = nextDate(date)"
-            :disabled="date == nextDate(date)">後一日</v-btn>
+            :disabled="formatDate(date) == nextDate(date)">後一日</v-btn>
     </v-app-bar>
     <v-row style="height: 700px;flex-direction: column;">
         <Bar class="v-col-12 v-col-sm-6"
@@ -78,6 +78,7 @@ export default {
             ],
             infos: new Array<Info>(),
             stocks: new Array<Stock>(),
+            selectDate: '',
             date: ''
         }
     },
@@ -145,14 +146,16 @@ export default {
                 && route.query.d != undefined
                 && route.query.d != null
                 && !Number.isNaN(Date.parse(route.query.d as string))) {
+                this.selectDate = this.formatDate(Date.parse(route.query.d as string))
                 this.date = this.formatDate(Date.parse(route.query.d as string))
             } else {
+                this.selectDate = this.formatDate(this.stocks[this.stocks.length - 1].date)
                 this.date = this.formatDate(this.stocks[this.stocks.length - 1].date)
             }
         }
     },
     computed: {
-        q() {
+        d() {
             return this.$route.query.d
         },
         tableData() {
@@ -285,7 +288,7 @@ export default {
     },
     watch: {
         'd': function (newValue) {
-            this.date = this.formatDate(newValue)
+            this.selectDate = this.formatDate(newValue)
         },
         'date': function () {
             const queryString = window.location.search;
@@ -296,6 +299,9 @@ export default {
                 const code = route.params.code as string
                 history.pushState(null, '', `/stock/${code}?${urlParams.toString()}`);
             }
+        },
+        'selectDate': function (newValue) {
+            this.date = this.formatDate(newValue)
         }
     },
     components: {
