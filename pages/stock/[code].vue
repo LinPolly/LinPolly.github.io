@@ -6,36 +6,64 @@ import '@vuepic/vue-datepicker/dist/main.css'
 
 <template>
     <v-row>
-        <v-col cols="1">
-            <h1>{{ code }}</h1>
-        </v-col>
-        <v-col v-if="realtimeData?.main">
-            <h2>{{ realtimeData.main.n }}</h2>
+        <v-col style="display: flex !important;align-items: center;">
+            <h1 v-if="realtimeData?.main"
+                style="margin-right: 8px;">{{ realtimeData.main.n }}</h1>
+            <span style="font-size: 24px;">{{ code }}</span>
         </v-col>
         <v-spacer></v-spacer>
     </v-row>
-    <v-row v-if="realtimeData?.main">
-        <v-col cols="12"
+    <v-row>
+        <v-col v-if="realtimeData?.main"
+            cols="12"
             md="6">
             <h2>即時現價</h2>
             <v-card elevation="5">
-                <v-progress-linear v-if="realtimeData.isreload"
+                <v-progress-linear v-if="realtimeData.ismainreload"
                     color="primary"
                     indeterminate>
                 </v-progress-linear>
                 <v-card-title>
                     <span
-                        :style="{ fontSize: '32px', color: diff(realtimeData?.main?.z, realtimeData?.main?.y) == 0 ? 'black' : (diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0 ? 'red' : 'green') }">
+                        :style="{ fontSize: '32px', marginRight: '8px', color: diff(realtimeData?.main?.z, realtimeData?.main?.y) == 0 ? 'black' : (diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0 ? 'red' : 'green') }">
                         {{
-                            trim(realtimeData.main.z, '0')
+                            trim(formatAsCurrency(parseFloat(realtimeData.main.z), 0), '0')
                         }}
+                    </span>
+                    <svg v-if="diff(realtimeData?.main?.z, realtimeData?.main?.y) < 0"
+                        width="15"
+                        height="15"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M4.12046 8.42605C4.5011 9.11206 5.48741 9.11259 5.86878 8.42698L9.17336 2.4861C9.54412 1.81956 9.06218 1 8.29946 1L1.69849 0.999999C0.936239 0.999999 0.454246 1.81866 0.824077 2.48518L4.12046 8.42605Z"
+                            fill="#30B566"></path>
+                    </svg>
+                    <svg v-if="diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0"
+                        width="15"
+                        height="15"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M4.12046 1.57395C4.5011 0.887937 5.48741 0.887414 5.86878 1.57302L9.17336 7.5139C9.54412 8.18044 9.06218 9 8.29946 9L1.69849 9C0.936239 9 0.454246 8.18134 0.824077 7.51482L4.12046 1.57395Z"
+                            fill="#D3321C"></path>
+                    </svg>
+                    <span
+                        :style="{ fontSize: '20px', color: diff(realtimeData?.main?.z, realtimeData?.main?.y) == 0 ? 'black' : (diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0 ? 'red' : 'green') }">
+                        {{ Math.abs(diff(realtimeData?.main?.z, realtimeData?.main?.y)) }}
+                    </span>
+                    <span
+                        :style="{ fontSize: '20px', color: diff(realtimeData?.main?.z, realtimeData?.main?.y) == 0 ? 'black' : (diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0 ? 'red' : 'green') }">
+                        ({{ Math.abs(diffp(realtimeData?.main?.z, realtimeData?.main?.y)) }}%)
                     </span>
                 </v-card-title>
                 <v-row>
                     <v-col cols="6">
                         <v-list class="v-col-6">
                             <v-list-item title="成交"
-                                :subtitle="trim(realtimeData?.main?.tv, '0')"></v-list-item>
+                                :subtitle="trim(realtimeData?.main?.z, '0')"></v-list-item>
                             <v-list-item title="開盤"
                                 :subtitle="trim(realtimeData?.main?.o, '0')"></v-list-item>
                             <v-list-item title="最高"
@@ -164,11 +192,12 @@ import '@vuepic/vue-datepicker/dist/main.css'
                 </v-row>
             </v-card>
         </v-col>
-        <v-col cols="12"
+        <v-col v-if="realtimeData?.data"
+            cols="12"
             md="6">
             <h2>成分股即時現價</h2>
             <v-card elevation="5">
-                <v-progress-linear v-if="realtimeData.isreload"
+                <v-progress-linear v-if="realtimeData.isdatareload"
                     color="primary"
                     indeterminate>
                 </v-progress-linear>
@@ -234,58 +263,61 @@ import '@vuepic/vue-datepicker/dist/main.css'
         </v-col>
     </v-row>
     <v-row style="height: 8px;"></v-row>
-    <h2>{{ code }} 每日成分股異動 {{ (stocks?.length ?? 0) > 0 ? stocks[0]?.date : '' }} - {{ (stocks?.length ?? 0) ?
-        stocks.at(stocks.length
-            -
-            1)?.date : '' }}</h2>
-    <v-banner :style="{ 'padding-top': '8px', 'height': `${appbarHeight}px` }"
-        :sticky="true"
-        lines="one">
+    <div v-if="stocks">
+        <h2>{{ code }} 每日成分股異動 {{ (stocks?.length ?? 0) > 0 ? stocks[0]?.date : '' }} - {{ (stocks?.length ??
+            0) ?
+            stocks.at(stocks.length
+                -
+                1)?.date : '' }}</h2>
+        <v-banner :style="{ 'padding-top': '8px', 'height': `${appbarHeight}px` }"
+            :sticky="true"
+            lines="one">
+            <v-row>
+                <v-col cols="1">
+                    <v-btn class="bg-secondary"
+                        @click="date = prevDate(date)"
+                        :disabled="formatDate(date) == prevDate(date)">前一日</v-btn>
+                </v-col>
+                <v-col>
+                    <VueDatePicker v-model="selectDate"
+                        :enable-time-picker="false"
+                        :clearable="false"
+                        auto-apply
+                        @open="appbarHeight = 422"
+                        @closed="appbarHeight = 72"
+                        :min-date="stocks != null && stocks[0] != null ? stocks[0].date : ''"
+                        :max-date="stocks != null && stocks[0] != null ? stocks[stocks.length - 1].date : ''" />
+                </v-col>
+                <v-col cols="1">
+                    <v-btn class="bg-primary"
+                        @click="date = nextDate(date)"
+                        :disabled="formatDate(date) == nextDate(date)">後一日</v-btn>
+                </v-col>
+                <v-spacer></v-spacer>
+            </v-row>
+        </v-banner>
         <v-row>
-            <v-col cols="1">
-                <v-btn class="bg-secondary"
-                    @click="date = prevDate(date)"
-                    :disabled="formatDate(date) == prevDate(date)">前一日</v-btn>
+            <v-col cols="12"
+                sm="6">
+                <Bar :data="chartData"
+                    :options="chartOptions"></Bar>
             </v-col>
-            <v-col>
-                <VueDatePicker v-model="selectDate"
-                    :enable-time-picker="false"
-                    :clearable="false"
-                    auto-apply
-                    @open="appbarHeight = 422"
-                    @closed="appbarHeight = 72"
-                    :min-date="stocks != null && stocks[0] != null ? stocks[0].date : ''"
-                    :max-date="stocks != null && stocks[0] != null ? stocks[stocks.length - 1].date : ''" />
+            <v-col cols="12"
+                sm="6">
+                <v-data-table height="600px"
+                    :headers="headers"
+                    :items="tableData"
+                    item-value="name"></v-data-table>
             </v-col>
-            <v-col cols="1">
-                <v-btn class="bg-primary"
-                    @click="date = nextDate(date)"
-                    :disabled="formatDate(date) == nextDate(date)">後一日</v-btn>
-            </v-col>
-            <v-spacer></v-spacer>
         </v-row>
-    </v-banner>
-    <v-row>
-        <v-col cols="12"
-            sm="6">
-            <Bar :data="chartData"
-                :options="chartOptions"></Bar>
-        </v-col>
-        <v-col cols="12"
-            sm="6">
-            <v-data-table height="600px"
-                :headers="headers"
-                :items="tableData"
-                item-value="name"></v-data-table>
-        </v-col>
-    </v-row>
-    <v-row>
-        <h2>{{ formatDate(date) }}與{{ formatDate(prevDate(date)) }}比較</h2>
-    </v-row>
-    <v-row style="height: 300px;">
-        <Bar :data="compareData"
-            :options="compareOptions"></Bar>
-    </v-row>
+        <v-row>
+            <h2>{{ formatDate(date) }}與{{ formatDate(prevDate(date)) }}比較</h2>
+        </v-row>
+        <v-row style="height: 300px;">
+            <Bar :data="compareData"
+                :options="compareOptions"></Bar>
+        </v-row>
+    </div>
 </template>
 
 <script lang="ts">
@@ -322,7 +354,8 @@ export default {
             infos: new Array<Info>(),
             stocks: new Array<Stock>(),
             realtimeData: {
-                isreload: false,
+                ismainreload: false,
+                isdatareload: false,
                 headers: [
                     { title: '名稱', align: 'start', sortable: false, key: 'c' },
                     { title: '股價', align: 'end', key: 'z' },
@@ -402,7 +435,7 @@ export default {
             return ((arg1 * m - arg2 * m) / m).toFixed(n) as number;
         },
         async loadRealTimeMainData() {
-            if (this.stocks == null) return
+            this.realtimeData.ismainreload = true
             const { data } = await useAsyncData(`realtime_${this.code}`, () => $fetch('/api/stock', {
                 params: {
                     code: this.code
@@ -413,21 +446,28 @@ export default {
             if (this.realtimeData.main.z == '-') {
                 this.realtimeData.main.z = this.realtimeData.main.y
             }
+            this.realtimeData.ismainreload = false
         },
         async loadRealTimeData() {
-            if (this.stocks == null) return
-            this.realtimeData.isreload = true
-
-            var labels = this.stocks[this.stocks.length - 1].stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => x.code)
-            const { data } = await useAsyncData(labels.join('-'), () => $fetch('/api/stock', {
-                params: {
-                    code: labels
-                }
-            }))
-
-            this.realtimeData.data = (data.value as MsgArray[]).filter(x => x.c != this.code)
             await this.loadRealTimeMainData()
-            this.realtimeData.isreload = false
+
+            this.realtimeData.isdatareload = true
+
+            if (this.stocks) {
+                var labels = this.stocks[this.stocks.length - 1]?.stock?.sort((a, b) => b.code.localeCompare(a.code)).map(x => x.code)
+                if (labels) {
+                    const { data } = await useAsyncData(labels.join('-'), () => $fetch('/api/stock', {
+                        params: {
+                            code: labels
+                        }
+                    }))
+
+                    this.realtimeData.data = (data.value as MsgArray[]).filter(x => x.c != this.code)
+                }
+            } else {
+                this.realtimeData.data = null
+            }
+            this.realtimeData.isdatareload = false
         },
         formatAsCurrency(value: number, dec: number) {
             dec = dec || 0
@@ -467,8 +507,10 @@ export default {
         },
         prevDate(date: any) {
             if (this.stocks == null) return date
-            var nowIndex = this.stocks.findIndex(x => this.formatDate(x.date) == date)
-            if (nowIndex == 0)
+            if (this.stocks.length == 0) return date
+
+            var nowIndex = this.stocks?.findIndex(x => this.formatDate(x.date) == date)
+            if (nowIndex == null || nowIndex == -1 || nowIndex == 0)
                 return date
 
             if (this.stocks[nowIndex - 1] == null)
@@ -478,8 +520,8 @@ export default {
         nextDate(date: any) {
             if (this.stocks == null) return date
 
-            var nowIndex = this.stocks.findIndex(x => this.formatDate(x.date) == date)
-            if (nowIndex == this.stocks.length - 1)
+            var nowIndex = this.stocks?.findIndex(x => this.formatDate(x.date) == date)
+            if (nowIndex == null || nowIndex == -1 || nowIndex == this.stocks.length - 1)
                 return date
 
             if (this.stocks[nowIndex + 1] == null)
@@ -489,30 +531,48 @@ export default {
         async loadInfo() {
             const { data } = await useAsyncData('18419', () => $fetch(`/stock/18419.json`), { server: false })
             // @ts-ignore
-            this.infos = data.value
+            if (this.isJson(data.value)) {
+                // @ts-ignore
+                this.infos = data.value
+            }
         },
         async loadData() {
             const { data } = await useAsyncData(this.code, () => $fetch(`/stock/${this.code}.json`), { server: false })
             // @ts-ignore
-            this.stocks = data.value
+            if (this.isJson(data.value)) {
+                // @ts-ignore
+                this.stocks = data.value
+            } else {
+                this.stocks = null
+            }
         },
         async init() {
             await Promise.all([
                 this.loadInfo(),
                 this.loadData()
             ])
-            if (this.d
-                && this.d != undefined
-                && this.d != null
-                && !Number.isNaN(Date.parse(this.d as string))) {
-                this.selectDate = this.formatDate(Date.parse(this.d as string))
-                this.date = this.formatDate(Date.parse(this.d as string))
-            } else {
-                this.selectDate = this.formatDate(this.stocks[this.stocks.length - 1].date)
-                this.date = this.formatDate(this.stocks[this.stocks.length - 1].date)
+            if (this.stocks != null) {
+                if (this.d
+                    && this.d != undefined
+                    && this.d != null
+                    && !Number.isNaN(Date.parse(this.d as string))) {
+                    this.selectDate = this.formatDate(Date.parse(this.d as string))
+                    this.date = this.formatDate(Date.parse(this.d as string))
+                } else {
+                    this.selectDate = this.formatDate(this.stocks[this.stocks.length - 1].date)
+                    this.date = this.formatDate(this.stocks[this.stocks.length - 1].date)
+                }
             }
 
             this.loadRealTimeData()
+        },
+        isJson(str: string) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
         }
     },
     computed: {
