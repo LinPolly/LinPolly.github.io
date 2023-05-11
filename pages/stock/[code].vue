@@ -275,7 +275,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
             <v-row>
                 <v-col cols="1">
                     <v-btn class="bg-secondary"
-                        @click="date = prevDate(date)"
+                        @click="selectDate = prevDate(date);"
                         :disabled="formatDate(date) == prevDate(date)">前一日</v-btn>
                 </v-col>
                 <v-col>
@@ -290,7 +290,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
                 </v-col>
                 <v-col cols="1">
                     <v-btn class="bg-primary"
-                        @click="date = nextDate(date)"
+                        @click="selectDate = nextDate(date)"
                         :disabled="formatDate(date) == nextDate(date)">後一日</v-btn>
                 </v-col>
                 <v-spacer></v-spacer>
