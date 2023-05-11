@@ -2,22 +2,35 @@
 import VueDatePicker from '@vuepic/vue-datepicker'
 import { Bar } from 'vue-chartjs'
 import '@vuepic/vue-datepicker/dist/main.css'
-import {
-    subtract
-} from 'mathjs'
 </script>
 
 <template>
-    <h1>{{ code }}</h1>
+    <v-row>
+        <v-col cols="1">
+            <h1>{{ code }}</h1>
+        </v-col>
+        <v-col v-if="realtimeData?.main">
+            <h2>{{ realtimeData.main.n }}</h2>
+        </v-col>
+        <v-spacer></v-spacer>
+    </v-row>
     <v-row v-if="realtimeData?.main">
         <v-col cols="12"
             md="6">
             <h2>即時現價</h2>
-            <v-card>
+            <v-card elevation="5">
                 <v-progress-linear v-if="realtimeData.isreload"
                     color="primary"
                     indeterminate>
                 </v-progress-linear>
+                <v-card-title>
+                    <span
+                        :style="{ fontSize: '32px', color: diff(realtimeData?.main?.z, realtimeData?.main?.y) == 0 ? 'black' : (diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0 ? 'red' : 'green') }">
+                        {{
+                            trim(realtimeData.main.z, '0')
+                        }}
+                    </span>
+                </v-card-title>
                 <v-row>
                     <v-col cols="6">
                         <v-list class="v-col-6">
@@ -36,7 +49,9 @@ import {
                             <v-list-item title="昨收"
                                 :subtitle="trim(realtimeData?.main?.y, '0')"></v-list-item>
                             <v-list-item title="漲跌"
-                                :subtitle="subtract(parseFloat(trim(realtimeData?.main?.z, '0')), parseFloat(trim(realtimeData?.main?.y, '0')))"></v-list-item>
+                                :subtitle="`${diff(realtimeData?.main?.z, realtimeData?.main?.y)}`"></v-list-item>
+                            <v-list-item title="漲跌幅(%)"
+                                :subtitle="`${diffp(realtimeData?.main?.z, realtimeData?.main?.y)}%`"></v-list-item>
                             <v-list-item title="總量"
                                 :subtitle="realtimeData?.main?.v"></v-list-item>
                         </v-list>
@@ -152,15 +167,69 @@ import {
         <v-col cols="12"
             md="6">
             <h2>成分股即時現價</h2>
-            <v-card>
+            <v-card elevation="5">
                 <v-progress-linear v-if="realtimeData.isreload"
                     color="primary"
                     indeterminate>
                 </v-progress-linear>
-                <v-data-table height="480px"
-                    :headers="realtimeData.headers"
+                <v-data-table :headers="realtimeData.headers"
                     :items="realTimetableData"
-                    item-value="name"></v-data-table>
+                    item-value="name">
+                    <template v-slot:item.c="{ item }">
+                        <v-card elevation="0">
+                            <v-card-title>
+                                <span>{{ infos.find(x => x.公司代號 == item.value.c)?.公司簡稱 }}</span>
+                            </v-card-title>
+                            <v-card-subtitle>
+                                <span>{{ item.value.c }}</span>
+                            </v-card-subtitle>
+                        </v-card>
+                    </template>
+                    <template v-slot:item.z="{ item }">
+                        <span
+                            :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">{{
+                                trim(item.value.z, '0') }}</span>
+                    </template>
+                    <template v-slot:item.diff="{ item }">
+                        <span
+                            :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
+                            {{
+                                diff(item.value.z, item.value.y)
+                            }}
+                        </span>
+                    </template>
+                    <template v-slot:item.diffp="{ item }">
+                        <span
+                            :style="{ color: diffp(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
+                            {{
+                                diffp(item.value.z, item.value.y)
+                            }}%
+                        </span>
+                    </template>
+                    <template v-slot:item.o="{ item }">
+                        <span
+                            :style="{ color: parseFloat(item.value.o) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.o) > parseFloat(item.value.y) ? 'red' : 'green') }">
+                            {{ trim(item.value.o, '0') }}
+                        </span>
+                    </template>
+                    <template v-slot:item.y="{ item }">
+                        <span>
+                            {{ trim(item.value.y, '0') }}
+                        </span>
+                    </template>
+                    <template v-slot:item.h="{ item }">
+                        <span
+                            :style="{ color: parseFloat(item.value.h) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.h) > parseFloat(item.value.y) ? 'red' : 'green') }">
+                            {{ trim(item.value.h, '0') }}
+                        </span>
+                    </template>
+                    <template v-slot:item.l="{ item }">
+                        <span
+                            :style="{ color: parseFloat(item.value.l) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.l) > parseFloat(item.value.y) ? 'red' : 'green') }">
+                            {{ trim(item.value.l, '0') }}
+                        </span>
+                    </template>
+                </v-data-table>
             </v-card>
         </v-col>
     </v-row>
@@ -169,22 +238,33 @@ import {
         stocks.at(stocks.length
             -
             1)?.date : '' }}</h2>
-    <v-app-bar :style="{ 'padding-top': '8px', 'height': `${appbarHeight}px` }">
-        <v-btn class="bg-secondary"
-            @click="date = prevDate(date)"
-            :disabled="formatDate(date) == prevDate(date)">前一日</v-btn>
-        <VueDatePicker v-model="selectDate"
-            :enable-time-picker="false"
-            :clearable="false"
-            auto-apply
-            @open="appbarHeight = 422"
-            @closed="appbarHeight = 72"
-            :min-date="stocks != null && stocks[0] != null ? stocks[0].date : ''"
-            :max-date="stocks != null && stocks[0] != null ? stocks[stocks.length - 1].date : ''" />
-        <v-btn class="bg-primary"
-            @click="date = nextDate(date)"
-            :disabled="formatDate(date) == nextDate(date)">後一日</v-btn>
-    </v-app-bar>
+    <v-banner :style="{ 'padding-top': '8px', 'height': `${appbarHeight}px` }"
+        :sticky="true"
+        lines="one">
+        <v-row>
+            <v-col cols="1">
+                <v-btn class="bg-secondary"
+                    @click="date = prevDate(date)"
+                    :disabled="formatDate(date) == prevDate(date)">前一日</v-btn>
+            </v-col>
+            <v-col>
+                <VueDatePicker v-model="selectDate"
+                    :enable-time-picker="false"
+                    :clearable="false"
+                    auto-apply
+                    @open="appbarHeight = 422"
+                    @closed="appbarHeight = 72"
+                    :min-date="stocks != null && stocks[0] != null ? stocks[0].date : ''"
+                    :max-date="stocks != null && stocks[0] != null ? stocks[stocks.length - 1].date : ''" />
+            </v-col>
+            <v-col cols="1">
+                <v-btn class="bg-primary"
+                    @click="date = nextDate(date)"
+                    :disabled="formatDate(date) == nextDate(date)">後一日</v-btn>
+            </v-col>
+            <v-spacer></v-spacer>
+        </v-row>
+    </v-banner>
     <v-row>
         <v-col cols="12"
             sm="6">
@@ -244,19 +324,14 @@ export default {
             realtimeData: {
                 isreload: false,
                 headers: [
-                    {
-                        title: '名稱',
-                        align: 'start',
-                        sortable: false,
-                        key: 'name',
-                    },
-                    { title: '股價', align: 'end', key: 'volumn' },
-                    { title: '漲跌', align: 'end', key: 'weights' },
-                    { title: '漲跌幅(%)', align: 'end', key: 'weights' },
-                    { title: '開盤', align: 'end', key: 'weights' },
-                    { title: '昨收', align: 'end', key: 'weights' },
-                    { title: '最高', align: 'end', key: 'weights' },
-                    { title: '最低', align: 'end', key: 'weights' },
+                    { title: '名稱', align: 'start', sortable: false, key: 'c' },
+                    { title: '股價', align: 'end', key: 'z' },
+                    { title: '漲跌', align: 'end', key: 'diff' },
+                    { title: '漲跌幅(%)', align: 'end', key: 'diffp' },
+                    { title: '開盤', align: 'end', key: 'o' },
+                    { title: '昨收', align: 'end', key: 'y' },
+                    { title: '最高', align: 'end', key: 'h' },
+                    { title: '最低', align: 'end', key: 'l' },
                 ],
                 main: {} as MsgArray,
                 data: new Array<MsgArray>(),
@@ -266,6 +341,66 @@ export default {
         }
     },
     methods: {
+        diff(z: string, y: string) {
+            var v = this.accSubtr(parseFloat(z), parseFloat(y))
+            if (v == 0)
+                return 0
+            return v
+        },
+        diffp(z: string, y: string) {
+            var v = ((this.accSubtr(parseFloat(z), parseFloat(y)) * 100 /
+                parseFloat(y) * 100) / 100)
+
+            if (v == 0)
+                return 0
+            return this.trim(v.toFixed(2), '0')
+        },
+        //除法
+        accDiv(arg1: number, arg2: number) {
+            var t1 = 0, t2 = 0, r1, r2;
+            try {
+                t1 = arg1.toString().split(".")[1].length;
+            } catch (e) { }
+            try {
+                t2 = arg2.toString().split(".")[1].length;
+            } catch (e) { }
+
+            r1 = Number(arg1.toString().replace(".", ""));
+            r2 = Number(arg2.toString().replace(".", ""));
+            return (r1 / r2) * Math.pow(10, t2 - t1);
+        },
+        //乘法
+        accMul(arg1: number, arg2: number) {
+            var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+            try {
+                m += s1.split(".")[1].length;
+            } catch (e) { }
+            try {
+                m += s2.split(".")[1].length;
+            } catch (e) { }
+            return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+        },
+        //加法
+        accAdd(arg1: number, arg2: number) {
+            var r1, r2, m;
+            try { r1 = arg1.toString().split(".")[1].length } catch (e) { r1 = 0 }
+            try { r2 = arg2.toString().split(".")[1].length } catch (e) { r2 = 0 }
+            m = Math.pow(10, Math.max(r1, r2));
+            return (arg1 * m + arg2 * m) / m;
+        },
+        //減法
+        accSubtr(arg1: number, arg2: number) {
+            var r1, r2, m, n;
+            try {
+                r1 = arg1.toString().split(".")[1].length;
+            } catch (e) { r1 = 0 }
+            try {
+                r2 = arg2.toString().split(".")[1].length;
+            } catch (e) { r2 = 0 }
+            m = Math.pow(10, Math.max(r1, r2));
+            n = (r1 >= r2) ? r1 : r2;
+            return ((arg1 * m - arg2 * m) / m).toFixed(n) as number;
+        },
         async loadRealTimeMainData() {
             if (this.stocks == null) return
             const { data } = await useAsyncData(`realtime_${this.code}`, () => $fetch('/api/stock', {
@@ -303,8 +438,17 @@ export default {
         },
         trim(str: string, c: string) {
             if (str) {
+                if (str === '0.00')
+                    return '0'
+
                 const pattern = new RegExp(`^${c}+|${c}+$`, 'g');
-                return str.replace(pattern, '')
+                var v = str.replace(pattern, '')
+
+                if (v.endsWith('.')) {
+                    return v.substring(0, v.length - 1)
+                }
+
+                return v
             }
             return str
         },
@@ -505,6 +649,10 @@ export default {
                 }
             }
         },
+        realTimetableData() {
+            var data = {}
+            return this.realtimeData.data
+        }
     },
     watch: {
         'd': function (newValue) {
