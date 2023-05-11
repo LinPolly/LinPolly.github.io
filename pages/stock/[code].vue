@@ -531,15 +531,12 @@ export default {
         async loadInfo() {
             const { data } = await useAsyncData('18419', () => $fetch(`/stock/18419.json`), { server: false })
             // @ts-ignore
-            if (this.isJson(data.value)) {
-                // @ts-ignore
-                this.infos = data.value
-            }
+            this.infos = data.value
         },
         async loadData() {
             const { data } = await useAsyncData(this.code, () => $fetch(`/stock/${this.code}.json`), { server: false })
             // @ts-ignore
-            if (this.isJson(data.value)) {
+            if (Array.isArray(data.value)) {
                 // @ts-ignore
                 this.stocks = data.value
             } else {
@@ -566,14 +563,6 @@ export default {
 
             this.loadRealTimeData()
         },
-        isJson(str: string) {
-            try {
-                JSON.parse(str);
-            } catch (e) {
-                return false;
-            }
-            return true;
-        }
     },
     computed: {
         code() {
