@@ -27,7 +27,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
                     <span
                         :style="{ fontSize: '32px', marginRight: '8px', color: diff(realtimeData?.main?.z, realtimeData?.main?.y) == 0 ? 'black' : (diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0 ? 'red' : 'green') }">
                         {{
-                            trim(formatAsCurrency(parseFloat(realtimeData.main.z), 0), '0')
+                            trim(formatAsCurrency(parseFloat(realtimeData.main.z), 2), '0')
                         }}
                     </span>
                     <svg v-if="diff(realtimeData?.main?.z, realtimeData?.main?.y) < 0"
