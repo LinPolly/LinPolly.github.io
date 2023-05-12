@@ -625,7 +625,7 @@ export default {
 
             this.loadRealTimeData()
             this.t = setInterval(async () => {
-                if (this.timer.lastudt.getHours() < 9 || (this.timer.lastudt.getHours() > 13 && this.timer.lastudt.getMinutes() > 30)) {
+                if (this.timer.lastudt.getHours() < 9 || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
                     clearInterval(this.t)
                     return
                 }
