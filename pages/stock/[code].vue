@@ -60,7 +60,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
                 </v-card-title>
                 <v-row>
                     <v-col cols="6">
-                        <v-list class="v-col-6">
+                        <v-list class="v-col-12">
                             <v-list-item title="成交"
                                 :subtitle="trimEnd(realtimeData?.main?.z, '0')"></v-list-item>
                             <v-list-item title="開盤"
@@ -72,7 +72,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
                         </v-list>
                     </v-col>
                     <v-col cols="6">
-                        <v-list class="v-col-6">
+                        <v-list class="v-col-12">
                             <v-list-item title="昨收"
                                 :subtitle="trimEnd(realtimeData?.main?.y, '0')"></v-list-item>
                             <v-list-item title="漲跌"
