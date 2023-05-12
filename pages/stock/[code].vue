@@ -201,64 +201,66 @@ import '@vuepic/vue-datepicker/dist/main.css'
                     color="primary"
                     indeterminate>
                 </v-progress-linear>
-                <v-data-table :headers="realtimeData.headers"
-                    :items="realTimetableData"
-                    item-value="name">
-                    <template v-slot:item.c="{ item }">
-                        <v-card elevation="0">
-                            <v-card-title>
-                                <span>{{ infos.find(x => x.公司代號 == item.value.c)?.公司簡稱 }}</span>
-                            </v-card-title>
-                            <v-card-subtitle>
-                                <span>{{ item.value.c }}</span>
-                            </v-card-subtitle>
-                        </v-card>
-                    </template>
-                    <template v-slot:item.z="{ item }">
-                        <span
-                            :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">{{
-                                trim(item.value.z, '0') }}</span>
-                    </template>
-                    <template v-slot:item.diff="{ item }">
-                        <span
-                            :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
-                            {{
-                                diff(item.value.z, item.value.y)
-                            }}
-                        </span>
-                    </template>
-                    <template v-slot:item.diffp="{ item }">
-                        <span
-                            :style="{ color: diffp(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
-                            {{
-                                diffp(item.value.z, item.value.y)
-                            }}%
-                        </span>
-                    </template>
-                    <template v-slot:item.o="{ item }">
-                        <span
-                            :style="{ color: parseFloat(item.value.o) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.o) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                            {{ trim(item.value.o, '0') }}
-                        </span>
-                    </template>
-                    <template v-slot:item.y="{ item }">
-                        <span>
-                            {{ trim(item.value.y, '0') }}
-                        </span>
-                    </template>
-                    <template v-slot:item.h="{ item }">
-                        <span
-                            :style="{ color: parseFloat(item.value.h) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.h) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                            {{ trim(item.value.h, '0') }}
-                        </span>
-                    </template>
-                    <template v-slot:item.l="{ item }">
-                        <span
-                            :style="{ color: parseFloat(item.value.l) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.l) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                            {{ trim(item.value.l, '0') }}
-                        </span>
-                    </template>
-                </v-data-table>
+                <ClientOnly>
+                    <v-data-table :headers="realtimeData.headers"
+                        :items="realTimetableData"
+                        item-value="name">
+                        <template v-slot:item.c="{ item }">
+                            <v-card elevation="0">
+                                <v-card-title>
+                                    <span>{{ infos.find(x => x.公司代號 == item.value.c)?.公司簡稱 }}</span>
+                                </v-card-title>
+                                <v-card-subtitle>
+                                    <span>{{ item.value.c }}</span>
+                                </v-card-subtitle>
+                            </v-card>
+                        </template>
+                        <template v-slot:item.z="{ item }">
+                            <span
+                                :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">{{
+                                    trim(item.value.z, '0') }}</span>
+                        </template>
+                        <template v-slot:item.diff="{ item }">
+                            <span
+                                :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
+                                {{
+                                    diff(item.value.z, item.value.y)
+                                }}
+                            </span>
+                        </template>
+                        <template v-slot:item.diffp="{ item }">
+                            <span
+                                :style="{ color: diffp(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
+                                {{
+                                    diffp(item.value.z, item.value.y)
+                                }}%
+                            </span>
+                        </template>
+                        <template v-slot:item.o="{ item }">
+                            <span
+                                :style="{ color: parseFloat(item.value.o) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.o) > parseFloat(item.value.y) ? 'red' : 'green') }">
+                                {{ trim(item.value.o, '0') }}
+                            </span>
+                        </template>
+                        <template v-slot:item.y="{ item }">
+                            <span>
+                                {{ trim(item.value.y, '0') }}
+                            </span>
+                        </template>
+                        <template v-slot:item.h="{ item }">
+                            <span
+                                :style="{ color: parseFloat(item.value.h) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.h) > parseFloat(item.value.y) ? 'red' : 'green') }">
+                                {{ trim(item.value.h, '0') }}
+                            </span>
+                        </template>
+                        <template v-slot:item.l="{ item }">
+                            <span
+                                :style="{ color: parseFloat(item.value.l) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.l) > parseFloat(item.value.y) ? 'red' : 'green') }">
+                                {{ trim(item.value.l, '0') }}
+                            </span>
+                        </template>
+                    </v-data-table>
+                </ClientOnly>
             </v-card>
         </v-col>
     </v-row>
@@ -304,10 +306,12 @@ import '@vuepic/vue-datepicker/dist/main.css'
             </v-col>
             <v-col cols="12"
                 sm="6">
-                <v-data-table height="600px"
-                    :headers="headers"
-                    :items="tableData"
-                    item-value="name"></v-data-table>
+                <ClientOnly>
+                    <v-data-table height="600px"
+                        :headers="headers"
+                        :items="tableData"
+                        item-value="name"></v-data-table>
+                </ClientOnly>
             </v-col>
         </v-row>
         <v-row>
@@ -446,7 +450,18 @@ export default {
                 }
             }))
 
-            this.realtimeData.main = (data.value as MsgArray[]).find(x => x.c == this.code) as MsgArray
+            var newData = (data.value as MsgArray[]).find(x => x.c == this.code) as MsgArray
+            if (this.realtimeData.main.c == '')
+                this.realtimeData.main = newData
+
+            var keys = Object.keys(newData)
+            keys.forEach(x => {
+                if (x == 'z' && newData[x] == '-') {
+                    console.log(newData[x])
+                } else {
+                    this.realtimeData.main[x] = newData[x]
+                }
+            })
             if (this.realtimeData.main.z == '-') {
                 this.realtimeData.main.z = this.realtimeData.main.y
             }
@@ -466,7 +481,21 @@ export default {
                         }
                     }))
 
-                    this.realtimeData.data = (data.value as MsgArray[]).filter(x => x.c != this.code)
+                    var newData = (data.value as MsgArray[]).filter(x => x.c != this.code)
+                    if (this.realtimeData.data.length == 0)
+                        this.realtimeData.data = newData
+
+                    newData.forEach(item => {
+                        var keys = Object.keys(item)
+                        keys.forEach(x => {
+                            if (x == 'z' && item[x] == '-') {
+                                console.log(item[x])
+                            } else {
+                                var d = this.realtimeData.data.find(x => x.c == item.c)
+                                d[x] = item[x]
+                            }
+                        })
+                    })
                 }
             } else {
                 this.realtimeData.data = null
