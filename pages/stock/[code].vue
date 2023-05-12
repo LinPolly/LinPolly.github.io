@@ -373,7 +373,7 @@ export default {
             date: '',
             timer: {
                 lastudt: new Date(),
-                t: null
+                t: ''
             }
         }
     },
@@ -565,9 +565,11 @@ export default {
                 }
             }
 
-
             this.loadRealTimeData()
-            this.t = setTimeout(async () => {
+            this.t = setInterval(async () => {
+                if (this.timer.lastudt.getHours() < 9 || (this.timer.lastudt.getHours() > 13 && this.timer.lastudt.getMinutes() > 30)) {
+                    clearInterval(this.t)
+                }
                 if (new Date() - this.timer.lastudt > 5_000) {
                     this.timer.lastudt = new Date()
                     await this.loadRealTimeData()
