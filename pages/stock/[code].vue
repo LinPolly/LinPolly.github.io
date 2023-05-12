@@ -11,7 +11,6 @@ import '@vuepic/vue-datepicker/dist/main.css'
                 style="margin-right: 8px;">{{ realtimeData.main.n }}</h1>
             <span style="font-size: 24px;">{{ code }}</span>
         </v-col>
-        <v-spacer></v-spacer>
     </v-row>
     <v-row>
         <v-col v-if="realtimeData?.main"
@@ -27,7 +26,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
                     <span
                         :style="{ fontSize: '32px', marginRight: '8px', color: diff(realtimeData?.main?.z, realtimeData?.main?.y) == 0 ? 'black' : (diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0 ? 'red' : 'green') }">
                         {{
-                            trim(formatAsCurrency(parseFloat(realtimeData.main.z), 2), '0')
+                            trimEnd(formatAsCurrency(parseFloat(realtimeData.main.z), 2), '0')
                         }}
                     </span>
                     <svg v-if="diff(realtimeData?.main?.z, realtimeData?.main?.y) < 0"
@@ -63,19 +62,19 @@ import '@vuepic/vue-datepicker/dist/main.css'
                     <v-col cols="6">
                         <v-list class="v-col-6">
                             <v-list-item title="成交"
-                                :subtitle="trim(realtimeData?.main?.z, '0')"></v-list-item>
+                                :subtitle="trimEnd(realtimeData?.main?.z, '0')"></v-list-item>
                             <v-list-item title="開盤"
-                                :subtitle="trim(realtimeData?.main?.o, '0')"></v-list-item>
+                                :subtitle="trimEnd(realtimeData?.main?.o, '0')"></v-list-item>
                             <v-list-item title="最高"
-                                :subtitle="trim(realtimeData?.main?.h, '0')"></v-list-item>
+                                :subtitle="trimEnd(realtimeData?.main?.h, '0')"></v-list-item>
                             <v-list-item title="最低"
-                                :subtitle="trim(realtimeData?.main?.l, '0')"></v-list-item>
+                                :subtitle="trimEnd(realtimeData?.main?.l, '0')"></v-list-item>
                         </v-list>
                     </v-col>
                     <v-col cols="6">
                         <v-list class="v-col-6">
                             <v-list-item title="昨收"
-                                :subtitle="trim(realtimeData?.main?.y, '0')"></v-list-item>
+                                :subtitle="trimEnd(realtimeData?.main?.y, '0')"></v-list-item>
                             <v-list-item title="漲跌"
                                 :subtitle="`${diff(realtimeData?.main?.z, realtimeData?.main?.y)}`"></v-list-item>
                             <v-list-item title="漲跌幅(%)"
@@ -101,13 +100,13 @@ import '@vuepic/vue-datepicker/dist/main.css'
                         <v-row>
                             <v-col>
                                 <v-list>
-                                    <v-list-item v-for="item in trim(realtimeData?.main?.g ?? '', '_').split('_')"
+                                    <v-list-item v-for="item in trimEnd(realtimeData?.main?.g ?? '', '_').split('_')"
                                         :key="item">
                                         <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
                                         </v-list-item-title>
                                         <v-list-item-action>
                                             <v-progress-linear :model-value="parseInt(item)"
-                                                :max="trim(realtimeData?.main?.g ?? '', '_').split('_').map(x => parseInt(x)).sort((a, b) => b - a)[0]"
+                                                :max="trimEnd(realtimeData?.main?.g ?? '', '_').split('_').map(x => parseInt(x)).sort((a, b) => b - a)[0]"
                                                 reverse>
                                             </v-progress-linear>
                                         </v-list-item-action>
@@ -116,11 +115,11 @@ import '@vuepic/vue-datepicker/dist/main.css'
                             </v-col>
                             <v-col>
                                 <v-list>
-                                    <v-list-item v-for="item in trim(realtimeData?.main?.b ?? '', '_').split('_')"
+                                    <v-list-item v-for="item in trimEnd(realtimeData?.main?.b ?? '', '_').split('_')"
                                         :key="item">
                                         <v-list-item-title
                                             :style="{ color: realtimeData?.main?.y == item ? 'black' : (parseFloat(item) > parseFloat(realtimeData?.main?.y) ? 'red' : 'green') }"
-                                            v-text="trim(item, '0')"></v-list-item-title>
+                                            v-text="trimEnd(item, '0')"></v-list-item-title>
                                     </v-list-item>
                                 </v-list>
                             </v-col>
@@ -129,7 +128,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
                         <v-row>
                             <v-col>
                                 <v-list-item
-                                    :title="formatAsCurrency(trim(realtimeData?.main?.g ?? '', '_').split('_').map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
+                                    :title="formatAsCurrency(trimEnd(realtimeData?.main?.g ?? '', '_').split('_').map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
                                 </v-list-item>
                             </v-col>
                             <v-col>
@@ -153,23 +152,23 @@ import '@vuepic/vue-datepicker/dist/main.css'
                         <v-row>
                             <v-col>
                                 <v-list>
-                                    <v-list-item v-for="item in trim(realtimeData?.main?.a ?? '', '_').split('_')"
+                                    <v-list-item v-for="item in trimEnd(realtimeData?.main?.a ?? '', '_').split('_')"
                                         :key="item">
                                         <v-list-item-title
                                             :style="{ color: realtimeData?.main?.y == item ? 'black' : (parseFloat(item) > parseFloat(realtimeData?.main?.y) ? 'red' : 'green') }"
-                                            v-text="trim(item, '0')"></v-list-item-title>
+                                            v-text="trimEnd(item, '0')"></v-list-item-title>
                                     </v-list-item>
                                 </v-list>
                             </v-col>
                             <v-col>
                                 <v-list>
-                                    <v-list-item v-for="item in trim(realtimeData?.main?.f ?? '', '_').split('_')"
+                                    <v-list-item v-for="item in trimEnd(realtimeData?.main?.f ?? '', '_').split('_')"
                                         :key="item">
                                         <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
                                         </v-list-item-title>
                                         <v-list-item-action>
                                             <v-progress-linear :model-value="parseInt(item)"
-                                                :max="trim(realtimeData?.main?.f ?? '', '_').split('_').map(x => parseInt(x)).sort((a, b) => b - a)[0]">
+                                                :max="trimEnd(realtimeData?.main?.f ?? '', '_').split('_').map(x => parseInt(x)).sort((a, b) => b - a)[0]">
                                             </v-progress-linear>
                                         </v-list-item-action>
                                     </v-list-item>
@@ -184,7 +183,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
                             </v-col>
                             <v-col>
                                 <v-list-item
-                                    :title="formatAsCurrency(trim(realtimeData?.main?.f ?? '', '_').split('_').map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
+                                    :title="formatAsCurrency(trimEnd(realtimeData?.main?.f ?? '', '_').split('_').map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
                                 </v-list-item>
                             </v-col>
                         </v-row>
@@ -218,7 +217,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
                         <template v-slot:item.z="{ item }">
                             <span
                                 :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">{{
-                                    trim(item.value.z, '0') }}</span>
+                                    trimEnd(item.value.z, '0') }}</span>
                         </template>
                         <template v-slot:item.diff="{ item }">
                             <span
@@ -239,24 +238,24 @@ import '@vuepic/vue-datepicker/dist/main.css'
                         <template v-slot:item.o="{ item }">
                             <span
                                 :style="{ color: parseFloat(item.value.o) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.o) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                                {{ trim(item.value.o, '0') }}
+                                {{ trimEnd(item.value.o, '0') }}
                             </span>
                         </template>
                         <template v-slot:item.y="{ item }">
                             <span>
-                                {{ trim(item.value.y, '0') }}
+                                {{ trimEnd(item.value.y, '0') }}
                             </span>
                         </template>
                         <template v-slot:item.h="{ item }">
                             <span
                                 :style="{ color: parseFloat(item.value.h) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.h) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                                {{ trim(item.value.h, '0') }}
+                                {{ trimEnd(item.value.h, '0') }}
                             </span>
                         </template>
                         <template v-slot:item.l="{ item }">
                             <span
                                 :style="{ color: parseFloat(item.value.l) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.l) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                                {{ trim(item.value.l, '0') }}
+                                {{ trimEnd(item.value.l, '0') }}
                             </span>
                         </template>
                     </v-data-table>
@@ -394,7 +393,7 @@ export default {
 
             if (v == 0)
                 return 0
-            return this.trim(v.toFixed(2), '0')
+            return this.trimEnd(v.toFixed(2), '0')
         },
         //除法
         accDiv(arg1: number, arg2: number) {
@@ -513,6 +512,38 @@ export default {
                     return '0'
 
                 const pattern = new RegExp(`^${c}+|${c}+$`, 'g');
+                var v = str.replace(pattern, '')
+
+                if (v.endsWith('.')) {
+                    return v.substring(0, v.length - 1)
+                }
+
+                return v
+            }
+            return str
+        },
+        trimEnd(str: string, c: string) {
+            if (str) {
+                if (str === '0.00')
+                    return '0'
+
+                const pattern = new RegExp(`^|${c}+$`, 'g');
+                var v = str.replace(pattern, '')
+
+                if (v.endsWith('.')) {
+                    return v.substring(0, v.length - 1)
+                }
+
+                return v
+            }
+            return str
+        },
+        trimStart(str: string, c: string) {
+            if (str) {
+                if (str === '0.00')
+                    return '0'
+
+                const pattern = new RegExp(`^${c}+|$`, 'g');
                 var v = str.replace(pattern, '')
 
                 if (v.endsWith('.')) {
