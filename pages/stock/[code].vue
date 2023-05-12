@@ -457,7 +457,6 @@ export default {
             var keys = Object.keys(newData)
             keys.forEach(x => {
                 if (x == 'z' && newData[x] == '-') {
-                    console.log(newData[x])
                 } else {
                     this.realtimeData.main[x] = newData[x]
                 }
@@ -489,7 +488,6 @@ export default {
                         var keys = Object.keys(item)
                         keys.forEach(x => {
                             if (x == 'z' && item[x] == '-') {
-                                console.log(item[x])
                             } else {
                                 var d = this.realtimeData.data.find(x => x.c == item.c)
                                 d[x] = item[x]
