@@ -370,7 +370,11 @@ export default {
                 data: new Array<MsgArray>(),
             },
             selectDate: '',
-            date: ''
+            date: '',
+            timer: {
+                lastudt: new Date(),
+                t: null
+            }
         }
     },
     methods: {
@@ -561,7 +565,14 @@ export default {
                 }
             }
 
+
             this.loadRealTimeData()
+            t = setTimeout(async () => {
+                if (new Date() - this.timer.lastudt > 5_000) {
+                    this.timer.lastudt = new Date()
+                    await this.loadRealTimeData()
+                }
+            }, 1000 / 60);
         },
     },
     computed: {
