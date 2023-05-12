@@ -567,7 +567,7 @@ export default {
 
 
             this.loadRealTimeData()
-            t = setTimeout(async () => {
+            this.t = setTimeout(async () => {
                 if (new Date() - this.timer.lastudt > 5_000) {
                     this.timer.lastudt = new Date()
                     await this.loadRealTimeData()
