@@ -1,4 +1,4 @@
-<template>   
+<template>
     <v-progress-linear v-if="realtimeData.isdatareload"
         color="primary"
         indeterminate>
@@ -177,22 +177,28 @@ export default {
                         if (this.realtimeData.data.length == 0)
                             this.realtimeData.data = newData
 
+                        newData.forEach(item => {
+                            if (!this.realtimeData.data.some(x => x.c == item.c)) {
+                                this.realtimeData.data.push(item)
+                            }
+                        })
+
                         newData.forEach(async item => {
+                            var d = this.realtimeData.data.find(x => x.c == item.c) as MsgArray
+
                             var keys = Object.keys(item)
                             keys.forEach(x => {
                                 if (x == 'z' && item[x] == '-') {
                                 } else {
-                                    var d = this.realtimeData.data.find(x => x.c == item.c)
                                     // @ts-ignore
                                     d[x] = item[x]
                                 }
                             })
 
-                            var dd = this.realtimeData.data.find(x => x.c == item.c) as MsgArray
-                            if (dd.z == '-'
-                                || dd.z == undefined
-                                || dd.z == null) {
-                                const { data } = await useAsyncData(`yahoo_${dd.c}`, () => $fetch(`/api/price?code=${dd.c}`))
+                            if (d.z == '-'
+                                || d.z == undefined
+                                || d.z == null) {
+                                const { data } = await useAsyncData(`yahoo_${d.c}`, () => $fetch(`/api/price?code=${d.c}`))
                                 // @ts-ignore
                                 dd.z = data.value
                             }
@@ -314,7 +320,7 @@ export default {
         d() {
             return this.$route.query.d
         },
-        realTimetableData() {           
+        realTimetableData() {
             return this.realtimeData.data
         }
     },
