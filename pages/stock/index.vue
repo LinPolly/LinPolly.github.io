@@ -158,7 +158,7 @@ export default {
             this.realtimeData.isdatareload = true
 
             if (this.infos) {
-                var labels = this.infos.map(x => x.公司代號).sort((a, b) => b.toString().localeCompare(a.toString()))
+                var labels = this.infos.map(x => x.公司代號).sort((a, b) => a.toString().localeCompare(b.toString()))
                 if (labels.length > 0) {
                     const batchSize = 10
                     var round = labels.length % batchSize == 0 ? labels.length / batchSize : (labels.length / batchSize) + 1;
