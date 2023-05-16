@@ -1,9 +1,22 @@
 <template>
-    <v-text-field label="追蹤"
+    <v-text-field label="股票代碼"
         v-model="inputfollow"
         append-inner-icon="mdi-plus"
         @click:append-inner="followstock"></v-text-field>
-    <v-btn-toggle v-model="toggle_exclusive">
+    <v-row v-if="inputfollow.length > 0">
+        <v-col
+            v-for="s in infos.filter(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
+            <v-btn @click="inputfollow = s.公司代號">
+                <v-card-title>
+                    {{ s.公司簡稱 }} {{ s.公司代號 }}
+                </v-card-title>
+            </v-btn>
+        </v-col>
+    </v-row>
+    <div style="height: 8px;"></div>
+    <v-btn-toggle v-model="toggle_exclusive"
+        elevation="5"
+        mandatory>
         <v-btn>
             <v-icon>mdi-view-grid</v-icon>
         </v-btn>
@@ -31,6 +44,10 @@
                     lx="3"
                     xxl="2">
                     <v-card elevation="5">
+                        <v-card-title>
+                            {{ data.n }} {{ data.c }}
+                        </v-card-title>
+                        <hr>
                         <v-card-title>
                             <span
                                 :style="{ fontSize: '32px', marginRight: '8px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
@@ -243,7 +260,7 @@
                                 :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
                                 ({{ Math.abs(diffp(data?.z, data?.y)) }}%)
                             </span>
-                        </v-card-title>                        
+                        </v-card-title>
                     </v-card>
                 </v-col>
             </v-row>
@@ -578,6 +595,11 @@ export default {
             setTimeout(this.repeat, 5000);
         },
         followstock() {
+            if (this.follow.some(x => x == this.follow)) {
+                this.inputfollow = ''
+                return
+            }
+
             this.follow.push(this.inputfollow)
             this.follow = this.follow.filter(x => x != '')
             this.inputfollow = ''
