@@ -640,7 +640,7 @@ export default {
                     this.date = this.formatDate(this.stocks[this.stocks.length - 1].date)
                 }
             }
-
+            await this.loadRealTimeData()
             this.repeat();
         },
         async repeat() {

@@ -293,6 +293,7 @@ export default {
                 this.loadInfo(),
             ])
 
+            await this.loadRealTimeData()
             this.repeat();
         },
         async repeat() {
