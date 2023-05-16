@@ -1,18 +1,47 @@
+<script setup lang="ts">
+import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
+</script>
+
 <template>
     <v-text-field label="股票代碼"
         v-model="inputfollow"
         append-inner-icon="mdi-plus"
         @click:append-inner="followstock"></v-text-field>
-    <v-row v-if="inputfollow.length > 0">
-        <v-col
-            v-for="s in infos.filter(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
-            <v-btn @click="inputfollow = s.公司代號">
-                <v-card-title>
-                    {{ s.公司簡稱 }} {{ s.公司代號 }}
-                </v-card-title>
-            </v-btn>
-        </v-col>
-    </v-row>
+    <v-card v-if="inputfollow.length > 0">
+        <v-card-title
+            v-if="infos.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
+            上市股
+        </v-card-title>
+        <v-row
+            v-if="infos.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
+            <v-col
+                v-for="s in infos.filter(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
+                <v-btn @click="inputfollow = s.公司代號">
+                    <v-card-title>
+                        {{ s.公司簡稱 }} {{ s.公司代號 }}
+                    </v-card-title>
+                </v-btn>
+            </v-col>
+        </v-row>
+        <div style="height: 8px;"></div>
+        <hr>
+        <v-card-title
+            v-if="etf.some(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
+            ETF
+        </v-card-title>
+        <v-row
+            v-if="etf.some(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
+            <v-col
+                v-for="s in etf.filter(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
+                <v-btn @click="inputfollow = s.證券代號">
+                    <v-card-title>
+                        {{ s.證券簡稱 }} {{ s.證券代號 }}
+                    </v-card-title>
+                </v-btn>
+            </v-col>
+        </v-row>
+        <div style="height: 8px;"></div>
+    </v-card>
     <div style="height: 8px;"></div>
     <v-btn-toggle v-model="toggle_exclusive"
         elevation="5"
@@ -334,6 +363,7 @@
 
 <script lang="ts">
 import { Info } from '~/models/stock/info'
+import { ETF } from '~/models/stock/etf';
 import { MsgArray } from '~/models/stock/twse'
 
 export default {
@@ -343,6 +373,7 @@ export default {
             inputfollow: '',
             follow: new Array<string>(),
             infos: new Array<Info>(),
+            etf: new Array<ETF>(),
             realtimeData: {
                 isdatareload: false,
                 headers: [
@@ -364,67 +395,6 @@ export default {
         }
     },
     methods: {
-        diff(z: string, y: string) {
-            var v = this.accSubtr(parseFloat(z), parseFloat(y))
-            if (v == 0)
-                return 0
-            return v
-        },
-        diffp(z: string, y: string) {
-            var v = ((this.accSubtr(parseFloat(z), parseFloat(y)) * 100 /
-                parseFloat(y) * 100) / 100)
-
-            if (v == 0)
-                return 0
-            return this.trimEnd(v.toFixed(2), '0')
-        },
-        //除法
-        accDiv(arg1: number, arg2: number) {
-            var t1 = 0, t2 = 0, r1, r2;
-            try {
-                t1 = arg1.toString().split(".")[1].length;
-            } catch (e) { }
-            try {
-                t2 = arg2.toString().split(".")[1].length;
-            } catch (e) { }
-
-            r1 = Number(arg1.toString().replace(".", ""));
-            r2 = Number(arg2.toString().replace(".", ""));
-            return (r1 / r2) * Math.pow(10, t2 - t1);
-        },
-        //乘法
-        accMul(arg1: number, arg2: number) {
-            var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
-            try {
-                m += s1.split(".")[1].length;
-            } catch (e) { }
-            try {
-                m += s2.split(".")[1].length;
-            } catch (e) { }
-            return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
-        },
-        //加法
-        accAdd(arg1: number, arg2: number) {
-            var r1, r2, m;
-            try { r1 = arg1.toString().split(".")[1].length } catch (e) { r1 = 0 }
-            try { r2 = arg2.toString().split(".")[1].length } catch (e) { r2 = 0 }
-            m = Math.pow(10, Math.max(r1, r2));
-            return (arg1 * m + arg2 * m) / m;
-        },
-        //減法
-        accSubtr(arg1: number, arg2: number) {
-            var r1, r2, m, n;
-            try {
-                r1 = arg1.toString().split(".")[1].length;
-            } catch (e) { r1 = 0 }
-            try {
-                r2 = arg2.toString().split(".")[1].length;
-            } catch (e) { r2 = 0 }
-            m = Math.pow(10, Math.max(r1, r2));
-            n = (r1 >= r2) ? r1 : r2;
-            // @ts-ignore
-            return ((arg1 * m - arg2 * m) / m).toFixed(n) as number;
-        },
         async loadRealTimeData() {
             this.realtimeData.isdatareload = true
 
@@ -488,80 +458,19 @@ export default {
             }
             this.realtimeData.isdatareload = false
         },
-        formatAsCurrency(value: number, dec: number) {
-            dec = dec || 0
-            if (value === null) {
-                return 0
-            }
-            return '' + value.toFixed(dec).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
-        },
-        trim(str: string, c: string) {
-            if (str) {
-                if (str === '0.00')
-                    return '0'
-
-                const pattern = new RegExp(`^${c}+|${c}+$`, 'g');
-                var v = str.replace(pattern, '')
-
-                if (v.endsWith('.')) {
-                    return v.substring(0, v.length - 1)
-                }
-
-                return v
-            }
-            return str
-        },
-        trimEnd(str: string, c: string) {
-            if (str) {
-                if (str === '0.00')
-                    return '0'
-
-                const pattern = new RegExp(`^|${c}+$`, 'g');
-                var v = str.replace(pattern, '')
-
-                if (v.endsWith('.')) {
-                    return v.substring(0, v.length - 1)
-                }
-
-                return v
-            }
-            return str
-        },
-        trimStart(str: string, c: string) {
-            if (str) {
-                if (str === '0.00')
-                    return '0'
-
-                const pattern = new RegExp(`^${c}+|$`, 'g');
-                var v = str.replace(pattern, '')
-
-                if (v.endsWith('.')) {
-                    return v.substring(0, v.length - 1)
-                }
-
-                return v
-            }
-            return str
-        },
-        formatDate(date: any) {
-            var d = new Date(date),
-                month = '' + (d.getMonth() + 1),
-                day = '' + d.getDate(),
-                year = d.getFullYear()
-
-            if (month.length < 2)
-                month = '0' + month
-            if (day.length < 2)
-                day = '0' + day
-
-            return `${year}-${month}-${day}`
-        },
         async loadInfo() {
-            // @ts-ignore
-            const { data } = await useAsyncData('18419', () => $fetch(`/stock/18419.json`), { server: false })
-            // @ts-ignore
-            this.infos = data.value
-
+            {
+                // @ts-ignore
+                const { data } = await useAsyncData('18419', () => $fetch(`/stock/18419.json`), { server: false })
+                // @ts-ignore
+                this.infos = data.value
+            }
+            {
+                // @ts-ignore
+                const { data } = await useAsyncData('etf', () => $fetch(`/stock/etf.json`), { server: false })
+                // @ts-ignore
+                this.etf = data.value
+            }
             var f = localStorage.getItem('follow')
             if (f != null && f != '') {
                 this.follow = f?.split('|').filter(x => x != '')
@@ -595,7 +504,7 @@ export default {
             setTimeout(this.repeat, 5000);
         },
         async followstock() {
-            if (this.follow.some(x => x == this.follow)) {
+            if (this.follow.some(x => x == this.inputfollow)) {
                 this.inputfollow = ''
                 return
             }

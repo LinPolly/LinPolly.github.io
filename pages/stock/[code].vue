@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { trimEnd, formatAsCurrency, diff, diffp, formatDate } from '~/lib/string'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import { Bar } from 'vue-chartjs'
 import '@vuepic/vue-datepicker/dist/main.css'
@@ -380,67 +381,6 @@ export default {
         }
     },
     methods: {
-        diff(z: string, y: string) {
-            var v = this.accSubtr(parseFloat(z), parseFloat(y))
-            if (v == 0)
-                return 0
-            return v
-        },
-        diffp(z: string, y: string) {
-            var v = ((this.accSubtr(parseFloat(z), parseFloat(y)) * 100 /
-                parseFloat(y) * 100) / 100)
-
-            if (v == 0)
-                return 0
-            return this.trimEnd(v.toFixed(2), '0')
-        },
-        //除法
-        accDiv(arg1: number, arg2: number) {
-            var t1 = 0, t2 = 0, r1, r2;
-            try {
-                t1 = arg1.toString().split(".")[1].length;
-            } catch (e) { }
-            try {
-                t2 = arg2.toString().split(".")[1].length;
-            } catch (e) { }
-
-            r1 = Number(arg1.toString().replace(".", ""));
-            r2 = Number(arg2.toString().replace(".", ""));
-            return (r1 / r2) * Math.pow(10, t2 - t1);
-        },
-        //乘法
-        accMul(arg1: number, arg2: number) {
-            var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
-            try {
-                m += s1.split(".")[1].length;
-            } catch (e) { }
-            try {
-                m += s2.split(".")[1].length;
-            } catch (e) { }
-            return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
-        },
-        //加法
-        accAdd(arg1: number, arg2: number) {
-            var r1, r2, m;
-            try { r1 = arg1.toString().split(".")[1].length } catch (e) { r1 = 0 }
-            try { r2 = arg2.toString().split(".")[1].length } catch (e) { r2 = 0 }
-            m = Math.pow(10, Math.max(r1, r2));
-            return (arg1 * m + arg2 * m) / m;
-        },
-        //減法
-        accSubtr(arg1: number, arg2: number) {
-            var r1, r2, m, n;
-            try {
-                r1 = arg1.toString().split(".")[1].length;
-            } catch (e) { r1 = 0 }
-            try {
-                r2 = arg2.toString().split(".")[1].length;
-            } catch (e) { r2 = 0 }
-            m = Math.pow(10, Math.max(r1, r2));
-            n = (r1 >= r2) ? r1 : r2;
-            // @ts-ignore
-            return ((arg1 * m - arg2 * m) / m).toFixed(n) as number;
-        },
         async loadRealTimeMainData() {
             this.realtimeData.ismainreload = true
             const { data } = await useAsyncData(`realtime_${this.code}`, () => $fetch('/api/stock', {
@@ -515,96 +455,28 @@ export default {
             }
             this.realtimeData.isdatareload = false
         },
-        formatAsCurrency(value: number, dec: number) {
-            dec = dec || 0
-            if (value === null) {
-                return 0
-            }
-            return '' + value.toFixed(dec).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
-        },
-        trim(str: string, c: string) {
-            if (str) {
-                if (str === '0.00')
-                    return '0'
-
-                const pattern = new RegExp(`^${c}+|${c}+$`, 'g');
-                var v = str.replace(pattern, '')
-
-                if (v.endsWith('.')) {
-                    return v.substring(0, v.length - 1)
-                }
-
-                return v
-            }
-            return str
-        },
-        trimEnd(str: string, c: string) {
-            if (str) {
-                if (str === '0.00')
-                    return '0'
-
-                const pattern = new RegExp(`^|${c}+$`, 'g');
-                var v = str.replace(pattern, '')
-
-                if (v.endsWith('.')) {
-                    return v.substring(0, v.length - 1)
-                }
-
-                return v
-            }
-            return str
-        },
-        trimStart(str: string, c: string) {
-            if (str) {
-                if (str === '0.00')
-                    return '0'
-
-                const pattern = new RegExp(`^${c}+|$`, 'g');
-                var v = str.replace(pattern, '')
-
-                if (v.endsWith('.')) {
-                    return v.substring(0, v.length - 1)
-                }
-
-                return v
-            }
-            return str
-        },
-        formatDate(date: any) {
-            var d = new Date(date),
-                month = '' + (d.getMonth() + 1),
-                day = '' + d.getDate(),
-                year = d.getFullYear()
-
-            if (month.length < 2)
-                month = '0' + month
-            if (day.length < 2)
-                day = '0' + day
-
-            return `${year}-${month}-${day}`
-        },
         prevDate(date: any) {
             if (this.stocks == null) return date
             if (this.stocks.length == 0) return date
 
-            var nowIndex = this.stocks?.findIndex(x => this.formatDate(x.date) == date)
+            var nowIndex = this.stocks?.findIndex(x => formatDate(x.date) == date)
             if (nowIndex == null || nowIndex == -1 || nowIndex == 0)
                 return date
 
             if (this.stocks[nowIndex - 1] == null)
                 return date
-            return this.formatDate(this.stocks[nowIndex - 1]?.date)
+            return formatDate(this.stocks[nowIndex - 1]?.date)
         },
         nextDate(date: any) {
             if (this.stocks == null) return date
 
-            var nowIndex = this.stocks?.findIndex(x => this.formatDate(x.date) == date)
+            var nowIndex = this.stocks?.findIndex(x => formatDate(x.date) == date)
             if (nowIndex == null || nowIndex == -1 || nowIndex == this.stocks.length - 1)
                 return date
 
             if (this.stocks[nowIndex + 1] == null)
                 return date
-            return this.formatDate(this.stocks[nowIndex + 1]?.date)
+            return formatDate(this.stocks[nowIndex + 1]?.date)
         },
         async loadInfo() {
             // @ts-ignore
@@ -633,11 +505,11 @@ export default {
                     && this.d != undefined
                     && this.d != null
                     && !Number.isNaN(Date.parse(this.d as string))) {
-                    this.selectDate = this.formatDate(Date.parse(this.d as string))
-                    this.date = this.formatDate(Date.parse(this.d as string))
+                    this.selectDate = formatDate(Date.parse(this.d as string))
+                    this.date = formatDate(Date.parse(this.d as string))
                 } else {
-                    this.selectDate = this.formatDate(this.stocks[this.stocks.length - 1].date)
-                    this.date = this.formatDate(this.stocks[this.stocks.length - 1].date)
+                    this.selectDate = formatDate(this.stocks[this.stocks.length - 1].date)
+                    this.date = formatDate(this.stocks[this.stocks.length - 1].date)
                 }
             }
             await this.loadRealTimeData()
@@ -673,7 +545,7 @@ export default {
             // @ts-ignore
             if (this.stocks == null) return data
 
-            var s = this.stocks.find(x => this.formatDate(x.date) == this.formatDate(this.date))
+            var s = this.stocks.find(x => formatDate(x.date) == formatDate(this.date))
             s?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => {
                 return {
                     name: this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code,
@@ -700,10 +572,10 @@ export default {
             if (this.stocks == null) return data
 
             data.labels = []
-            data.datasets[0].label = this.formatDate(this.date)
+            data.datasets[0].label = formatDate(this.date)
             data.datasets[0].data = []
 
-            var s = this.stocks.find(x => this.formatDate(x.date) == this.formatDate(this.date))
+            var s = this.stocks.find(x => formatDate(x.date) == formatDate(this.date))
             s?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code)
                 .forEach(x => data.labels.push(x))
 
@@ -753,13 +625,13 @@ export default {
             if (this.stocks == null) return data
 
             var sdt = this.prevDate(this.date)
-            var edt = this.formatDate(this.date)
+            var edt = formatDate(this.date)
 
             data.labels = []
             data.datasets[0].data = []
 
-            var ed = this.stocks.find(x => this.formatDate(x.date) == this.formatDate(edt))
-            var sd = this.stocks.find(x => this.formatDate(x.date) == this.formatDate(sdt))
+            var ed = this.stocks.find(x => formatDate(x.date) == formatDate(edt))
+            var sd = this.stocks.find(x => formatDate(x.date) == formatDate(sdt))
 
             ed?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code)
                 .forEach(x => data.labels.push(x))
@@ -801,18 +673,18 @@ export default {
     },
     watch: {
         'd': function (newValue) {
-            this.selectDate = this.formatDate(newValue)
+            this.selectDate = formatDate(newValue)
         },
         'date': function () {
             const queryString = window.location.search
             const urlParams = new URLSearchParams(queryString)
-            if (urlParams.get('d') != this.formatDate(this.date)) {
-                urlParams.set('d', this.formatDate(this.date))
+            if (urlParams.get('d') != formatDate(this.date)) {
+                urlParams.set('d', formatDate(this.date))
                 history.pushState(null, '', `/stock/${this.code}?${urlParams.toString()}`)
             }
         },
         'selectDate': function (newValue) {
-            this.date = this.formatDate(newValue)
+            this.date = formatDate(newValue)
         }
     },
     components: {
