@@ -310,6 +310,7 @@ export default {
         },
         async init() {
             if (this.$route.query.f) {
+                // @ts-ignore
                 this.follow = this.$route.query.f.split('|').filter(x => x != '')
             }
             await Promise.all([
@@ -349,11 +350,8 @@ export default {
             localStorage.setItem('follow', this.follow.join('|'))
             const urlParams = new URLSearchParams();
             urlParams.set('f', this.follow.join('|'))
-            history.pushState(
-                {},
-                null,
-                this.$route.path + '?' + urlParams.toString()
-            )
+            // @ts-ignore
+            history.pushState({}, null, this.$route.path + '?' + urlParams.toString())
         }
     },
     computed: {
