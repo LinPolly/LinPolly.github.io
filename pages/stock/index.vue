@@ -1,4 +1,8 @@
-<template>
+<template>   
+    <v-progress-linear v-if="realtimeData.isdatareload"
+        color="primary"
+        indeterminate>
+    </v-progress-linear>
     <ClientOnly>
         <v-data-table :headers="realtimeData.headers"
             :items="realTimetableData"
@@ -62,7 +66,6 @@
 </template>
 
 <script lang="ts">
-import { Stock } from '~/models/stock/stock.js'
 import { Info } from '~/models/stock/info'
 import { MsgArray } from '~/models/stock/twse'
 
@@ -156,7 +159,7 @@ export default {
 
             if (this.infos) {
                 var labels = this.infos.map(x => x.公司代號).sort((a, b) => b.toString().localeCompare(a.toString()))
-                if (labels) {
+                if (labels.length > 0) {
                     const batchSize = 10
                     var round = labels.length % batchSize == 0 ? labels.length / batchSize : (labels.length / batchSize) + 1;
 
@@ -298,10 +301,10 @@ export default {
             // @ts-ignore
             if (new Date() - this.timer.lastudt > 5_000) {
                 this.timer.lastudt = new Date()
-                await this.loadRealTimeData()
+                // await this.loadRealTimeData()
             }
 
-            setTimeout(this.repeat, 5000);
+            // setTimeout(this.repeat, 5000);
         }
     },
     computed: {
@@ -311,7 +314,7 @@ export default {
         d() {
             return this.$route.query.d
         },
-        realTimetableData() {
+        realTimetableData() {           
             return this.realtimeData.data
         }
     },
