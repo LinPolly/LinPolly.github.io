@@ -198,7 +198,7 @@ export default {
                                 || d.z == null) {
                                 const { data } = await useAsyncData(`yahoo_${d.c}`, () => $fetch(`/api/price?code=${d.c}`))
                                 // @ts-ignore
-                                dd.z = data.value
+                                d.z = data.value
                             }
                         })
 
