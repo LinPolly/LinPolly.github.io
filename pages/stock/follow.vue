@@ -594,7 +594,7 @@ export default {
 
             setTimeout(this.repeat, 5000);
         },
-        followstock() {
+        async followstock() {
             if (this.follow.some(x => x == this.follow)) {
                 this.inputfollow = ''
                 return
@@ -603,10 +603,24 @@ export default {
             this.follow.push(this.inputfollow)
             this.follow = this.follow.filter(x => x != '')
             this.inputfollow = ''
+
+            if (this.timer.lastudt.getHours() < 9
+                || this.timer.lastudt.getHours() >= 14
+                || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
+                await this.loadRealTimeData()
+                return
+            }
         },
-        removeFollow(c: string) {
+        async removeFollow(c: string) {
             this.follow = this.follow.filter(x => x != c)
             this.realtimeData.data = this.realtimeData.data.filter(x => x.c != c)
+
+            if (this.timer.lastudt.getHours() < 9
+                || this.timer.lastudt.getHours() >= 14
+                || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
+                await this.loadRealTimeData()
+                return
+            }
         }
     },
     watch: {
