@@ -301,10 +301,10 @@ export default {
             // @ts-ignore
             if (new Date() - this.timer.lastudt > 5_000) {
                 this.timer.lastudt = new Date()
-                // await this.loadRealTimeData()
+                await this.loadRealTimeData()
             }
 
-            // setTimeout(this.repeat, 5000);
+            setTimeout(this.repeat, 5000);
         }
     },
     computed: {
