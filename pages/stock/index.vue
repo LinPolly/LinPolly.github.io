@@ -160,7 +160,7 @@ export default {
             if (this.infos) {
                 var labels = this.infos.map(x => x.公司代號).sort((a, b) => a.toString().localeCompare(b.toString()))
                 if (labels.length > 0) {
-                    const batchSize = 10
+                    const batchSize = 20
                     var round = labels.length % batchSize == 0 ? labels.length / batchSize : (labels.length / batchSize) + 1;
 
                     for (let i = 0; i < round; i++) {
