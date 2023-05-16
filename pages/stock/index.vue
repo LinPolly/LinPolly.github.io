@@ -3,7 +3,7 @@
         color="primary"
         indeterminate>
     </v-progress-linear>
-    <ClientOnly>
+    <ClientOnly>        
         <v-data-table :headers="realtimeData.headers"
             :items="realTimetableData"
             item-value="name">

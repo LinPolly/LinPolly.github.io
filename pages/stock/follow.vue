@@ -3,75 +3,316 @@
         v-model="inputfollow"
         append-inner-icon="mdi-plus"
         @click:append-inner="followstock"></v-text-field>
-    <v-progress-linear v-if="realtimeData.isdatareload"
-        color="primary"
-        indeterminate>
-    </v-progress-linear>
-    <ClientOnly>
-        <v-data-table :headers="realtimeData.headers"
-            :items="realTimetableData"
-            item-value="name">
-            <template v-slot:item.c="{ item }">
-                <v-card elevation="0">
-                    <v-card-title>
-                        <span>{{ item.value.n }}</span>
-                    </v-card-title>
-                    <v-card-subtitle>
-                        <span>{{ item.value.c }}</span>
-                    </v-card-subtitle>
-                </v-card>
-            </template>
-            <template v-slot:item.z="{ item }">
-                <span
-                    :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">{{
-                        trimEnd(item.value.z, '0') }}</span>
-            </template>
-            <template v-slot:item.diff="{ item }">
-                <span
-                    :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
-                    {{
-                        diff(item.value.z, item.value.y)
-                    }}
-                </span>
-            </template>
-            <template v-slot:item.diffp="{ item }">
-                <span
-                    :style="{ color: diffp(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
-                    {{
-                        diffp(item.value.z, item.value.y)
-                    }}%
-                </span>
-            </template>
-            <template v-slot:item.o="{ item }">
-                <span
-                    :style="{ color: parseFloat(item.value.o) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.o) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                    {{ trimEnd(item.value.o, '0') }}
-                </span>
-            </template>
-            <template v-slot:item.y="{ item }">
-                <span>
-                    {{ trimEnd(item.value.y, '0') }}
-                </span>
-            </template>
-            <template v-slot:item.h="{ item }">
-                <span
-                    :style="{ color: parseFloat(item.value.h) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.h) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                    {{ trimEnd(item.value.h, '0') }}
-                </span>
-            </template>
-            <template v-slot:item.l="{ item }">
-                <span
-                    :style="{ color: parseFloat(item.value.l) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.l) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                    {{ trimEnd(item.value.l, '0') }}
-                </span>
-            </template>
-            <template v-slot:item.action="{ item }">
-                <v-btn class="bg-warning"
-                    icon="mdi-delete"
-                    @click="removeFollow(item.value.c)"></v-btn>
-            </template>
-        </v-data-table>
-    </ClientOnly>
+    <v-btn-toggle v-model="toggle_exclusive">
+        <v-btn>
+            <v-icon>mdi-view-grid</v-icon>
+        </v-btn>
+        <v-btn>
+            <v-icon>mdi-grid</v-icon>
+        </v-btn>
+        <v-btn>
+            <v-icon>mdi-format-list-bulleted</v-icon>
+        </v-btn>
+    </v-btn-toggle>
+    <div style="height: 8px;"></div>
+    <v-card>
+        <v-progress-linear v-if="realtimeData.isdatareload"
+            color="primary"
+            indeterminate>
+        </v-progress-linear>
+        <ClientOnly>
+            <v-row v-if="toggle_exclusive == 0">
+                <v-col v-for="data in realtimeData.data"
+                    :key="data.c"
+                    cols="12"
+                    sm="6"
+                    md="6"
+                    lg="4"
+                    lx="3"
+                    xxl="2">
+                    <v-card elevation="5">
+                        <v-card-title>
+                            <span
+                                :style="{ fontSize: '32px', marginRight: '8px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                {{
+                                    trimEnd(formatAsCurrency(parseFloat(data.z), 2), '0')
+                                }}
+                            </span>
+                            <svg v-if="diff(data?.z, data?.y) < 0"
+                                width="15"
+                                height="15"
+                                viewBox="0 0 10 10"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M4.12046 8.42605C4.5011 9.11206 5.48741 9.11259 5.86878 8.42698L9.17336 2.4861C9.54412 1.81956 9.06218 1 8.29946 1L1.69849 0.999999C0.936239 0.999999 0.454246 1.81866 0.824077 2.48518L4.12046 8.42605Z"
+                                    fill="#30B566"></path>
+                            </svg>
+                            <svg v-if="diff(data?.z, data?.y) > 0"
+                                width="15"
+                                height="15"
+                                viewBox="0 0 10 10"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M4.12046 1.57395C4.5011 0.887937 5.48741 0.887414 5.86878 1.57302L9.17336 7.5139C9.54412 8.18044 9.06218 9 8.29946 9L1.69849 9C0.936239 9 0.454246 8.18134 0.824077 7.51482L4.12046 1.57395Z"
+                                    fill="#D3321C"></path>
+                            </svg>
+                            <span
+                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                {{ Math.abs(diff(data?.z, data?.y)) }}
+                            </span>
+                            <span
+                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                ({{ Math.abs(diffp(data?.z, data?.y)) }}%)
+                            </span>
+                        </v-card-title>
+                        <v-row>
+                            <v-col cols="6">
+                                <v-list class="v-col-12">
+                                    <v-list-item title="成交"
+                                        :subtitle="trimEnd(data?.z, '0')"></v-list-item>
+                                    <v-list-item title="開盤"
+                                        :subtitle="trimEnd(data?.o, '0')"></v-list-item>
+                                    <v-list-item title="最高"
+                                        :subtitle="trimEnd(data?.h, '0')"></v-list-item>
+                                    <v-list-item title="最低"
+                                        :subtitle="trimEnd(data?.l, '0')"></v-list-item>
+                                </v-list>
+                            </v-col>
+                            <v-col cols="6">
+                                <v-list class="v-col-12">
+                                    <v-list-item title="昨收"
+                                        :subtitle="trimEnd(data?.y, '0')"></v-list-item>
+                                    <v-list-item title="漲跌"
+                                        :subtitle="`${diff(data?.z, data?.y)}`"></v-list-item>
+                                    <v-list-item title="漲跌幅(%)"
+                                        :subtitle="`${diffp(data?.z, data?.y)}%`"></v-list-item>
+                                    <v-list-item title="總量"
+                                        :subtitle="data?.v"></v-list-item>
+                                </v-list>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="6">
+                                <v-row>
+                                    <div style="width: 8px;"></div>
+                                    <v-col>
+                                        <v-label>量</v-label>
+                                    </v-col>
+                                    <v-spacer></v-spacer>
+                                    <v-col>
+                                        <v-label>委買價</v-label>
+                                    </v-col>
+                                </v-row>
+                                <hr>
+                                <v-row>
+                                    <v-col>
+                                        <v-list>
+                                            <v-list-item v-for="item in trimEnd(data?.g ?? '', '_').split('_')"
+                                                :key="item">
+                                                <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
+                                                </v-list-item-title>
+                                                <v-list-item-action>
+                                                    <v-progress-linear :model-value="parseInt(item)"
+                                                        :max="trimEnd(data?.g ?? '', '_').split('_').map(x => parseInt(x)).sort((a, b) => b - a)[0]"
+                                                        reverse>
+                                                    </v-progress-linear>
+                                                </v-list-item-action>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-col>
+                                    <v-col>
+                                        <v-list>
+                                            <v-list-item v-for="item in trimEnd(data?.b ?? '', '_').split('_')"
+                                                :key="item">
+                                                <v-list-item-title
+                                                    :style="{ color: data?.y == item ? 'black' : (parseFloat(item) > parseFloat(data?.y) ? 'red' : 'green') }"
+                                                    v-text="trimEnd(item, '0')"></v-list-item-title>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-col>
+                                </v-row>
+                                <hr style="margin-left: 8px;margin-right: 8px;">
+                                <v-row>
+                                    <v-col>
+                                        <v-list-item
+                                            :title="formatAsCurrency(trimEnd(data?.g ?? '', '_').split('_').map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
+                                        </v-list-item>
+                                    </v-col>
+                                    <v-col>
+                                        <v-list-item title="小計">
+                                        </v-list-item>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                            <v-col cols="6">
+                                <v-row>
+                                    <div style="width: 8px;"></div>
+                                    <v-col>
+                                        <v-label>委賣價</v-label>
+                                    </v-col>
+                                    <v-spacer></v-spacer>
+                                    <v-col>
+                                        <v-label>量</v-label>
+                                    </v-col>
+                                </v-row>
+                                <hr>
+                                <v-row>
+                                    <v-col>
+                                        <v-list>
+                                            <v-list-item v-for="item in trimEnd(data?.a ?? '', '_').split('_')"
+                                                :key="item">
+                                                <v-list-item-title
+                                                    :style="{ color: data?.y == item ? 'black' : (parseFloat(item) > parseFloat(data?.y) ? 'red' : 'green') }"
+                                                    v-text="trimEnd(item, '0')"></v-list-item-title>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-col>
+                                    <v-col>
+                                        <v-list>
+                                            <v-list-item v-for="item in trimEnd(data?.f ?? '', '_').split('_')"
+                                                :key="item">
+                                                <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
+                                                </v-list-item-title>
+                                                <v-list-item-action>
+                                                    <v-progress-linear :model-value="parseInt(item)"
+                                                        :max="trimEnd(data?.f ?? '', '_').split('_').map(x => parseInt(x)).sort((a, b) => b - a)[0]">
+                                                    </v-progress-linear>
+                                                </v-list-item-action>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-col>
+                                </v-row>
+                                <hr style="margin-left: 8px;margin-right: 8px;">
+                                <v-row>
+                                    <v-col>
+                                        <v-list-item title="小計">
+                                        </v-list-item>
+                                    </v-col>
+                                    <v-col>
+                                        <v-list-item
+                                            :title="formatAsCurrency(trimEnd(data?.f ?? '', '_').split('_').map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
+                                        </v-list-item>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                    </v-card>
+                </v-col>
+            </v-row>
+            <v-row v-if="toggle_exclusive == 1">
+                <v-col v-for="data in realtimeData.data"
+                    :key="data.c">
+                    <v-card elevation="5">
+                        <v-card-title>
+                            {{ data.n }} {{ data.c }}
+                        </v-card-title>
+                        <v-card-title>
+                            <span
+                                :style="{ fontSize: '32px', marginRight: '8px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                {{
+                                    trimEnd(formatAsCurrency(parseFloat(data.z), 2), '0')
+                                }}
+                            </span>
+                            <svg v-if="diff(data?.z, data?.y) < 0"
+                                width="15"
+                                height="15"
+                                viewBox="0 0 10 10"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M4.12046 8.42605C4.5011 9.11206 5.48741 9.11259 5.86878 8.42698L9.17336 2.4861C9.54412 1.81956 9.06218 1 8.29946 1L1.69849 0.999999C0.936239 0.999999 0.454246 1.81866 0.824077 2.48518L4.12046 8.42605Z"
+                                    fill="#30B566"></path>
+                            </svg>
+                            <svg v-if="diff(data?.z, data?.y) > 0"
+                                width="15"
+                                height="15"
+                                viewBox="0 0 10 10"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M4.12046 1.57395C4.5011 0.887937 5.48741 0.887414 5.86878 1.57302L9.17336 7.5139C9.54412 8.18044 9.06218 9 8.29946 9L1.69849 9C0.936239 9 0.454246 8.18134 0.824077 7.51482L4.12046 1.57395Z"
+                                    fill="#D3321C"></path>
+                            </svg>
+                            <span
+                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                {{ Math.abs(diff(data?.z, data?.y)) }}
+                            </span>
+                            <span
+                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                ({{ Math.abs(diffp(data?.z, data?.y)) }}%)
+                            </span>
+                        </v-card-title>                        
+                    </v-card>
+                </v-col>
+            </v-row>
+            <v-data-table v-if="toggle_exclusive == 2"
+                :headers="realtimeData.headers"
+                :items="realTimetableData"
+                item-value="name">
+                <template v-slot:item.c="{ item }">
+                    <v-card elevation="0">
+                        <v-card-title>
+                            <span>{{ item.value.n }}</span>
+                        </v-card-title>
+                        <v-card-subtitle>
+                            <span>{{ item.value.c }}</span>
+                        </v-card-subtitle>
+                    </v-card>
+                </template>
+                <template v-slot:item.z="{ item }">
+                    <span
+                        :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">{{
+                            trimEnd(item.value.z, '0') }}</span>
+                </template>
+                <template v-slot:item.diff="{ item }">
+                    <span
+                        :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
+                        {{
+                            diff(item.value.z, item.value.y)
+                        }}
+                    </span>
+                </template>
+                <template v-slot:item.diffp="{ item }">
+                    <span
+                        :style="{ color: diffp(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
+                        {{
+                            diffp(item.value.z, item.value.y)
+                        }}%
+                    </span>
+                </template>
+                <template v-slot:item.o="{ item }">
+                    <span
+                        :style="{ color: parseFloat(item.value.o) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.o) > parseFloat(item.value.y) ? 'red' : 'green') }">
+                        {{ trimEnd(item.value.o, '0') }}
+                    </span>
+                </template>
+                <template v-slot:item.y="{ item }">
+                    <span>
+                        {{ trimEnd(item.value.y, '0') }}
+                    </span>
+                </template>
+                <template v-slot:item.h="{ item }">
+                    <span
+                        :style="{ color: parseFloat(item.value.h) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.h) > parseFloat(item.value.y) ? 'red' : 'green') }">
+                        {{ trimEnd(item.value.h, '0') }}
+                    </span>
+                </template>
+                <template v-slot:item.l="{ item }">
+                    <span
+                        :style="{ color: parseFloat(item.value.l) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.l) > parseFloat(item.value.y) ? 'red' : 'green') }">
+                        {{ trimEnd(item.value.l, '0') }}
+                    </span>
+                </template>
+                <template v-slot:item.action="{ item }">
+                    <v-btn class="bg-warning"
+                        icon="mdi-delete"
+                        @click="removeFollow(item.value.c)"></v-btn>
+                </template>
+            </v-data-table>
+        </ClientOnly>
+    </v-card>
 </template>
 
 <script lang="ts">
@@ -81,6 +322,7 @@ import { MsgArray } from '~/models/stock/twse'
 export default {
     data() {
         return {
+            toggle_exclusive: 0,
             inputfollow: '',
             follow: new Array<string>(),
             infos: new Array<Info>(),
