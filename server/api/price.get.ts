@@ -1,19 +1,19 @@
-import { GetStockInfo } from "~/models/stock/twse";
+import * as cheerio from "cheerio";
 
 export default defineEventHandler(async (event) => {
     try {
         const query = getQuery(event)
         const code = query.code
         let controller = new AbortController();
-        var ex_ch = ''
-        if (Array.isArray(code)) {
-            ex_ch = code.map(x => `tse_${x}.tw|otc_${x}.tw`).join('|')
-        } else {
-            ex_ch = `tse_${code}.tw|otc_${code}.tw`
-        }
-        const url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=${ex_ch}&json=1&delay=0`
-        const data = await fetch(url,
+        var symbol = `${code}.TW`
+
+        const url = `https://tw.stock.yahoo.com/quote/${symbol}`
+        const headers = {
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'
+        };
+        const req = await fetch(url,
             {
+                headers: headers,
                 cache: "only-if-cached",
                 signal: controller.signal,
             })
@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
                     controller.abort();
                     controller = new AbortController();
                     return fetch(url, {
+                        headers: headers,
                         cache: "force-cache",
                         signal: controller.signal,
                     });
@@ -32,13 +33,20 @@ export default defineEventHandler(async (event) => {
                     controller.abort();
                     controller = new AbortController();
                     return fetch(url, {
+                        headers: headers,
                         cache: "reload",
                         signal: controller.signal,
                     });
                 }
-                return res.json();
-            }) as GetStockInfo;
-        return data.msgArray
+                return res;
+            });
+
+        var pageSource = await req.text()
+        const $ = cheerio.load(pageSource)
+        var div = $('#layout-col1 > div > div > div > div')[1]
+        var $div = cheerio.load(div)
+        var price = $div('div:first-child > div > span:first-child').text()
+        return price.replace(',', '')
     } catch (error) {
         console.log(error)
         return { result: [], error: error }

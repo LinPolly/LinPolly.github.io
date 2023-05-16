@@ -375,8 +375,7 @@ export default {
             selectDate: '',
             date: '',
             timer: {
-                lastudt: new Date(),
-                t: ''
+                lastudt: new Date()
             }
         }
     },
@@ -460,14 +459,17 @@ export default {
                     this.realtimeData.main[x] = newData[x]
                 }
             })
-            if (this.realtimeData.main.z == '-') {
-                this.realtimeData.main.z = this.realtimeData.main.y
+
+            if (this.realtimeData.main.z == '-'
+                || this.realtimeData.main.z == undefined
+                || this.realtimeData.main.z == null) {
+                const { data } = await useAsyncData(`yahoo_${this.realtimeData.main.c}`, () => $fetch(`/api/price?code=${this.realtimeData.main.c}`))
+                this.realtimeData.main.z = data.value
             }
             this.realtimeData.ismainreload = false
         },
         async loadRealTimeData() {
             await this.loadRealTimeMainData()
-
             this.realtimeData.isdatareload = true
 
             if (this.stocks) {
@@ -483,7 +485,7 @@ export default {
                     if (this.realtimeData.data.length == 0)
                         this.realtimeData.data = newData
 
-                    newData.forEach(item => {
+                    newData.forEach(async item => {
                         var keys = Object.keys(item)
                         keys.forEach(x => {
                             if (x == 'z' && item[x] == '-') {
@@ -492,6 +494,14 @@ export default {
                                 d[x] = item[x]
                             }
                         })
+
+                        var dd = this.realtimeData.data.find(x => x.c == item.c) as MsgArray
+                        if (dd.z == '-'
+                            || dd.z == undefined
+                            || dd.z == null) {
+                            const { data } = await useAsyncData(`yahoo_${dd.c}`, () => $fetch(`/api/price?code=${dd.c}`))
+                            dd.z = data.value
+                        }
                     })
                 }
             } else {
@@ -623,20 +633,22 @@ export default {
                 }
             }
 
-            this.loadRealTimeData()
-            this.t = setInterval(async () => {
-                if (this.timer.lastudt.getHours() < 9
-                    || this.timer.lastudt.getHours() >= 14
-                    || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
-                    clearInterval(this.t)
-                    return
-                }
-                if (new Date() - this.timer.lastudt > 5_000) {
-                    this.timer.lastudt = new Date()
-                    await this.loadRealTimeData()
-                }
-            }, 1000 / 60);
+            this.repeat();
         },
+        async repeat() {
+            if (this.timer.lastudt.getHours() < 9
+                || this.timer.lastudt.getHours() >= 14
+                || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
+                setTimeout(this.repeat, 1000 / 60);
+                return
+            }
+            if (new Date() - this.timer.lastudt > 5_000) {
+                this.timer.lastudt = new Date()
+                await this.loadRealTimeData()
+            }
+
+            setTimeout(this.repeat, 1000 / 60);
+        }
     },
     computed: {
         code() {
