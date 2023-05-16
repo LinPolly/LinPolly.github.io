@@ -187,10 +187,15 @@ export default {
                             if (dd.z == '-'
                                 || dd.z == undefined
                                 || dd.z == null) {
-                                // const { data } = await useAsyncData(`yahoo_${dd.c}`, () => $fetch(`/api/price?code=${dd.c}`))
-                                // dd.z = data.value
+                                const { data } = await useAsyncData(`yahoo_${dd.c}`, () => $fetch(`/api/price?code=${dd.c}`))
+                                dd.z = data.value
                             }
                         })
+
+                        var delay = new Promise((resolve, reject) => {
+                            setTimeout(resolve, 5000)
+                        })
+                        await delay
                     }
                 }
             } else {
@@ -290,7 +295,7 @@ export default {
                 await this.loadRealTimeData()
             }
 
-            setTimeout(this.repeat, 1000 / 60);
+            setTimeout(this.repeat, 5000);
         }
     },
     computed: {
