@@ -174,8 +174,6 @@ export default {
                         }))
 
                         var newData = (data.value as MsgArray[]).filter(x => x.c != this.code)
-                        if (this.realtimeData.data.length == 0)
-                            this.realtimeData.data = newData
 
                         newData.forEach(item => {
                             if (!this.realtimeData.data.some(x => x.c == item.c)) {
