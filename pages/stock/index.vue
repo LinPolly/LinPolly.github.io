@@ -148,6 +148,7 @@ export default {
             } catch (e) { r2 = 0 }
             m = Math.pow(10, Math.max(r1, r2));
             n = (r1 >= r2) ? r1 : r2;
+            // @ts-ignore
             return ((arg1 * m - arg2 * m) / m).toFixed(n) as number;
         },
         async loadRealTimeData() {
@@ -179,6 +180,7 @@ export default {
                                 if (x == 'z' && item[x] == '-') {
                                 } else {
                                     var d = this.realtimeData.data.find(x => x.c == item.c)
+                                    // @ts-ignore
                                     d[x] = item[x]
                                 }
                             })
@@ -188,6 +190,7 @@ export default {
                                 || dd.z == undefined
                                 || dd.z == null) {
                                 const { data } = await useAsyncData(`yahoo_${dd.c}`, () => $fetch(`/api/price?code=${dd.c}`))
+                                // @ts-ignore
                                 dd.z = data.value
                             }
                         })
@@ -199,6 +202,7 @@ export default {
                     }
                 }
             } else {
+                // @ts-ignore
                 this.realtimeData.data = null
             }
             this.realtimeData.isdatareload = false
@@ -272,6 +276,7 @@ export default {
             return `${year}-${month}-${day}`
         },
         async loadInfo() {
+            // @ts-ignore
             const { data } = await useAsyncData('18419', () => $fetch(`/stock/18419.json`), { server: false })
             // @ts-ignore
             this.infos = data.value
@@ -290,6 +295,7 @@ export default {
                 setTimeout(this.repeat, 1000 / 60);
                 return
             }
+            // @ts-ignore
             if (new Date() - this.timer.lastudt > 5_000) {
                 this.timer.lastudt = new Date()
                 await this.loadRealTimeData()
