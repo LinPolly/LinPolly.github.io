@@ -262,17 +262,7 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                     :key="data.c">
                     <v-card elevation="5">
                         <v-card-title>
-                            <v-row>
-                                <v-col>{{ data.n }} {{ data.c }}</v-col>
-                                <v-col cols="5">
-                                    <v-switch
-                                        :label="`切換至${follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') ? '整股' : '零股'}`"
-                                        color="indigo"
-                                        inset
-                                        hide-details
-                                        @click="targetOdd(data.c, $event)"></v-switch>
-                                </v-col>
-                            </v-row>
+                            {{ data.n }} {{ data.c }}
                         </v-card-title>
                         <v-card-title>
                             <span
