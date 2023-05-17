@@ -423,11 +423,12 @@ export default {
     methods: {
         targetOdd(code: string, e) {
             var flag = e.target.value
-            var f = this.follow.find(x => x.indexOf(code) > -1)
+            var findex = this.follow.findIndex(x => x.indexOf(code) > -1)
+
             if (flag) {
-                f += '_odd'
+                this.follow[findex] += '_odd'
             } else {
-                f = f?.substring(0, f.length - '_odd'.length)
+                this.follow[findex] = this.follow[findex].substring(0, this.follow[findex].length - '_odd'.length)
             }
         },
         async loadRealTimeData() {
