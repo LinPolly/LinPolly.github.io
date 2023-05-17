@@ -80,6 +80,7 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                                     <v-switch
                                         :label="`切換至${follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') ? '整股' : '零股'}`"
                                         color="indigo"
+                                        :model-value="follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') == true"
                                         inset
                                         hide-details
                                         @click="targetOdd(data.c, $event)"></v-switch>
@@ -365,6 +366,7 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                     <v-switch
                         :label="`切換至${follow.find(x => x.indexOf(item.value.c) > -1)?.endsWith('_odd') ? '整股' : '零股'}`"
                         color="indigo"
+                        :model-value="follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') == true"
                         inset
                         hide-details
                         @click="targetOdd(item.value.c, $event)"></v-switch>
@@ -416,9 +418,11 @@ export default {
             var findex = this.follow.findIndex(x => x.indexOf(code) > -1)
 
             if (flag) {
-                this.follow[findex] += '_odd'
+                if (!this.follow[findex].endsWith('_odd'))
+                    this.follow[findex] += '_odd'
             } else {
-                this.follow[findex] = this.follow[findex].substring(0, this.follow[findex].length - '_odd'.length)
+                if (this.follow[findex].endsWith('_odd'))
+                    this.follow[findex] = this.follow[findex].substring(0, this.follow[findex].length - '_odd'.length)
             }
         },
         async loadRealTimeData() {
