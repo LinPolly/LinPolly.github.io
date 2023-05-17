@@ -4,6 +4,14 @@ export default defineEventHandler(async (event) => {
     try {
         const query = getQuery(event)
         const code = query.code
+
+        if (code == '') {
+            return []
+        }
+        if (Array.isArray(code) && code.length == 0) {
+            return []
+        }
+
         let controller = new AbortController();
         var ex_ch = ''
         if (Array.isArray(code)) {

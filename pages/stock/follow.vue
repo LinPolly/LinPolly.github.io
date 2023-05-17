@@ -408,6 +408,9 @@ export default {
                         const offset = i * batchSize
                         const limit = batchSize
                         const _labels = labels.slice(offset, offset + limit)
+                        if (_labels.length == 0) {
+                            continue
+                        }
                         const { data } = await useAsyncData(_labels.join('-'), () => $fetch('/api/stock', {
                             params: {
                                 code: _labels

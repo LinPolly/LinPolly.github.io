@@ -1,8 +1,12 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
-</script>
+</script> -->
 
 <template>
+    <h1>index</h1>
+</template>
+
+<!-- <template>
     <v-progress-linear v-if="realtimeData.isdatareload"
         color="primary"
         indeterminate>
@@ -67,8 +71,8 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
             </template>
         </v-data-table>
     </ClientOnly>
-</template>
-
+</template> -->
+<!-- 
 <script lang="ts">
 import { Info } from '~/models/stock/info'
 import { MsgArray } from '~/models/stock/twse'
@@ -208,4 +212,4 @@ export default {
         this.init()
     }
 }
-</script>
+</script> -->
