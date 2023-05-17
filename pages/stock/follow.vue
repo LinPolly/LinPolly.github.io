@@ -366,7 +366,7 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                     <v-switch
                         :label="`切換至${follow.find(x => x.indexOf(item.value.c) > -1)?.endsWith('_odd') ? '整股' : '零股'}`"
                         color="indigo"
-                        :model-value="follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') == true"
+                        :model-value="follow.find(x => x.indexOf(item.value.c) > -1)?.endsWith('_odd') == true"
                         inset
                         hide-details
                         @change="targetOdd(item.value.c)"></v-switch>
