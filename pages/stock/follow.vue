@@ -83,7 +83,7 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                                         :model-value="follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') == true"
                                         inset
                                         hide-details
-                                        @click="targetOdd(data.c, $event)"></v-switch>
+                                        @update:model-value="targetOdd(data.c, $event)"></v-switch>
                                 </v-col>
                             </v-row>
                         </v-card-title>
@@ -369,7 +369,7 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                         :model-value="follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') == true"
                         inset
                         hide-details
-                        @click="targetOdd(item.value.c, $event)"></v-switch>
+                        @update:model-value="targetOdd(item.value.c, $event)"></v-switch>
                     <v-btn class="bg-warning"
                         icon="mdi-delete"
                         @click="removeFollow(item.value.c)"></v-btn>
