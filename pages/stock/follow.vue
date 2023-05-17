@@ -74,7 +74,16 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                     xxl="2">
                     <v-card elevation="5">
                         <v-card-title>
-                            {{ data.n }} {{ data.c }}
+                                <v-col>{{ data.n }} {{ data.c }}</v-col>
+                                <v-col cols="5">
+                                    <v-switch
+                                        :label="`切換至${follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') ? '整股' : '零股'}`"
+                                        color="indigo"
+                                        inset
+                                        hide-details
+                                        @click="targetOdd(data.c, $event)"></v-switch>
+                                </v-col>
+                            </v-row>
                         </v-card-title>
                         <hr>
                         <v-card-title>
@@ -252,7 +261,17 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                     :key="data.c">
                     <v-card elevation="5">
                         <v-card-title>
-                            {{ data.n }} {{ data.c }}
+                            <v-row>
+                                <v-col>{{ data.n }} {{ data.c }}</v-col>
+                                <v-col cols="5">
+                                    <v-switch
+                                        :label="`切換至${follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') ? '整股' : '零股'}`"
+                                        color="indigo"
+                                        inset
+                                        hide-details
+                                        @click="targetOdd(data.c, $event)"></v-switch>
+                                </v-col>
+                            </v-row>
                         </v-card-title>
                         <v-card-title>
                             <span
@@ -352,6 +371,12 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                     </span>
                 </template>
                 <template v-slot:item.action="{ item }">
+                    <v-switch
+                        :label="`切換至${follow.find(x => x.indexOf(item.value.c) > -1)?.endsWith('_odd') ? '整股' : '零股'}`"
+                        color="indigo"
+                        inset
+                        hide-details
+                        @click="targetOdd(item.value.c, $event)"></v-switch>
                     <v-btn class="bg-warning"
                         icon="mdi-delete"
                         @click="removeFollow(item.value.c)"></v-btn>
@@ -395,6 +420,15 @@ export default {
         }
     },
     methods: {
+        targetOdd(code: string, e) {
+            var flag = e.target.value
+            var f = this.follow.find(x => x.indexOf(code) > -1)
+            if (flag) {
+                f += '_odd'
+            } else {
+                f = f?.substring(0, f.length - '_odd'.length)
+            }
+        },
         async loadRealTimeData() {
             this.realtimeData.isdatareload = true
 

@@ -1,7 +1,7 @@
 export const formatAsCurrency = (value: number, dec: number) => {
     dec = dec || 0
     if (value === null) {
-        return 0
+        return '0'
     }
     return '' + value.toFixed(dec).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
 }
@@ -57,7 +57,7 @@ export const trimStart = (str: string, c: string) => {
     return str
 }
 
-export const formatDate = (date: Date | string) => {
+export const formatDate = (date: Date | string | number) => {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
@@ -84,7 +84,9 @@ export const diffp = (z: string, y: string) => {
 
     if (v == 0)
         return 0
-    return trimEnd(v.toFixed(2), '0')
+
+    // @ts-ignore
+    return trimEnd(v.toFixed(2), '0') as number
 }
 //除法
 export const accDiv = (arg1: number, arg2: number) => {

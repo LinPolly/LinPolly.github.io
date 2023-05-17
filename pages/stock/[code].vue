@@ -549,7 +549,7 @@ export default {
             s?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => {
                 return {
                     name: this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code,
-                    volumn: this.formatAsCurrency(x.volumn, 0),
+                    volumn: formatAsCurrency(x.volumn, 0),
                     weights: x.weights
                 }
             }).forEach(x => data.push(x))
