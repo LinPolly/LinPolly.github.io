@@ -91,6 +91,17 @@ export default defineEventHandler(async (event) => {
 
             result.push(...data.msgArray)
         }
+
+        if (Array.isArray(code)) {
+            var s = code.map(x => x.toString() as string).map(x => {
+                if (x.endsWith('_odd')) {
+                    return x.substring(0, x.length - '_odd'.length)
+                } else {
+                    return x
+                }
+            })
+            result = result.sort((a, b) => s.indexOf(a.c) - s.indexOf(b.c))
+        }
         return result
     } catch (error) {
         console.log(error)
