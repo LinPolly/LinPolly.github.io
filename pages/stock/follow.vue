@@ -563,12 +563,15 @@ export default {
         }
     },
     watch: {
-        'follow': function () {
-            localStorage.setItem('follow', this.follow.join('|'))
-            const urlParams = new URLSearchParams();
-            urlParams.set('f', this.follow.join('|'))
-            // @ts-ignore
-            history.pushState({}, null, this.$route.path + '?' + urlParams.toString())
+        'follow': {
+            handler: function () {
+                localStorage.setItem('follow', this.follow.join('|'))
+                const urlParams = new URLSearchParams();
+                urlParams.set('f', this.follow.join('|'))
+                // @ts-ignore
+                history.pushState({}, null, this.$route.path + '?' + urlParams.toString())
+            },
+            deep: true
         }
     },
     computed: {
