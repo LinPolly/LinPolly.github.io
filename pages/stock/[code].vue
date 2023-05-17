@@ -101,13 +101,14 @@ import '@vuepic/vue-datepicker/dist/main.css'
                         <v-row>
                             <v-col>
                                 <v-list>
-                                    <v-list-item v-for="item in trimEnd(realtimeData?.main?.g ?? '', '_').split('_')"
+                                    <v-list-item
+                                        v-for="item in trimEnd(realtimeData?.main?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
                                         :key="item">
                                         <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
                                         </v-list-item-title>
                                         <v-list-item-action>
                                             <v-progress-linear :model-value="parseInt(item)"
-                                                :max="trimEnd(realtimeData?.main?.g ?? '', '_').split('_').map(x => parseInt(x)).sort((a, b) => b - a)[0]"
+                                                :max="trimEnd(realtimeData?.main?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).sort((a, b) => b - a)[0]"
                                                 reverse>
                                             </v-progress-linear>
                                         </v-list-item-action>
@@ -116,7 +117,8 @@ import '@vuepic/vue-datepicker/dist/main.css'
                             </v-col>
                             <v-col>
                                 <v-list>
-                                    <v-list-item v-for="item in trimEnd(realtimeData?.main?.b ?? '', '_').split('_')"
+                                    <v-list-item
+                                        v-for="item in trimEnd(realtimeData?.main?.b ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
                                         :key="item">
                                         <v-list-item-title
                                             :style="{ color: realtimeData?.main?.y == item ? 'black' : (parseFloat(item) > parseFloat(realtimeData?.main?.y) ? 'red' : 'green') }"
@@ -129,7 +131,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
                         <v-row>
                             <v-col>
                                 <v-list-item
-                                    :title="formatAsCurrency(trimEnd(realtimeData?.main?.g ?? '', '_').split('_').map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
+                                    :title="formatAsCurrency(trimEnd(realtimeData?.main?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
                                 </v-list-item>
                             </v-col>
                             <v-col>
@@ -153,7 +155,8 @@ import '@vuepic/vue-datepicker/dist/main.css'
                         <v-row>
                             <v-col>
                                 <v-list>
-                                    <v-list-item v-for="item in trimEnd(realtimeData?.main?.a ?? '', '_').split('_')"
+                                    <v-list-item
+                                        v-for="item in trimEnd(realtimeData?.main?.a ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
                                         :key="item">
                                         <v-list-item-title
                                             :style="{ color: realtimeData?.main?.y == item ? 'black' : (parseFloat(item) > parseFloat(realtimeData?.main?.y) ? 'red' : 'green') }"
@@ -163,13 +166,14 @@ import '@vuepic/vue-datepicker/dist/main.css'
                             </v-col>
                             <v-col>
                                 <v-list>
-                                    <v-list-item v-for="item in trimEnd(realtimeData?.main?.f ?? '', '_').split('_')"
+                                    <v-list-item
+                                        v-for="item in trimEnd(realtimeData?.main?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
                                         :key="item">
                                         <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
                                         </v-list-item-title>
                                         <v-list-item-action>
                                             <v-progress-linear :model-value="parseInt(item)"
-                                                :max="trimEnd(realtimeData?.main?.f ?? '', '_').split('_').map(x => parseInt(x)).sort((a, b) => b - a)[0]">
+                                                :max="trimEnd(realtimeData?.main?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).sort((a, b) => b - a)[0]">
                                             </v-progress-linear>
                                         </v-list-item-action>
                                     </v-list-item>
@@ -184,7 +188,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
                             </v-col>
                             <v-col>
                                 <v-list-item
-                                    :title="formatAsCurrency(trimEnd(realtimeData?.main?.f ?? '', '_').split('_').map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
+                                    :title="formatAsCurrency(trimEnd(realtimeData?.main?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
                                 </v-list-item>
                             </v-col>
                         </v-row>
