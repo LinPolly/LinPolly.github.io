@@ -83,7 +83,7 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                                         :model-value="follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') == true"
                                         inset
                                         hide-details
-                                        @change="targetOdd(data.c, $event)"></v-switch>
+                                        @change="targetOdd(data.c)"></v-switch>
                                 </v-col>
                             </v-row>
                         </v-card-title>
@@ -369,7 +369,7 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                         :model-value="follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') == true"
                         inset
                         hide-details
-                        @change="targetOdd(item.value.c, $event)"></v-switch>
+                        @change="targetOdd(item.value.c)"></v-switch>
                     <v-btn class="bg-warning"
                         icon="mdi-delete"
                         @click="removeFollow(item.value.c)"></v-btn>
@@ -413,16 +413,13 @@ export default {
         }
     },
     methods: {
-        targetOdd(code: string, e) {
-            var flag = e.target.value
+        targetOdd(code: string) {
             var findex = this.follow.findIndex(x => x.indexOf(code) > -1)
 
-            if (flag) {
-                if (!this.follow[findex].endsWith('_odd'))
-                    this.follow[findex] += '_odd'
+            if (!this.follow[findex].endsWith('_odd')) {
+                this.follow[findex] += '_odd'
             } else {
-                if (this.follow[findex].endsWith('_odd'))
-                    this.follow[findex] = this.follow[findex].substring(0, this.follow[findex].length - '_odd'.length)
+                this.follow[findex] = this.follow[findex].substring(0, this.follow[findex].length - '_odd'.length)
             }
         },
         async loadRealTimeData() {
