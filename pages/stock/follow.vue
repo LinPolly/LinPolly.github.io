@@ -74,6 +74,7 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                     xxl="2">
                     <v-card elevation="5">
                         <v-card-title>
+                            <v-row>
                                 <v-col>{{ data.n }} {{ data.c }}</v-col>
                                 <v-col cols="5">
                                     <v-switch
