@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
+import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
 </script>
 
 <template>
@@ -90,9 +90,9 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                         <hr>
                         <v-card-title>
                             <span
-                                :style="{ fontSize: '32px', marginRight: '8px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                :style="{ fontSize: '32px', marginRight: '8px', color: diff(data?.z, data?.y) == 0 || !isNumeric(data.z) ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
                                 {{
-                                    trimEnd(formatAsCurrency(parseFloat(data.z), 2), '0')
+                                    isNumeric(data.z) ? trimEnd(formatAsCurrency(parseFloat(data.z), 2), '0') : data.z
                                 }}
                             </span>
                             <svg v-if="diff(data?.z, data?.y) < 0"
@@ -116,12 +116,12 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                                     fill="#D3321C"></path>
                             </svg>
                             <span
-                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
-                                {{ Math.abs(diff(data?.z, data?.y)) }}
+                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 || !isNumeric(data.z) ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                {{ isNumeric(data.z) ? Math.abs(diff(data?.z, data?.y)) : data.z }}
                             </span>
                             <span
-                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
-                                ({{ Math.abs(diffp(data?.z, data?.y)) }}%)
+                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 || !isNumeric(data.z) ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                ({{ isNumeric(data.z) ? Math.abs(diffp(data?.z, data?.y)) : data.z }}%)
                             </span>
                         </v-card-title>
                         <v-row>
@@ -142,9 +142,9 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                                     <v-list-item title="昨收"
                                         :subtitle="trimEnd(data?.y, '0')"></v-list-item>
                                     <v-list-item title="漲跌"
-                                        :subtitle="`${diff(data?.z, data?.y)}`"></v-list-item>
+                                        :subtitle="(isNumeric(data.z) ? `${diff(data?.z, data?.y)}` : data.z)"></v-list-item>
                                     <v-list-item title="漲跌幅(%)"
-                                        :subtitle="`${diffp(data?.z, data?.y)}%`"></v-list-item>
+                                        :subtitle="(isNumeric(data.z) ? `${diffp(data?.z, data?.y)}%` : data.z)"></v-list-item>
                                     <v-list-item title="總量"
                                         :subtitle="data?.v"></v-list-item>
                                 </v-list>
@@ -271,9 +271,9 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                         </v-card-title>
                         <v-card-title>
                             <span
-                                :style="{ fontSize: '32px', marginRight: '8px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                :style="{ fontSize: '32px', marginRight: '8px', color: diff(data?.z, data?.y) == 0 || !isNumeric(data.z) ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
                                 {{
-                                    trimEnd(formatAsCurrency(parseFloat(data.z), 2), '0')
+                                    isNumeric(data.z) ? trimEnd(formatAsCurrency(parseFloat(data.z), 2), '0') : data.z
                                 }}
                             </span>
                             <svg v-if="diff(data?.z, data?.y) < 0"
@@ -297,12 +297,12 @@ import { trimEnd, formatAsCurrency, diff, diffp } from '~/lib/string'
                                     fill="#D3321C"></path>
                             </svg>
                             <span
-                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
-                                {{ Math.abs(diff(data?.z, data?.y)) }}
+                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 || !isNumeric(data.z) ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                {{ isNumeric(data.z) ? Math.abs(diff(data?.z, data?.y)) : data.z }}
                             </span>
                             <span
-                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
-                                ({{ Math.abs(diffp(data?.z, data?.y)) }}%)
+                                :style="{ fontSize: '20px', color: diff(data?.z, data?.y) == 0 || !isNumeric(data.z) ? 'black' : (diff(data?.z, data?.y) > 0 ? 'red' : 'green') }">
+                                ({{ isNumeric(data.z) ? Math.abs(diffp(data?.z, data?.y)) : data.z }}%)
                             </span>
                         </v-card-title>
                     </v-card>
@@ -526,7 +526,7 @@ export default {
             if (this.timer.lastudt.getHours() < 9
                 || this.timer.lastudt.getHours() >= 14
                 || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
-                setTimeout(this.repeat, 1000 / 60);
+                setTimeout(this.repeat, 1000);
                 return
             }
             // @ts-ignore
