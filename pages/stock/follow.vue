@@ -475,7 +475,10 @@ export default {
 
                             if (d.z == '-'
                                 || d.z == undefined
-                                || d.z == null) {
+                                || d.z == null
+                                // 價格跳太快從yahoo修正當前價格
+                                || (d.z != trimEnd(d.g ?? '', '_').split('_')[0]
+                                    && d.z != trimEnd(d?.b ?? '', '_').split('_')[0])) {
                                 const { data } = await useAsyncData(`yahoo_${d.c}`, () => $fetch(`/api/price?code=${d.c}`))
                                 // @ts-ignore
                                 d.z = data.value
