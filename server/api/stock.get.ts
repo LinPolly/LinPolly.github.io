@@ -1,4 +1,5 @@
 import { GetStockInfo, MsgArray } from "~/models/stock/twse";
+import * as cache from '~~/server/cache/stock';
 
 export default defineEventHandler(async (event) => {
     try {
@@ -16,14 +17,19 @@ export default defineEventHandler(async (event) => {
         var ex_ch = ''
         var ex_chodd = ''
         if (Array.isArray(code)) {
-            ex_ch = code.map(x => `${x}`).filter(x => !x.endsWith('_odd')).map(x => `tse_${x}.tw|otc_${x}.tw`).join('|')
-            ex_chodd = code.map(x => `${x}`).filter(x => x.endsWith('_odd')).map(x => x.substring(0, x.length - '_odd'.length)).map(x => `tse_${x}.tw|otc_${x}.tw`).join('|')
+            ex_ch = code.map(x => `${x}`).filter(x => cache.get(x) == null).filter(x => !x.endsWith('_odd')).map(x => `tse_${x}.tw|otc_${x}.tw`).join('|')
+            ex_chodd = code.map(x => `${x}`).filter(x => cache.get(x) == null).filter(x => x.endsWith('_odd')).map(x => x.substring(0, x.length - '_odd'.length)).map(x => `tse_${x}.tw|otc_${x}.tw`).join('|')
         } else {
             if (code?.toString().endsWith('_odd')) {
                 var c = code.toString().substring(0, code.toString().length - '_odd'.length)
                 ex_chodd = `tse_${c}.tw|otc_${c}.tw`
+
             } else {
                 ex_ch = `tse_${code}.tw|otc_${code}.tw`
+            }
+            if (cache.get(code?.toString() ?? '') != null) {
+                ex_chodd = ''
+                ex_ch = ''
             }
         }
 
@@ -93,13 +99,35 @@ export default defineEventHandler(async (event) => {
         }
 
         if (Array.isArray(code)) {
+            code.map(x => `${x}`)
+                .filter(x => cache.get(x) != null)
+                .forEach(e => {
+                    result.push(cache.get(e))
+                })
+
+            code.map(x => `${x}`)
+                .filter(x => cache.get(x) != null)
+                .forEach(e => {
+                    result.push(cache.get(e))
+                })
+        } else {
+            if (cache.get(code?.toString() ?? '') != null) {
+                result.push(cache.get(code?.toString() ?? ''))
+            }
+        }
+
+        if (Array.isArray(code)) {
             var s = code.map(x => x.toString() as string).map(x => {
                 if (x.endsWith('_odd')) {
-                    return x.substring(0, x.length - '_odd'.length)
+                    var c = x.substring(0, x.length - '_odd'.length)
+                    cache.set(x, result.find(e => e.c == c), 5)
+                    return c
                 } else {
+                    cache.set(x, result.find(e => e.c == x), 5)
                     return x
                 }
             })
+
             result = result.sort((a, b) => s.indexOf(a.c) - s.indexOf(b.c))
         }
         return result

@@ -167,8 +167,8 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                                     <v-col>
                                         <v-list>
                                             <v-list-item
-                                                v-for="item in trimEnd(data?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
-                                                :key="item">
+                                                v-for="(item, i) in trimEnd(data?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
+                                                :key="i">
                                                 <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
                                                 </v-list-item-title>
                                                 <v-list-item-action>
@@ -183,8 +183,8 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                                     <v-col>
                                         <v-list>
                                             <v-list-item
-                                                v-for="item in trimEnd(data?.b ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
-                                                :key="item">
+                                                v-for="(item, i) in trimEnd(data?.b ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
+                                                :key="i">
                                                 <v-list-item-title
                                                     :style="{ color: data?.y == item ? 'black' : (parseFloat(item) > parseFloat(data?.y) ? 'red' : 'green') }"
                                                     v-text="trimEnd(item, '0')"></v-list-item-title>
@@ -432,7 +432,7 @@ export default {
             if (this.infos && this.follow.length > 0) {
                 var labels = this.follow
                 if (labels.length > 0) {
-                    const batchSize = 10
+                    const batchSize = 20
                     var round = labels.length % batchSize == 0 ? labels.length / batchSize : (labels.length / batchSize) + 1;
 
                     for (let i = 0; i < round; i++) {
