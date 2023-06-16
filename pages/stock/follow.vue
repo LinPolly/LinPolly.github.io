@@ -555,7 +555,7 @@ export default {
             }
         },
         async removeFollow(c: string) {
-            this.follow = this.follow.filter(x => x != c)
+            this.follow = this.follow.filter(x => x != c && x != `${c}_odd`)
             this.realtimeData.data = this.realtimeData.data.filter(x => x.c != c)
 
             if (this.timer.lastudt.getHours() < 9
