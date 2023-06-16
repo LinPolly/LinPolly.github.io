@@ -15,7 +15,8 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
         <v-row
             v-if="infos.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
             <v-col
-                v-for="s in infos.filter(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
+                v-for="(s, i) in infos.filter(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)"
+                :key="i">
                 <v-btn @click="inputfollow = s.公司代號">
                     <v-card-title>
                         {{ s.公司簡稱 }} {{ s.公司代號 }}
@@ -32,7 +33,8 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
         <v-row
             v-if="etf.some(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
             <v-col
-                v-for="s in etf.filter(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
+                v-for="(s, i) in etf.filter(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)"
+                :key="i">
                 <v-btn @click="inputfollow = s.證券代號">
                     <v-card-title>
                         {{ s.證券簡稱 }} {{ s.證券代號 }}
@@ -64,8 +66,8 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
         </v-progress-linear>
         <ClientOnly>
             <v-row v-if="toggle_exclusive == 0">
-                <v-col v-for="data in realtimeData.data"
-                    :key="data.c"
+                <v-col v-for="(data, i) in realtimeData.data"
+                    :key="i"
                     cols="12"
                     sm="6"
                     md="6"
@@ -221,8 +223,8 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                                     <v-col>
                                         <v-list>
                                             <v-list-item
-                                                v-for="item in trimEnd(data?.a ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
-                                                :key="item">
+                                                v-for="(item, i) in trimEnd(data?.a ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
+                                                :key="i">
                                                 <v-list-item-title
                                                     :style="{ color: data?.y == item ? 'black' : (parseFloat(item) > parseFloat(data?.y) ? 'red' : 'green') }"
                                                     v-text="trimEnd(item, '0')"></v-list-item-title>
@@ -232,8 +234,8 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                                     <v-col>
                                         <v-list>
                                             <v-list-item
-                                                v-for="item in trimEnd(data?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
-                                                :key="item">
+                                                v-for="(item, i) in trimEnd(data?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
+                                                :key="i">
                                                 <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
                                                 </v-list-item-title>
                                                 <v-list-item-action>
@@ -263,8 +265,8 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                 </v-col>
             </v-row>
             <v-row v-if="toggle_exclusive == 1">
-                <v-col v-for="data in realtimeData.data"
-                    :key="data.c">
+                <v-col v-for="(data, i) in realtimeData.data"
+                    :key="i">
                     <v-card elevation="5">
                         <v-card-title>
                             {{ data.n }} {{ data.c }}
