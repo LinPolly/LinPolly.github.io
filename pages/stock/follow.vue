@@ -477,8 +477,8 @@ export default {
                                 || d.z == undefined
                                 || d.z == null
                                 // 價格跳太快從yahoo修正當前價格
-                                || (parseFloat(d.z) <= parseFloat(trimEnd(d.a ?? '', '_').split('_')[0])
-                                    && parseFloat(d.z) >= parseFloat(trimEnd(d?.b ?? '', '_').split('_')[0]))
+                                || parseFloat(d.z) > parseFloat(trimEnd(d.a ?? '', '_').split('_')[0])
+                                || parseFloat(d.z) < parseFloat(trimEnd(d?.b ?? '', '_').split('_')[0])
                             ) {
                                 const { data } = await useAsyncData(`yahoo_${d.c}`, () => $fetch(`/api/price?code=${d.c}`))
                                 // @ts-ignore
