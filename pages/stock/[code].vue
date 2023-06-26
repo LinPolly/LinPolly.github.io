@@ -12,6 +12,14 @@ import '@vuepic/vue-datepicker/dist/main.css'
                 style="margin-right: 8px;">{{ realtimeData.main.n }}</h1>
             <span style="font-size: 24px;">{{ code }}</span>
         </v-col>
+        <v-col cols="5">
+            <v-switch :label="`切換至${code.endsWith('_odd') ? '整股' : '零股'}`"
+                color="indigo"
+                :model-value="code.endsWith('_odd') == true"
+                inset
+                hide-details
+                @change="targetOdd(code)"></v-switch>
+        </v-col>
     </v-row>
     <v-row>
         <v-col v-if="realtimeData?.main"
@@ -385,9 +393,20 @@ export default {
         }
     },
     methods: {
+        targetOdd(c: string) {
+            if (!c.endsWith('_odd')) {
+                c += '_odd'
+            } else {
+                c = c.substring(0, c.length - '_odd'.length)
+            }
+
+            // @ts-ignore
+            history.pushState({}, null, this.$route.path.replace(this.code, c))
+        },
         async loadRealTimeMainData() {
             this.realtimeData.ismainreload = true
-            const { data } = await useAsyncData(`realtime_${this.code}`, () => $fetch('/api/stock', {
+
+            const { data } = await useAsyncData(this.code, () => $fetch('/api/stock', {
                 params: {
                     code: this.code
                 }
@@ -408,7 +427,11 @@ export default {
 
             if (this.realtimeData.main.z == '-'
                 || this.realtimeData.main.z == undefined
-                || this.realtimeData.main.z == null) {
+                || this.realtimeData.main.z == null
+                // 價格跳太快從yahoo修正當前價格
+                || parseFloat(this.realtimeData.main.z) > parseFloat(trimEnd(this.realtimeData.main.a ?? '', '_').split('_')[0])
+                || parseFloat(this.realtimeData.main.z) < parseFloat(trimEnd(this.realtimeData.main?.b ?? '', '_').split('_')[0])
+            ) {
                 const { data } = await useAsyncData(`yahoo_${this.realtimeData.main.c}`, () => $fetch(`/api/price?code=${this.realtimeData.main.c}`))
                 // @ts-ignore
                 this.realtimeData.main.z = data.value
@@ -446,7 +469,11 @@ export default {
                         var dd = this.realtimeData.data.find(x => x.c == item.c) as MsgArray
                         if (dd.z == '-'
                             || dd.z == undefined
-                            || dd.z == null) {
+                            || dd.z == null
+                            // 價格跳太快從yahoo修正當前價格
+                            || parseFloat(dd.z) > parseFloat(trimEnd(dd.a ?? '', '_').split('_')[0])
+                            || parseFloat(dd.z) < parseFloat(trimEnd(dd?.b ?? '', '_').split('_')[0])
+                        ) {
                             const { data } = await useAsyncData(`yahoo_${dd.c}`, () => $fetch(`/api/price?code=${dd.c}`))
                             // @ts-ignore
                             dd.z = data.value
