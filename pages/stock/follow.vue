@@ -534,6 +534,7 @@ export default {
             if (this.timer.lastudt.getHours() < 9
                 || this.timer.lastudt.getHours() >= 14
                 || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
+                this.timer.lastudt = new Date()
                 setTimeout(this.repeat, 1000);
                 return
             }

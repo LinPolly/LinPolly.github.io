@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
         let controller = new AbortController();
         var symbol = `${code}.TW`
 
-        const url = `https://query2.finance.yahoo.com/v8/finance/chart/${symbol}?symbol=${symbol}&period1=0&period2=9999999999&interval=1d`
+        const url = `https://query2.finance.yahoo.com/v8/finance/chart/${symbol}?symbol=${symbol}&interval=1m`
         const headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'
         };
