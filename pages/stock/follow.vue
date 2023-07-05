@@ -483,7 +483,7 @@ export default {
                                 if (this.follow.some(x => x.startsWith(d.c) && x.endsWith('_odd')) == false) {
                                     const { data } = await useAsyncData(`yahoo_${d.c}`, () => $fetch(`/api/price?code=${d.c}`))
                                     // @ts-ignore
-                                    d.z = parseFloat(data.value?.toString() ?? '-').toString()
+                                    d.z = data.value?.toString()
                                 }
                             }
                         })
