@@ -434,7 +434,7 @@ export default {
             ) {
                 const { data } = await useAsyncData(`yahoo_${this.realtimeData.main.c}`, () => $fetch(`/api/price?code=${this.realtimeData.main.c}`))
                 // @ts-ignore
-                this.realtimeData.main.z = parseFloat(data.value?.toString() ?? '-')
+                this.realtimeData.main.z = parseFloat(data.value?.toString() ?? '-').toString()
             }
             this.realtimeData.ismainreload = false
         },
@@ -476,7 +476,7 @@ export default {
                         ) {
                             const { data } = await useAsyncData(`yahoo_${dd.c}`, () => $fetch(`/api/price?code=${dd.c}`))
                             // @ts-ignore
-                            dd.z = parseFloat(data.value?.toString() ?? '-')
+                            dd.z = parseFloat(data.value?.toString() ?? '-').toString()
                         }
                     })
                 }
