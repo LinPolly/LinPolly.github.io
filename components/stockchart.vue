@@ -21,11 +21,7 @@ export default {
         }
     },
     mounted() {
-        this.init()
-        var chart = this.chart
-        document.body.addEventListener('resize', function () {
-            if (chart) chart.timeScale().fitContent()
-        })
+        this.init()        
     },
     unmounted() {
         if (this.chart) {
