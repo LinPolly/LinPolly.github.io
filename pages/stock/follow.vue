@@ -69,11 +69,11 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                 <v-col v-for="(data, i) in realtimeData.data"
                     :key="i"
                     cols="12"
-                    sm="12"
-                    md="12"
-                    lg="6"
-                    lx="6"
-                    xxl="6">
+                    sm="6"
+                    md="6"
+                    lg="4"
+                    lx="3"
+                    xxl="2">
                     <v-card elevation="5">
                         <v-card-title>
                             <v-row>
