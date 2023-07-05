@@ -1,3 +1,5 @@
+import * as cache from '~~/server/cache/stock';
+
 export default defineEventHandler(async (event) => {
     try {
         const query = getQuery(event)
@@ -5,7 +7,14 @@ export default defineEventHandler(async (event) => {
         let controller = new AbortController();
         var symbol = `${code}.TW`
 
-        const url = `https://query2.finance.yahoo.com/v8/finance/chart/${symbol}?symbol=${symbol}&interval=1m`
+        var ff = cache.get(`chart_${symbol}`)
+        if (ff) {
+            return ff
+        }
+
+        var yahooSymbol = encodeURIComponent(`["${symbol}"]`)
+
+        const url = `https://tw.stock.yahoo.com/_td-stock/api/resource/FinanceChartService.ApacLibraCharts;symbols=${yahooSymbol};type=tick?bkt=&device=desktop&ecma=modern&feature=useNewQuoteTabColor%2CenableNewPk&intl=tw&lang=zh-Hant-TW&partner=none&prid=08iveohia9l4c&region=TW&site=finance&tz=Asia%2FTaipei&returnMeta=true`
         const headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'
         };
@@ -39,7 +48,12 @@ export default defineEventHandler(async (event) => {
                 return res;
             });
 
-        return await req.json()
+        var data = await req.json()
+
+        var r = data.data.find(x => x.symbol == symbol)
+        cache.set(`chart_${symbol}`, r, 60)
+
+        return r
     } catch (error) {
         console.log(error)
         return { result: [], error: error }

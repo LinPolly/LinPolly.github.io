@@ -69,11 +69,11 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                 <v-col v-for="(data, i) in realtimeData.data"
                     :key="i"
                     cols="12"
-                    sm="6"
-                    md="6"
-                    lg="4"
-                    lx="3"
-                    xxl="2">
+                    sm="12"
+                    md="12"
+                    lg="6"
+                    lx="6"
+                    xxl="6">
                     <v-card elevation="5">
                         <v-card-title>
                             <v-row>
@@ -126,6 +126,13 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                                 ({{ isNumeric(data.z) ? Math.abs(diffp(data?.z, data?.y)) : data.z }}%)
                             </span>
                         </v-card-title>
+                        <v-row style="height: 350px;padding: 0;margin: 0;">
+                            <ClientOnly>
+                                <stockchart v-if="data"
+                                    :symbol="data"
+                                    style="width: 100%;"></stockchart>
+                            </ClientOnly>
+                        </v-row>
                         <v-row>
                             <v-col cols="6">
                                 <v-list class="v-col-12">
