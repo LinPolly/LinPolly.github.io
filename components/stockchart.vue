@@ -10,6 +10,9 @@ export default {
         baselineExtraData: new Map(),
         volumeExtraData: new Map(),
         chartRawData: null,
+        timer: {
+            lastudt: new Date()
+        }
     }),
     props: {
         symbol: {
@@ -19,6 +22,10 @@ export default {
     },
     mounted() {
         this.init()
+        var chart = this.chart
+        document.body.addEventListener('resize', function () {
+            if (chart) chart.timeScale().fitContent()
+        })
     },
     unmounted() {
         if (this.chart) {
@@ -221,6 +228,22 @@ export default {
 
             list.push(maxVal)
             return list
+        },
+        async repeat() {
+            if (this.timer.lastudt.getHours() < 9
+                || this.timer.lastudt.getHours() >= 14
+                || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
+                this.timer.lastudt = new Date()
+                setTimeout(this.repeat, 1000);
+                return
+            }
+            // @ts-ignore
+            if (new Date() - this.timer.lastudt > 5_000) {
+                this.timer.lastudt = new Date()
+                await this.init()
+            }
+
+            setTimeout(this.repeat, 5000)
         },
     },
 };
