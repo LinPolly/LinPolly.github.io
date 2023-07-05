@@ -254,5 +254,5 @@ export default {
         <span ref="tooltip"></span>
     </div>
     <div ref="chart"
-        style="width: 100%;height: 100%;"></div>
+        style="width: 100%;height: 100%;padding-left: 4px;"></div>
 </template>

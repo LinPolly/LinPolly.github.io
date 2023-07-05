@@ -69,7 +69,7 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                 <v-col v-for="(data, i) in realtimeData.data"
                     :key="i"
                     cols="12"
-                    sm="6"
+                    sm="12"
                     md="6"
                     lg="4"
                     lx="3"
