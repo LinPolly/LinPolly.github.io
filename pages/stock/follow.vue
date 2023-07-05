@@ -126,7 +126,8 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                                 ({{ isNumeric(data.z) ? Math.abs(diffp(data?.z, data?.y)) : data.z }}%)
                             </span>
                         </v-card-title>
-                        <v-row style="height: 350px;padding: 0;margin: 0;">
+                        <v-row style="height: 350px;padding: 0;margin: 0;"
+                            v-if="follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') == false">
                             <ClientOnly>
                                 <stockchart v-if="data"
                                     :symbol="data"
