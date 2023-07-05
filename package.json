@@ -9,18 +9,18 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@types/node": "^18",
-    "nuxt": "^3.5.1"
+    "@types/node": "^18.16.19",
+    "nuxt": "^3.6.1"
   },
   "dependencies": {
     "@master/css": "^1.37.8",
     "@mdi/font": "^7.2.96",
-    "@vuepic/vue-datepicker": "^5.0.1",
+    "@vuepic/vue-datepicker": "^5.4.0",
     "chart.js": "^4.3.0",
     "cheerio": "^1.0.0-rc.12",
     "lightweight-charts": "^4.0.1",
     "vue-chartjs": "^5.2.0",
-    "vuetify": "^3.2.2"
+    "vuetify": "^3.3.6"
   },
   "engines": {
     "node": ">=16 <=19"

@@ -406,11 +406,11 @@ export default {
         async loadRealTimeMainData() {
             this.realtimeData.ismainreload = true
 
-            const { data } = await useAsyncData(this.code, () => $fetch('/api/stock', {
+            const { data } = await useFetch('/api/stock', {
                 params: {
                     code: this.code
                 }
-            }))
+            })
 
             var newData = (data.value as MsgArray[]).find(x => x.c == this.code) as MsgArray
             if (this.realtimeData.main.c == '')
@@ -445,11 +445,11 @@ export default {
             if (this.stocks) {
                 var labels = this.stocks[this.stocks.length - 1]?.stock?.sort((a, b) => b.code.localeCompare(a.code)).map(x => x.code)
                 if (labels) {
-                    const { data } = await useAsyncData(labels.join('-'), () => $fetch('/api/stock', {
+                    const { data } = await useFetch('/api/stock', {
                         params: {
                             code: labels
                         }
-                    }))
+                    })
 
                     var newData = (data.value as MsgArray[]).filter(x => x.c != this.code)
                     if (this.realtimeData.data.length == 0)
@@ -705,14 +705,6 @@ export default {
     watch: {
         'd': function (newValue) {
             this.selectDate = formatDate(newValue)
-        },
-        'date': function () {
-            const queryString = window.location.search
-            const urlParams = new URLSearchParams(queryString)
-            if (urlParams.get('d') != formatDate(this.date)) {
-                urlParams.set('d', formatDate(this.date))
-                history.pushState(null, '', `/stock/${this.code}?${urlParams.toString()}`)
-            }
         },
         'selectDate': function (newValue) {
             this.date = formatDate(newValue)

@@ -1,3 +1,11 @@
+<template>
+    <div style="height: 20px;width: 100%;">
+        <span ref="tooltip"></span>
+    </div>
+    <div ref="chart"
+        style="width: 100%;height: 100%;padding-left: 4px;"></div>
+</template>
+
 <script lang="ts">
 import { BaselineData, IChartApi, ISeriesApi, createChart } from 'lightweight-charts'
 import { MsgArray } from '~/models/stock/twse'
@@ -21,7 +29,12 @@ export default {
         }
     },
     mounted() {
-        this.init()        
+        var chart = this.chart
+        this.observer = new ResizeObserver(function (entries) {
+            chart?.timeScale().fitContent()
+        });
+        this.observer.observe(this.$refs.chart)
+        this.init()
     },
     unmounted() {
         if (this.chart) {
@@ -187,7 +200,7 @@ export default {
 
                     if (price != null && volume != null) {
                         // @ts-ignore
-                        toolTip.textContent = `${this.timestampToTime(param?.time)} 價 ${price} 量 ${volume}`
+                        toolTip.textContent = `${this.timestampToTime(param?.time + timeOffset)} 價 ${price} 量 ${volume}`
                     } else {
                         // @ts-ignore
                         toolTip.textContent = ''
@@ -244,11 +257,3 @@ export default {
     },
 };
 </script>
-
-<template>
-    <div style="height: 20px;width: 100%;">
-        <span ref="tooltip"></span>
-    </div>
-    <div ref="chart"
-        style="width: 100%;height: 100%;padding-left: 4px;"></div>
-</template>
