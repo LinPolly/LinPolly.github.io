@@ -35,6 +35,7 @@ export default {
         });
         this.observer.observe(this.$refs.chart)
         this.init()
+        this.repeat()
     },
     unmounted() {
         if (this.chart) {
@@ -51,6 +52,13 @@ export default {
             if (this.chartRawData) {
 
                 var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
+
+                if (this.chart) {
+                    this.chart.remove();
+                    // @ts-ignore
+                    this.chart = null;
+                }
+
                 if (this.chart == null) {
                     // @ts-ignore
                     this.chart = createChart(this.$refs.chart, {
@@ -81,7 +89,6 @@ export default {
                             locale: 'zh-tw',
                             // @ts-ignore
                             timeFormatter: (timestamp) => {
-                                // 鼠标悬浮，时间格式化配置
                                 return this.timestampToTime(timestamp + timeOffset)
                             },
                         },
@@ -89,7 +96,7 @@ export default {
                 }
 
                 this.baselineSeries = this.chart.addBaselineSeries({
-                    baseValue: { type: 'price', price: parseFloat(this.symbol.z) },
+                    baseValue: { type: 'price', price: parseFloat(this.symbol.y) },
                     topLineColor: 'rgba( 239, 83, 80, 1)',
                     topFillColor1: 'rgba( 239, 83, 80, 0.05)',
                     topFillColor2: 'rgba( 239, 83, 80, 0.28)',
@@ -100,7 +107,13 @@ export default {
 
                 {
                     // Replace with your own data
-                    const data = []
+                    const data = [
+                        {
+                            time: this.chartRawData.chart.timestamp[0],
+                            value: parseFloat(this.symbol.y)
+                        }
+                    ]
+
                     // @ts-ignore
                     for (let i = 1; i < this.chartRawData.chart.timestamp.length; i++) {
                         var r = {

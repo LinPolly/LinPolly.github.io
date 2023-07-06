@@ -1,4 +1,7 @@
 import { GetStockInfo, MsgArray } from "~/models/stock/twse";
+import * as 上市 from '~~/server/static/上市';
+import * as 上櫃 from '~~/server/static/上櫃';
+import * as ETF from '~~/server/static/ETF';
 import * as cache from '~~/server/cache/stock';
 
 export default defineEventHandler(async (event) => {
@@ -17,15 +20,43 @@ export default defineEventHandler(async (event) => {
         var ex_ch = ''
         var ex_chodd = ''
         if (Array.isArray(code)) {
-            ex_ch = code.map(x => `${x}`).filter(x => cache.get(x) == null).filter(x => !x.endsWith('_odd')).map(x => `tse_${x}.tw|otc_${x}.tw`).join('|')
-            ex_chodd = code.map(x => `${x}`).filter(x => cache.get(x) == null).filter(x => x.endsWith('_odd')).map(x => x.substring(0, x.length - '_odd'.length)).map(x => `tse_${x}.tw|otc_${x}.tw`).join('|')
+            ex_ch = code.map(x => `${x}`).filter(x => cache.get(x) == null).filter(x => !x.endsWith('_odd')).map(x => {
+                if (ETF.has(x)) {
+                    return `tse_${x}.tw`
+                } else if (上櫃.has(x)) {
+                    return `otc_${x}.tw`
+                } else {
+                    return `tse_${x}.tw`
+                }
+            }).join('|')
+            ex_chodd = code.map(x => `${x}`).filter(x => cache.get(x) == null).filter(x => x.endsWith('_odd')).map(x => x.substring(0, x.length - '_odd'.length)).map(x => {
+                if (ETF.has(x)) {
+                    return `tse_${x}.tw`
+                } else if (上櫃.has(x)) {
+                    return `otc_${x}.tw`
+                } else {
+                    return `tse_${x}.tw`
+                }
+            }).join('|')
         } else {
             if (code?.toString().endsWith('_odd')) {
                 var c = code.toString().substring(0, code.toString().length - '_odd'.length)
-                ex_chodd = `tse_${c}.tw|otc_${c}.tw`
 
+                if (ETF.has(c)) {
+                    ex_chodd = `tse_${c}.tw`
+                } else if (上櫃.has(c)) {
+                    ex_chodd = `otc_${c}.tw`
+                } else {
+                    ex_chodd = `tse_${c}.tw`
+                }
             } else {
-                ex_ch = `tse_${code}.tw|otc_${code}.tw`
+                if (ETF.has(code)) {
+                    ex_ch = `tse_${code}.tw`
+                } else if (上櫃.has(code)) {
+                    ex_ch = `otc_${code}.tw`
+                } else {
+                    ex_ch = `tse_${code}.tw`
+                }
             }
             if (cache.get(code?.toString() ?? '') != null) {
                 ex_chodd = ''
