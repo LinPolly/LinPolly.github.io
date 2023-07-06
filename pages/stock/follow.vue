@@ -206,7 +206,7 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                                 <v-row>
                                     <v-col>
                                         <v-list-item
-                                            :title="formatAsCurrency(trimEnd(data?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
+                                            :title="data?.g ? formatAsCurrency(trimEnd(data?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0) : 0">
                                         </v-list-item>
                                     </v-col>
                                     <v-col>
@@ -263,7 +263,7 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                                     </v-col>
                                     <v-col>
                                         <v-list-item
-                                            :title="formatAsCurrency(trimEnd(data?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
+                                            :title="data?.f ? formatAsCurrency(trimEnd(data?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0) : 0">
                                         </v-list-item>
                                     </v-col>
                                 </v-row>
