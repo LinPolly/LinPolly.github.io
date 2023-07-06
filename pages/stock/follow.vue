@@ -539,7 +539,8 @@ export default {
             this.repeat();
         },
         async repeat() {
-            if (this.timer.lastudt.getHours() < 9
+            if (this.timer.lastudt.getHours() <= 7
+                || (this.timer.lastudt.getHours() <= 8 && this.timer.lastudt.getMinutes() < 50)
                 || this.timer.lastudt.getHours() >= 14
                 || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
                 this.timer.lastudt = new Date()
