@@ -182,7 +182,7 @@ export default {
                         }
 
                         // @ts-ignore
-                        if (this.chartRawData.chart.indicators.quote[0].close[i] > parseFloat(this.symbol.z)) {
+                        if (this.chartRawData.chart.indicators.quote[0].close[i] > parseFloat(this.symbol.y)) {
                             // @ts-ignore
                             r.color = 'red'
                         }
@@ -199,12 +199,13 @@ export default {
                 }
 
                 var container = this.$refs.chart
-                const toolTip = this.$refs.tooltip
+                const toolTip = this.$refs.tooltip as HTMLElement
 
                 this.chart.subscribeCrosshairMove((param) => {
                     if (!param.point) {
                         // @ts-ignore
                         toolTip.textContent = ''
+                        toolTip.style.color = 'black'
                         return;
                     }
 
@@ -214,9 +215,17 @@ export default {
                     if (price != null && volume != null) {
                         // @ts-ignore
                         toolTip.textContent = `${this.timestampToTime(param?.time + timeOffset)} 價 ${price} 量 ${volume}`
+                        if (parseFloat(price) == parseFloat(this.symbol.y)) {
+                            toolTip.style.color = 'black'
+                        } else if (parseFloat(price) > parseFloat(this.symbol.y)) {
+                            toolTip.style.color = 'red'
+                        } else if (parseFloat(price) < parseFloat(this.symbol.y)) {
+                            toolTip.style.color = 'green'
+                        }
                     } else {
                         // @ts-ignore
                         toolTip.textContent = ''
+                        toolTip.style.color = 'black'
                     }
                 })
 
