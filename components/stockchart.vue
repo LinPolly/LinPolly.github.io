@@ -17,7 +17,8 @@ export default {
         volumeSeries: null as unknown as ISeriesApi<"Histogram">,
         baselineExtraData: new Map(),
         volumeExtraData: new Map(),
-        chartRawData: null,
+        chartRawData: null as unknown as Object,
+        observer: null as unknown as ResizeObserver,
         timer: {
             lastudt: new Date()
         }
@@ -33,7 +34,7 @@ export default {
         this.observer = new ResizeObserver(function (entries) {
             chart?.timeScale().fitContent()
         });
-        this.observer.observe(this.$refs.chart)
+        this.observer.observe(this.$refs.chart as HTMLElement)
         this.init()
         this.repeat()
     },
@@ -50,15 +51,7 @@ export default {
 
             this.chartRawData = data.value
             if (this.chartRawData) {
-
                 var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
-
-                if (this.chart) {
-                    this.chart.remove();
-                    // @ts-ignore
-                    this.chart = null;
-                }
-
                 if (this.chart == null) {
                     // @ts-ignore
                     this.chart = createChart(this.$refs.chart, {
@@ -95,15 +88,25 @@ export default {
                     })
                 }
 
-                this.baselineSeries = this.chart.addBaselineSeries({
-                    baseValue: { type: 'price', price: parseFloat(this.symbol.y) },
-                    topLineColor: 'rgba( 239, 83, 80, 1)',
-                    topFillColor1: 'rgba( 239, 83, 80, 0.05)',
-                    topFillColor2: 'rgba( 239, 83, 80, 0.28)',
-                    bottomLineColor: 'rgba( 38, 166, 154, 1)',
-                    bottomFillColor1: 'rgba( 38, 166, 154, 0.28)',
-                    bottomFillColor2: 'rgba( 38, 166, 154, 0.05)',
-                })
+                if (this.baselineSeries == null) {
+                    this.baselineSeries = this.chart.addBaselineSeries({
+                        baseValue: { type: 'price', price: parseFloat(this.symbol.y) },
+                        topLineColor: 'rgba( 239, 83, 80, 1)',
+                        topFillColor1: 'rgba( 239, 83, 80, 0.05)',
+                        topFillColor2: 'rgba( 239, 83, 80, 0.28)',
+                        bottomLineColor: 'rgba( 38, 166, 154, 1)',
+                        bottomFillColor1: 'rgba( 38, 166, 154, 0.28)',
+                        bottomFillColor2: 'rgba( 38, 166, 154, 0.05)',
+                    })
+
+                    this.baselineSeries.priceScale().applyOptions({
+                        scaleMargins: {
+                            // positioning the price scale for the area series
+                            top: 0.1,
+                            bottom: 0.4,
+                        },
+                    });
+                }
 
                 {
                     // Replace with your own data
@@ -138,33 +141,30 @@ export default {
                     // @ts-ignore
                     this.baselineSeries.setData(data)
                 }
-                this.baselineSeries.priceScale().applyOptions({
-                    scaleMargins: {
-                        // positioning the price scale for the area series
-                        top: 0.1,
-                        bottom: 0.4,
-                    },
-                });
 
-                this.volumeSeries = this.chart.addHistogramSeries({
-                    color: '#26a69a',
-                    priceFormat: {
-                        type: 'volume',
-                    },
-                    priceScaleId: '', // set as an overlay by setting a blank priceScaleId
-                    // set the positioning of the volume series
-                    // @ts-ignore
-                    scaleMargins: {
-                        top: 0.7, // highest point of the series will be 70% away from the top
-                        bottom: 0,
-                    },
-                });
-                this.volumeSeries.priceScale().applyOptions({
-                    scaleMargins: {
-                        top: 0.7, // highest point of the series will be 70% away from the top
-                        bottom: 0,
-                    },
-                });
+                if (this.volumeSeries == null) {
+                    this.volumeSeries = this.chart.addHistogramSeries({
+                        color: '#26a69a',
+                        priceFormat: {
+                            type: 'volume',
+                        },
+                        priceScaleId: '', // set as an overlay by setting a blank priceScaleId
+                        // set the positioning of the volume series
+                        // @ts-ignore
+                        scaleMargins: {
+                            top: 0.7, // highest point of the series will be 70% away from the top
+                            bottom: 0,
+                        },
+                    });
+
+                    this.volumeSeries.priceScale().applyOptions({
+                        scaleMargins: {
+                            top: 0.7, // highest point of the series will be 70% away from the top
+                            bottom: 0,
+                        },
+                    });
+                }
+
                 {
                     // Replace with your own data
                     const data = []
@@ -198,7 +198,7 @@ export default {
                     this.volumeSeries.setData(data)
                 }
 
-                var container = this.$refs.chart
+                var container = this.$refs.chart as HTMLElement
                 const toolTip = this.$refs.tooltip as HTMLElement
 
                 this.chart.subscribeCrosshairMove((param) => {
