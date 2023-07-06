@@ -7,282 +7,42 @@ import '@vuepic/vue-datepicker/dist/main.css'
 
 <template>
     <v-row>
-        <v-col style="display: flex !important;align-items: center;">
-            <h1 v-if="realtimeData?.main"
-                style="margin-right: 8px;">{{ realtimeData.main.n }}</h1>
-            <span style="font-size: 24px;">{{ code }}</span>
-        </v-col>
-        <v-col cols="5">
-            <v-switch :label="`切換至${code.endsWith('_odd') ? '整股' : '零股'}`"
-                color="indigo"
-                :model-value="code.endsWith('_odd') == true"
-                inset
-                hide-details
-                @change="targetOdd(code)"></v-switch>
-        </v-col>
-    </v-row>
-    <v-row>
         <v-col v-if="realtimeData?.main"
             cols="12"
             md="6">
             <h2>即時現價</h2>
-            <v-card elevation="5">
-                <v-progress-linear v-if="realtimeData.ismainreload"
-                    color="primary"
-                    indeterminate>
-                </v-progress-linear>
-                <v-card-title>
-                    <span
-                        :style="{ fontSize: '32px', marginRight: '8px', color: diff(realtimeData?.main?.z, realtimeData?.main?.y) == 0 ? 'black' : (diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0 ? 'red' : 'green') }">
-                        {{
-                            trimEnd(formatAsCurrency(parseFloat(realtimeData.main.z), 2), '0')
-                        }}
-                    </span>
-                    <svg v-if="diff(realtimeData?.main?.z, realtimeData?.main?.y) < 0"
-                        width="15"
-                        height="15"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M4.12046 8.42605C4.5011 9.11206 5.48741 9.11259 5.86878 8.42698L9.17336 2.4861C9.54412 1.81956 9.06218 1 8.29946 1L1.69849 0.999999C0.936239 0.999999 0.454246 1.81866 0.824077 2.48518L4.12046 8.42605Z"
-                            fill="#30B566"></path>
-                    </svg>
-                    <svg v-if="diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0"
-                        width="15"
-                        height="15"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M4.12046 1.57395C4.5011 0.887937 5.48741 0.887414 5.86878 1.57302L9.17336 7.5139C9.54412 8.18044 9.06218 9 8.29946 9L1.69849 9C0.936239 9 0.454246 8.18134 0.824077 7.51482L4.12046 1.57395Z"
-                            fill="#D3321C"></path>
-                    </svg>
-                    <span
-                        :style="{ fontSize: '20px', color: diff(realtimeData?.main?.z, realtimeData?.main?.y) == 0 ? 'black' : (diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0 ? 'red' : 'green') }">
-                        {{ Math.abs(diff(realtimeData?.main?.z, realtimeData?.main?.y)) }}
-                    </span>
-                    <span
-                        :style="{ fontSize: '20px', color: diff(realtimeData?.main?.z, realtimeData?.main?.y) == 0 ? 'black' : (diff(realtimeData?.main?.z, realtimeData?.main?.y) > 0 ? 'red' : 'green') }">
-                        ({{ Math.abs(diffp(realtimeData?.main?.z, realtimeData?.main?.y)) }}%)
-                    </span>
-                </v-card-title>
-                <v-row>
-                    <v-col cols="6">
-                        <v-list class="v-col-12">
-                            <v-list-item title="成交"
-                                :subtitle="trimEnd(realtimeData?.main?.z, '0')"></v-list-item>
-                            <v-list-item title="開盤"
-                                :subtitle="trimEnd(realtimeData?.main?.o, '0')"></v-list-item>
-                            <v-list-item title="最高"
-                                :subtitle="trimEnd(realtimeData?.main?.h, '0')"></v-list-item>
-                            <v-list-item title="最低"
-                                :subtitle="trimEnd(realtimeData?.main?.l, '0')"></v-list-item>
-                        </v-list>
-                    </v-col>
-                    <v-col cols="6">
-                        <v-list class="v-col-12">
-                            <v-list-item title="昨收"
-                                :subtitle="trimEnd(realtimeData?.main?.y, '0')"></v-list-item>
-                            <v-list-item title="漲跌"
-                                :subtitle="`${diff(realtimeData?.main?.z, realtimeData?.main?.y)}`"></v-list-item>
-                            <v-list-item title="漲跌幅(%)"
-                                :subtitle="`${diffp(realtimeData?.main?.z, realtimeData?.main?.y)}%`"></v-list-item>
-                            <v-list-item title="總量"
-                                :subtitle="realtimeData?.main?.v"></v-list-item>
-                        </v-list>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="6">
-                        <v-row>
-                            <div style="width: 8px;"></div>
-                            <v-col>
-                                <v-label>量</v-label>
-                            </v-col>
-                            <v-spacer></v-spacer>
-                            <v-col>
-                                <v-label>委買價</v-label>
-                            </v-col>
-                        </v-row>
-                        <hr>
-                        <v-row>
-                            <v-col>
-                                <v-list>
-                                    <v-list-item
-                                        v-for="(item, i) in trimEnd(realtimeData?.main?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
-                                        :key="i">
-                                        <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
-                                        </v-list-item-title>
-                                        <v-list-item-action>
-                                            <v-progress-linear :model-value="parseInt(item)"
-                                                :max="trimEnd(realtimeData?.main?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).sort((a, b) => b - a)[0]"
-                                                reverse>
-                                            </v-progress-linear>
-                                        </v-list-item-action>
-                                    </v-list-item>
-                                </v-list>
-                            </v-col>
-                            <v-col>
-                                <v-list>
-                                    <v-list-item
-                                        v-for="(item, i) in trimEnd(realtimeData?.main?.b ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
-                                        :key="i">
-                                        <v-list-item-title
-                                            :style="{ color: realtimeData?.main?.y == item ? 'black' : (parseFloat(item) > parseFloat(realtimeData?.main?.y) ? 'red' : 'green') }"
-                                            v-text="trimEnd(item, '0')"></v-list-item-title>
-                                    </v-list-item>
-                                </v-list>
-                            </v-col>
-                        </v-row>
-                        <hr style="margin-left: 8px;margin-right: 8px;">
-                        <v-row>
-                            <v-col>
-                                <v-list-item
-                                    :title="formatAsCurrency(trimEnd(realtimeData?.main?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
-                                </v-list-item>
-                            </v-col>
-                            <v-col>
-                                <v-list-item title="小計">
-                                </v-list-item>
-                            </v-col>
-                        </v-row>
-                    </v-col>
-                    <v-col cols="6">
-                        <v-row>
-                            <div style="width: 8px;"></div>
-                            <v-col>
-                                <v-label>委賣價</v-label>
-                            </v-col>
-                            <v-spacer></v-spacer>
-                            <v-col>
-                                <v-label>量</v-label>
-                            </v-col>
-                        </v-row>
-                        <hr>
-                        <v-row>
-                            <v-col>
-                                <v-list>
-                                    <v-list-item
-                                        v-for="(item, i) in trimEnd(realtimeData?.main?.a ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
-                                        :key="i">
-                                        <v-list-item-title
-                                            :style="{ color: realtimeData?.main?.y == item ? 'black' : (parseFloat(item) > parseFloat(realtimeData?.main?.y) ? 'red' : 'green') }"
-                                            v-text="trimEnd(item, '0')"></v-list-item-title>
-                                    </v-list-item>
-                                </v-list>
-                            </v-col>
-                            <v-col>
-                                <v-list>
-                                    <v-list-item
-                                        v-for="(item, i) in trimEnd(realtimeData?.main?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
-                                        :key="i">
-                                        <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
-                                        </v-list-item-title>
-                                        <v-list-item-action>
-                                            <v-progress-linear :model-value="parseInt(item)"
-                                                :max="trimEnd(realtimeData?.main?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).sort((a, b) => b - a)[0]">
-                                            </v-progress-linear>
-                                        </v-list-item-action>
-                                    </v-list-item>
-                                </v-list>
-                            </v-col>
-                        </v-row>
-                        <hr style="margin-left: 8px;margin-right: 8px;">
-                        <v-row>
-                            <v-col>
-                                <v-list-item title="小計">
-                                </v-list-item>
-                            </v-col>
-                            <v-col>
-                                <v-list-item
-                                    :title="formatAsCurrency(trimEnd(realtimeData?.main?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0)">
-                                </v-list-item>
-                            </v-col>
-                        </v-row>
-                    </v-col>
-                </v-row>
-            </v-card>
+            <stockcard :symbol="realtimeData.main"
+                :id-odd="code.endsWith('_odd') == true"
+                @target-odd="targetOdd"></stockcard>
         </v-col>
         <v-col v-if="realtimeData?.data"
             cols="12"
             md="6">
             <h2>成分股即時現價</h2>
             <v-card elevation="5">
-                <v-progress-linear v-if="realtimeData.isdatareload"
-                    color="primary"
-                    indeterminate>
-                </v-progress-linear>
-                <ClientOnly>
-                    <v-data-table :headers="realtimeData.headers"
-                        :items="realTimetableData"
-                        item-value="name">
-                        <template v-slot:item.c="{ item }">
-                            <v-card elevation="0">
-                                <v-card-title>
-                                    <span>{{ infos.find(x => x.公司代號 == item.value.c)?.公司簡稱 }}</span>
-                                </v-card-title>
-                                <v-card-subtitle>
-                                    <span>{{ item.value.c }}</span>
-                                </v-card-subtitle>
-                            </v-card>
-                        </template>
-                        <template v-slot:item.z="{ item }">
-                            <span
-                                :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">{{
-                                    trimEnd(item.value.z, '0') }}</span>
-                        </template>
-                        <template v-slot:item.diff="{ item }">
-                            <span
-                                :style="{ color: diff(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
-                                {{
-                                    diff(item.value.z, item.value.y)
-                                }}
-                            </span>
-                        </template>
-                        <template v-slot:item.diffp="{ item }">
-                            <span
-                                :style="{ color: diffp(item.value.z, item.value.y) == 0 ? 'black' : (diff(item.value.z, item.value.y) > 0 ? 'red' : 'green') }">
-                                {{
-                                    diffp(item.value.z, item.value.y)
-                                }}%
-                            </span>
-                        </template>
-                        <template v-slot:item.o="{ item }">
-                            <span
-                                :style="{ color: parseFloat(item.value.o) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.o) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                                {{ trimEnd(item.value.o, '0') }}
-                            </span>
-                        </template>
-                        <template v-slot:item.y="{ item }">
-                            <span>
-                                {{ trimEnd(item.value.y, '0') }}
-                            </span>
-                        </template>
-                        <template v-slot:item.h="{ item }">
-                            <span
-                                :style="{ color: parseFloat(item.value.h) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.h) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                                {{ trimEnd(item.value.h, '0') }}
-                            </span>
-                        </template>
-                        <template v-slot:item.l="{ item }">
-                            <span
-                                :style="{ color: parseFloat(item.value.l) == parseFloat(item.value.y) ? 'black' : (parseFloat(item.value.l) > parseFloat(item.value.y) ? 'red' : 'green') }">
-                                {{ trimEnd(item.value.l, '0') }}
-                            </span>
-                        </template>
-                    </v-data-table>
-                </ClientOnly>
+                <v-layout :style="{ height: code.endsWith('_odd') == true ? '630px' : '1064px', overflow: 'auto' }">
+                    <v-sheet class="d-flex flex-wrap">
+                        <v-flex v-for="(data, i) in realtimeData.data"
+                            :key="i"
+                            class="ma-2 pa-2">
+                            <stockcard :symbol="data"
+                                :id-odd="false"
+                                card-style="mini"></stockcard>
+                        </v-flex>
+                    </v-sheet>
+                </v-layout>
             </v-card>
         </v-col>
     </v-row>
     <v-row style="height: 8px;"></v-row>
     <div v-if="stocks">
-        <h2>{{ code }} 每日成分股異動 {{ (stocks?.length ?? 0) > 0 ? stocks[0]?.date : '' }} - {{ (stocks?.length ??
+        <h2>{{ code.endsWith('_odd') ? code.substring(0, code.length - '_odd'.length) : code }} 每日成分股異動 {{
+            (stocks?.length ?? 0) > 0 ? stocks[0]?.date : '' }} - {{
+        (stocks?.length ??
             0) ?
-            stocks.at(stocks.length
-                -
-                1)?.date : '' }}</h2>
+        stocks.at(stocks.length
+            -
+            1)?.date : '' }}</h2>
         <v-banner :style="{ 'padding-top': '8px', 'height': `${appbarHeight}px` }"
             :sticky="true"
             lines="one">
@@ -372,16 +132,16 @@ export default {
             realtimeData: {
                 ismainreload: false,
                 isdatareload: false,
-                headers: [
-                    { title: '名稱', align: 'start', sortable: false, key: 'c' },
-                    { title: '股價', align: 'end', key: 'z' },
-                    { title: '漲跌', align: 'end', key: 'diff' },
-                    { title: '漲跌幅(%)', align: 'end', key: 'diffp' },
-                    { title: '開盤', align: 'end', key: 'o' },
-                    { title: '昨收', align: 'end', key: 'y' },
-                    { title: '最高', align: 'end', key: 'h' },
-                    { title: '最低', align: 'end', key: 'l' },
-                ],
+                // headers: [
+                //     { title: '名稱', align: 'start', sortable: false, key: 'c' },
+                //     { title: '股價', align: 'end', key: 'z' },
+                //     { title: '漲跌', align: 'end', key: 'diff' },
+                //     { title: '漲跌幅(%)', align: 'end', key: 'diffp' },
+                //     { title: '開盤', align: 'end', key: 'o' },
+                //     { title: '昨收', align: 'end', key: 'y' },
+                //     { title: '最高', align: 'end', key: 'h' },
+                //     { title: '最低', align: 'end', key: 'l' },
+                // ],
                 main: {} as MsgArray,
                 data: new Array<MsgArray>(),
             },
@@ -394,14 +154,14 @@ export default {
     },
     methods: {
         targetOdd(c: string) {
-            if (!c.endsWith('_odd')) {
-                c += '_odd'
-            } else {
-                c = c.substring(0, c.length - '_odd'.length)
+            if (c) {
+                if (!this.code.endsWith('_odd')) {
+                    c += '_odd'
+                }
+                // @ts-ignore
+                history.pushState({}, null, this.$route.path.replace(this.code, c))
+                this.$route.params.code = c
             }
-
-            // @ts-ignore
-            history.pushState({}, null, this.$route.path.replace(this.code, c))
         },
         async loadRealTimeMainData() {
             this.realtimeData.ismainreload = true
@@ -412,7 +172,11 @@ export default {
                 }
             })
 
-            var newData = (data.value as MsgArray[]).find(x => x.c == this.code) as MsgArray
+            var c = this.code
+            if (this.code.endsWith('_odd')) {
+                c = this.code.substring(0, this.code.length - '_odd'.length)
+            }
+            var newData = (data.value as MsgArray[]).find(x => x.c == c) as MsgArray
             if (this.realtimeData.main.c == '')
                 this.realtimeData.main = newData
 
@@ -425,16 +189,18 @@ export default {
                 }
             })
 
-            if (this.realtimeData.main.z == '-'
-                || this.realtimeData.main.z == undefined
-                || this.realtimeData.main.z == null
-                // 價格跳太快從yahoo修正當前價格
-                || parseFloat(this.realtimeData.main.z) > parseFloat(trimEnd(this.realtimeData.main.a ?? '', '_').split('_')[0])
-                || parseFloat(this.realtimeData.main.z) < parseFloat(trimEnd(this.realtimeData.main?.b ?? '', '_').split('_')[0])
-            ) {
-                const { data } = await useAsyncData(`yahoo_${this.realtimeData.main.c}`, () => $fetch(`/api/price?code=${this.realtimeData.main.c}`))
-                // @ts-ignore
-                this.realtimeData.main.z = data.value?.toString()
+            if (!this.code.endsWith('_odd')) {
+                if (this.realtimeData.main.z == '-'
+                    || this.realtimeData.main.z == undefined
+                    || this.realtimeData.main.z == null
+                    // 價格跳太快從yahoo修正當前價格
+                    || parseFloat(this.realtimeData.main.z) > parseFloat(trimEnd(this.realtimeData.main.a ?? '', '_').split('_')[0])
+                    || parseFloat(this.realtimeData.main.z) < parseFloat(trimEnd(this.realtimeData.main?.b ?? '', '_').split('_')[0])
+                ) {
+                    const { data } = await useAsyncData(`yahoo_${this.realtimeData.main.c}`, () => $fetch(`/api/price?code=${this.realtimeData.main.c}`))
+                    // @ts-ignore
+                    this.realtimeData.main.z = data.value?.toString()
+                }
             }
             this.realtimeData.ismainreload = false
         },
@@ -452,9 +218,10 @@ export default {
                     })
 
                     var newData = (data.value as MsgArray[]).filter(x => x.c != this.code)
+                    console.log(newData.length)
                     if (this.realtimeData.data.length == 0)
                         this.realtimeData.data = newData
-
+                    // console.log(this.realtimeData.data.length)
                     newData.forEach(async item => {
                         var keys = Object.keys(item)
                         keys.forEach(x => {
@@ -484,6 +251,7 @@ export default {
                 // @ts-ignore
                 this.realtimeData.data = null
             }
+
             this.realtimeData.isdatareload = false
         },
         prevDate(date: any) {
@@ -516,7 +284,11 @@ export default {
             this.infos = data.value
         },
         async loadData() {
-            const { data } = await useAsyncData(this.code, () => $fetch(`/stock/${this.code}.json`), { server: false })
+            var c = this.code
+            if (this.code.endsWith('_odd')) {
+                c = this.code.substring(0, this.code.length - '_odd'.length)
+            }
+            const { data } = await useAsyncData(`${c}_json`, () => $fetch(`/stock/${c}.json`), { server: false })
             // @ts-ignore
             if (Array.isArray(data.value)) {
                 // @ts-ignore
@@ -697,10 +469,6 @@ export default {
                 }
             }
         },
-        realTimetableData() {
-            var data = {}
-            return this.realtimeData.data
-        }
     },
     watch: {
         'd': function (newValue) {

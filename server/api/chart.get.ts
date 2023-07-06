@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
         let controller = new AbortController();
         var symbol = `${code}.TW`
 
-        var ff = cache.get(`chart_${symbol}`)
+        var ff = cache.get(`chart_${symbol}_1m`)
         if (ff) {
             return ff
         }
@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
         var data = await req.json()
 
         var r = data.data.find(x => x.symbol == symbol)
-        cache.set(`chart_${symbol}`, r, 60)
+        cache.set(`chart_${symbol}_1m`, r, 60)
 
         return r
     } catch (error) {

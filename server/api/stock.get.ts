@@ -131,13 +131,13 @@ export default defineEventHandler(async (event) => {
 
         if (Array.isArray(code)) {
             code.map(x => `${x}`)
-                .filter(x => cache.get(x) != null)
+                .filter(x => cache.get(x) != null && result.some(y => y.c == x) == false)
                 .forEach(e => {
                     result.push(cache.get(e))
                 })
 
             code.map(x => `${x}`)
-                .filter(x => cache.get(x) != null)
+                .filter(x => cache.get(x) != null && result.some(y => y.c == x) == false)
                 .forEach(e => {
                     result.push(cache.get(e))
                 })
