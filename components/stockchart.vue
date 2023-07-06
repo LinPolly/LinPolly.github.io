@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { BaselineData, IChartApi, ISeriesApi, createChart } from 'lightweight-charts'
+import { IChartApi, ISeriesApi, createChart } from 'lightweight-charts'
 import { MsgArray } from '~/models/stock/twse'
 
 export default {
@@ -47,7 +47,8 @@ export default {
     },
     methods: {
         async init() {
-            const { data } = await useFetch(`/api/chart?code=${this.symbol.c}`)
+            var c = this.symbol.c
+            const { data } = await useFetch(`/api/chart?code=${c}`)
 
             this.chartRawData = data.value
             if (this.chartRawData) {

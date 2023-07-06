@@ -34,6 +34,7 @@ const dark: ThemeDefinition = {
 
 export default defineNuxtPlugin(nuxtApp => {
     const vuetify = createVuetify({
+        ssr: false,
         theme: {
             defaultTheme: 'light',
             themes: {

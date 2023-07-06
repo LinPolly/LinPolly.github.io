@@ -1,10 +1,3 @@
-<script setup lang="ts">
-import { trimEnd, formatAsCurrency, diff, diffp, formatDate } from '~/lib/string'
-import VueDatePicker from '@vuepic/vue-datepicker'
-import { Bar } from 'vue-chartjs'
-import '@vuepic/vue-datepicker/dist/main.css'
-</script>
-
 <template>
     <v-row>
         <v-col v-if="realtimeData?.main"
@@ -12,14 +5,15 @@ import '@vuepic/vue-datepicker/dist/main.css'
             md="6">
             <h2>即時現價</h2>
             <stockcard :symbol="realtimeData.main"
-                :id-odd="code.endsWith('_odd') == true"
+                :is-odd="isOdd"
                 @target-odd="targetOdd"></stockcard>
         </v-col>
-        <v-col v-if="realtimeData?.data"
+        <v-col v-if="stocks"
             cols="12"
             md="6">
             <h2>成分股即時現價</h2>
-            <v-card elevation="5">
+            <v-card elevation="5"
+                v-if="realtimeData?.data">
                 <v-layout :style="{ height: code.endsWith('_odd') == true ? '630px' : '1064px', overflow: 'auto' }">
                     <v-sheet class="d-flex flex-wrap">
                         <v-flex v-for="(data, i) in realtimeData.data"
@@ -35,6 +29,14 @@ import '@vuepic/vue-datepicker/dist/main.css'
         </v-col>
     </v-row>
     <v-row style="height: 8px;"></v-row>
+    <v-layout v-if="realtimeData.main">
+        <v-row style="height: 600px;margin-left: 25px;padding-right: 25px;padding-bottom: 35px;"
+            v-if="realtimeData.main">
+            <stockhischart v-if="realtimeData.main?.c"
+                :symbol="realtimeData.main"
+                style="width: 100%;"></stockhischart>
+        </v-row>
+    </v-layout>
     <div v-if="stocks">
         <h2>{{ code.endsWith('_odd') ? code.substring(0, code.length - '_odd'.length) : code }} 每日成分股異動 {{
             (stocks?.length ?? 0) > 0 ? stocks[0]?.date : '' }} - {{
@@ -96,6 +98,13 @@ import '@vuepic/vue-datepicker/dist/main.css'
     </div>
 </template>
 
+<script setup lang="ts">
+import { trimEnd, formatAsCurrency, diff, diffp, formatDate } from '~/lib/string'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import { Bar } from 'vue-chartjs'
+import '@vuepic/vue-datepicker/dist/main.css'
+</script>
+
 <script lang="ts">
 import {
     Chart as ChartJS,
@@ -116,6 +125,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 export default {
     data() {
         return {
+            isOdd: this.$route.path.endsWith('_odd'),
             appbarHeight: 72,
             headers: [
                 {
@@ -154,14 +164,18 @@ export default {
     },
     methods: {
         targetOdd(c: string) {
-            if (c) {
-                if (!this.code.endsWith('_odd')) {
-                    c += '_odd'
-                }
-                // @ts-ignore
-                history.pushState({}, null, this.$route.path.replace(this.code, c))
-                this.$route.params.code = c
+            c = this.$route.path
+            if (!c.endsWith('_odd')) {
+                c += '_odd'
+            } else {
+                c = c.substring(0, c.length - '_odd'.length)
             }
+            // @ts-ignore
+            history.pushState({}, null, c)
+
+            this.$route.path = c
+            this.$route.params.code = c.split('/')[c.split('/').length - 1]
+            this.isOdd = this.$route.params.code.endsWith('_odd')
         },
         async loadRealTimeMainData() {
             this.realtimeData.ismainreload = true
@@ -218,7 +232,7 @@ export default {
                     })
 
                     var newData = (data.value as MsgArray[]).filter(x => x.c != this.code)
-                    console.log(newData.length)
+
                     if (this.realtimeData.data.length == 0)
                         this.realtimeData.data = newData
                     // console.log(this.realtimeData.data.length)
@@ -476,7 +490,7 @@ export default {
         },
         'selectDate': function (newValue) {
             this.date = formatDate(newValue)
-        }
+        },
     },
     components: {
         Bar, VueDatePicker

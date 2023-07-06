@@ -75,7 +75,7 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
                     lx="3"
                     xxl="2">
                     <stockcard :symbol="data"
-                        :id-odd="follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') == true"
+                        :is-odd="follow.find(x => x.indexOf(data.c) > -1)?.endsWith('_odd') == true"
                         @target-odd="targetOdd"></stockcard>
                 </v-col>
             </v-row>
