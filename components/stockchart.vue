@@ -109,7 +109,7 @@ export default {
                     // Replace with your own data
                     const data = [
                         {
-                            time: this.chartRawData.chart.timestamp[0],
+                            time: this.chartRawData.chart.timestamp[0] - timeOffset,
                             value: parseFloat(this.symbol.y)
                         }
                     ]
