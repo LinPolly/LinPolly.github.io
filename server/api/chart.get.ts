@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
         var data = await req.json()
 
         var r = data.data.find(x => x.symbol == symbol)
-        cache.set(`chart_${symbol}_1m`, r, 60)
+        cache.set(`chart_${symbol}_1m`, r, 30)
 
         return r
     } catch (error) {

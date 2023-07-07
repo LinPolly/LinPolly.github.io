@@ -30,8 +30,7 @@
     </v-row>
     <v-row style="height: 8px;"></v-row>
     <v-layout v-if="realtimeData.main">
-        <v-row style="height: 600px;margin-left: 25px;padding-right: 25px;padding-bottom: 35px;"
-            v-if="realtimeData.main">
+        <v-row style="height: 600px;margin-left: 25px;padding-right: 25px;padding-bottom: 35px;">
             <stockhischart v-if="realtimeData.main?.c"
                 :symbol="realtimeData.main"
                 style="width: 100%;"></stockhischart>
@@ -494,9 +493,6 @@ export default {
     },
     components: {
         Bar, VueDatePicker
-    },
-    beforeMount() {
-        this.init()
     },
     mounted() {
         this.init()
