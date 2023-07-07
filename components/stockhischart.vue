@@ -57,8 +57,7 @@ export default {
                 var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
                 timeOffset = 0
                 if (chart == null) {
-                    // @ts-ignore
-                    chart = createChart(this.$refs.chart, {
+                    chart = createChart(this.$refs.chart as HTMLElement, {
                         autoSize: true,
                         timeScale: {
                             rightOffset: 12,

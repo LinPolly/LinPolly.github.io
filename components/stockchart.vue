@@ -14,7 +14,6 @@ let chart = null as unknown as IChartApi
 
 export default {
     data: () => ({
-
         baselineSeries: null as unknown as ISeriesApi<"Baseline">,
         volumeSeries: null as unknown as ISeriesApi<"Histogram">,
         baselineExtraData: new Map(),
@@ -50,8 +49,7 @@ export default {
             if (this.chartRawData) {
                 var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
                 if (chart == null) {
-                    // @ts-ignore
-                    chart = createChart(this.$refs.chart, {
+                    chart = createChart(this.$refs.chart as HTMLElement, {
                         autoSize: true,
                         handleScroll: false,
                         handleScale: false,
@@ -118,7 +116,7 @@ export default {
                     for (let i = 1; i < this.chartRawData.chart.timestamp.length; i++) {
                         var r = {
                             // @ts-ignore
-                            time: this.chartRawData.chart.timestamp[i] - timeOffset,                          
+                            time: this.chartRawData.chart.timestamp[i] - timeOffset,
                             // @ts-ignore
                             value: this.chartRawData.chart.indicators.quote[0].close[i],
                         }
