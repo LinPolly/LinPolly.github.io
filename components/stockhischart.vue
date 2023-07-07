@@ -1,6 +1,6 @@
 <template>
     <div ref="tooltip"
-        style="width: 120px; height: 200px; position: absolute; display: none; padding: 8px; box-sizing: border-box; font-size: 12px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+        style="width: 120px; height: 230px; position: absolute; display: none; padding: 8px; box-sizing: border-box; font-size: 12px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
     </div>
     <div ref="chart"
         style="width: 100%;height: 100%;padding-left: 4px;"></div>
@@ -216,7 +216,7 @@ export default {
 <div style="margin: 4px 0px; color: ${'black'}">高 ${parseFloat(data.high).toFixed(2)}</div>
 <div style="margin: 4px 0px; color: ${'black'}">低 ${parseFloat(data.low).toFixed(2)}</div>
 <div style="margin: 4px 0px; color: ${'black'}">收 ${parseFloat(data.close).toFixed(2)}</div>
-<div style="margin: 4px 0px; color: ${'black'}">量 ${formatAsCurrency(parseInt(data.volume), 2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">量 ${trimEnd(formatAsCurrency(parseInt(data.volume), 2), '0')}</div>
 <div style="margin: 4px 0px; color: ${'black'}">MA5 ${parseFloat(ma5.value).toFixed(2)}</div>
 <div style="margin: 4px 0px; color: ${'black'}">MA20 ${parseFloat(ma20.value).toFixed(2)}</div>
 <div style="margin: 4px 0px; color: ${'black'}">MA60 ${parseFloat(ma60.value).toFixed(2)}</div>
