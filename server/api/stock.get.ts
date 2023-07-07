@@ -70,7 +70,7 @@ export default defineEventHandler(async (event) => {
             const url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=${ex_ch}&json=1&delay=0`
             const data = await fetch(url,
                 {
-                    cache: "only-if-cached",
+                    // cache: "only-if-cached",
                     signal: controller.signal,
                 })
                 .then((res) => {
@@ -101,7 +101,7 @@ export default defineEventHandler(async (event) => {
             const url = `https://mis.twse.com.tw/stock/api/getOddInfo.jsp?ex_ch=${ex_chodd}&json=1&delay=0`
             const data = await fetch(url,
                 {
-                    cache: "only-if-cached",
+                    // cache: "only-if-cached",
                     signal: controller.signal,
                 })
                 .then((res) => {

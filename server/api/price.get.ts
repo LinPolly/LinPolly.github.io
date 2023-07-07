@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
         const req = await fetch(url,
             {
                 headers: headers,
-                cache: "only-if-cached",
+                // cache: "only-if-cached",
                 signal: controller.signal,
             })
             .then((res) => {

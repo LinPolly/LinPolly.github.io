@@ -2,7 +2,7 @@
     <div style="height: 20px;width: 100%;">
         <span ref="tooltip"></span>
     </div>
-    <div ref="chart"
+    <div ref="chartDiv"
         style="width: 100%;height: 100%;padding-left: 4px;"></div>
 </template>
 
@@ -49,7 +49,7 @@ export default {
             if (this.chartRawData) {
                 var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
                 if (chart == null) {
-                    chart = createChart(this.$refs.chart as HTMLElement, {
+                    chart = createChart(this.$refs.chartDiv as HTMLElement, {
                         autoSize: true,
                         handleScroll: false,
                         handleScale: false,
@@ -189,7 +189,7 @@ export default {
                     this.volumeSeries.setData(data)
                 }
 
-                var container = this.$refs.chart as HTMLElement
+                var container = this.$refs.chartDiv as HTMLElement
                 const toolTip = this.$refs.tooltip as HTMLElement
 
                 chart.subscribeCrosshairMove((param) => {

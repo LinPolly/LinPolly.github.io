@@ -2,7 +2,7 @@
     <div ref="tooltip"
         style="width: 120px; height: 230px; position: absolute; display: none; padding: 8px; box-sizing: border-box; font-size: 12px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
     </div>
-    <div ref="chart"
+    <div ref="chartDiv"
         style="width: 100%;height: 100%;padding-left: 4px;"></div>
 </template>
 
@@ -57,7 +57,7 @@ export default {
                 var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
                 timeOffset = 0
                 if (chart == null) {
-                    chart = createChart(this.$refs.chart as HTMLElement, {
+                    chart = createChart(this.$refs.chartDiv as HTMLElement, {
                         autoSize: true,
                         timeScale: {
                             rightOffset: 12,
@@ -175,7 +175,7 @@ export default {
                     this.ma60Series.setData(ma60)
                 }
 
-                var container = this.$refs.chart as HTMLElement
+                var container = this.$refs.chartDiv as HTMLElement
                 const toolTipWidth = 80;
                 const toolTipHeight = 80;
                 const toolTipMargin = 15;
@@ -211,9 +211,9 @@ export default {
 <div style="margin: 4px 0px; color: ${'black'}">低 ${parseFloat(data.low).toFixed(2)}</div>
 <div style="margin: 4px 0px; color: ${'black'}">收 ${parseFloat(data.close).toFixed(2)}</div>
 <div style="margin: 4px 0px; color: ${'black'}">量 ${trimEnd(formatAsCurrency(parseInt(data.volume), 2), '0')}</div>
-<div style="margin: 4px 0px; color: ${'black'}">MA5 ${parseFloat(ma5.value).toFixed(2)}</div>
-<div style="margin: 4px 0px; color: ${'black'}">MA20 ${parseFloat(ma20.value).toFixed(2)}</div>
-<div style="margin: 4px 0px; color: ${'black'}">MA60 ${parseFloat(ma60.value).toFixed(2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">MA5 ${parseFloat(ma5).toFixed(2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">MA20 ${parseFloat(ma20).toFixed(2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">MA60 ${parseFloat(ma60).toFixed(2)}</div>
 <div style="color: ${'black'}">${dateStr}</div>`;
 
                         const y = param.point.y;
