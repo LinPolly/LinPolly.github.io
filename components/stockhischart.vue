@@ -1,6 +1,6 @@
 <template>
-    <div ref="tooltip"
-        style="width: 120px; height: 230px; position: absolute; display: none; padding: 8px; box-sizing: border-box; font-size: 12px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+    <div style="height: 60px;width: 100%;">
+        <span ref="tooltip"></span>
     </div>
     <div ref="chartDiv"
         style="width: 100%;height: 100%;padding-left: 4px;"></div>
@@ -193,7 +193,6 @@ export default {
                         param.point.y < 0 ||
                         param.point.y > container.clientHeight
                     ) {
-                        toolTip.style.display = 'none';
                     } else {
                         // time will be in the same format that we supplied to setData.
                         // thus it will be YYYY-MM-DD 
@@ -204,17 +203,9 @@ export default {
                         const ma5 = this.ma5ExtraData.get(param.time)
                         const ma20 = this.ma20ExtraData.get(param.time)
                         const ma60 = this.ma60ExtraData.get(param.time)
-                        toolTip.innerHTML = `
-<div style="color: ${'rgba(255, 82, 82, 1)'}">${this.symbol.n}</div>
-<div style="margin: 4px 0px; color: ${'black'}">開 ${parseFloat(data.open).toFixed(2)}</div>
-<div style="margin: 4px 0px; color: ${'black'}">高 ${parseFloat(data.high).toFixed(2)}</div>
-<div style="margin: 4px 0px; color: ${'black'}">低 ${parseFloat(data.low).toFixed(2)}</div>
-<div style="margin: 4px 0px; color: ${'black'}">收 ${parseFloat(data.close).toFixed(2)}</div>
-<div style="margin: 4px 0px; color: ${'black'}">量 ${trimEnd(formatAsCurrency(parseInt(data.volume), 2), '0')}</div>
-<div style="margin: 4px 0px; color: ${'black'}">MA5 ${parseFloat(ma5).toFixed(2)}</div>
-<div style="margin: 4px 0px; color: ${'black'}">MA20 ${parseFloat(ma20).toFixed(2)}</div>
-<div style="margin: 4px 0px; color: ${'black'}">MA60 ${parseFloat(ma60).toFixed(2)}</div>
-<div style="color: ${'black'}">${dateStr}</div>`;
+                        toolTip.innerHTML = `${dateStr} 開${parseFloat(data.open).toFixed(2)} 高${parseFloat(data.high).toFixed(2)} 低${parseFloat(data.low).toFixed(2)} 收${parseFloat(data.close).toFixed(2)} 量${trimEnd(formatAsCurrency(parseInt(data.volume), 2), '0')}
+                        <br>
+                        MA5 ${parseFloat(ma5).toFixed(2)} MA20 ${parseFloat(ma20).toFixed(2)} MA60 ${parseFloat(ma60).toFixed(2)}`;
 
                         const y = param.point.y;
                         let left = param.point.x + toolTipMargin;

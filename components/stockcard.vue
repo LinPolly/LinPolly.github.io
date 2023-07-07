@@ -56,7 +56,7 @@
                             :model-value="isOdd"
                             inset
                             hide-details
-                            @change="targetOdd(symbol.c)"></v-switch>
+                            @change="target_Odd(symbol.c)"></v-switch>
                     </v-col>
                 </v-row>
             </v-card-title>
@@ -263,7 +263,7 @@ export default {
         targetOdd: Function,
     },
     methods: {
-        targetOdd(code: string) {
+        target_Odd(code: string) {
             this.$emit('targetOdd', code)
         }
     },

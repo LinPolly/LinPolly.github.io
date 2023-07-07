@@ -30,7 +30,7 @@
     </v-row>
     <v-row style="height: 8px;"></v-row>
     <v-layout v-if="realtimeData.main">
-        <v-row style="height: 600px;margin-left: 25px;padding-right: 25px;padding-bottom: 35px;">
+        <v-row style="height: 650px;margin-left: 25px;padding-right: 25px;padding-bottom: 95px;padding-top: 40px;">
             <stockhischart v-if="realtimeData.main?.c"
                 :symbol="realtimeData.main"
                 style="width: 100%;"></stockhischart>
@@ -292,7 +292,8 @@ export default {
         },
         async loadInfo() {
             // @ts-ignore
-            const { data } = await useAsyncData('18419', () => $fetch(`/stock/18419.json`), { server: false })
+            const { data } = await useFetch(`/stock/18419.json`)
+            console.log(data.value)
             // @ts-ignore
             this.infos = data.value
         },
