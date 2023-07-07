@@ -91,10 +91,10 @@ export default {
 
                 if (this.candlestickSeries == null) {
                     this.candlestickSeries = this.chart.addCandlestickSeries({
-                        wickUpColor: 'rgb(225, 50, 85)',
-                        upColor: 'rgb(225, 50, 85)',
-                        wickDownColor: 'rgb(54, 116, 217)',
-                        downColor: 'rgb(54, 116, 217)',
+                        wickUpColor: 'rgb(223, 63, 63)',
+                        upColor: 'rgb(223, 63, 63)',
+                        wickDownColor: 'rgb(51, 139, 72)',
+                        downColor: 'rgb(51, 139, 72)',
                         borderVisible: false,
                     })
                 }
