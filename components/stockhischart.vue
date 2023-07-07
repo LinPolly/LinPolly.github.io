@@ -6,8 +6,11 @@
         style="width: 100%;height: 100%;padding-left: 4px;"></div>
 </template>
 
+<script setup lang="ts">
+import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
+</script>
+
 <script lang="ts">
-import { formatAsCurrency } from 'lib/string';
 import { IChartApi, ISeriesApi, createChart } from 'lightweight-charts'
 import { MsgArray } from '~/models/stock/twse'
 
