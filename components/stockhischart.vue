@@ -1,12 +1,13 @@
 <template>
     <div ref="tooltip"
-        style="width: 96px; height: 80px; position: absolute; display: none; padding: 8px; box-sizing: border-box; font-size: 12px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+        style="width: 120px; height: 80px; position: absolute; display: none; padding: 8px; box-sizing: border-box; font-size: 12px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
     </div>
     <div ref="chart"
         style="width: 100%;height: 100%;padding-left: 4px;"></div>
 </template>
 
 <script lang="ts">
+import { formatAsCurrency } from 'lib/string';
 import { IChartApi, ISeriesApi, createChart } from 'lightweight-charts'
 import { MsgArray } from '~/models/stock/twse'
 
@@ -208,14 +209,14 @@ export default {
                         const ma60 = this.ma60ExtraData.get(param.time)
                         toolTip.innerHTML = `
 <div style="color: ${'rgba(255, 82, 82, 1)'}">${this.symbol.n}</div>
-<div style="font-size: 24px; margin: 4px 0px; color: ${'black'}">開 ${data.open}</div>
-<div style="font-size: 24px; margin: 4px 0px; color: ${'black'}">高 ${data.high}</div>
-<div style="font-size: 24px; margin: 4px 0px; color: ${'black'}">低 ${data.low}</div>
-<div style="font-size: 24px; margin: 4px 0px; color: ${'black'}">收 ${data.close}</div>
-<div style="font-size: 24px; margin: 4px 0px; color: ${'black'}">量 ${data.volume}</div>
-<div style="font-size: 24px; margin: 4px 0px; color: ${'black'}">MA5 ${ma5.value}</div>
-<div style="font-size: 24px; margin: 4px 0px; color: ${'black'}">MA20 ${ma20.value}</div>
-<div style="font-size: 24px; margin: 4px 0px; color: ${'black'}">MA60 ${ma60.value}</div>
+<div style="margin: 4px 0px; color: ${'black'}">開 ${parseFloat(data.open).toFixed(2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">高 ${parseFloat(data.high).toFixed(2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">低 ${parseFloat(data.low).toFixed(2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">收 ${parseFloat(data.close).toFixed(2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">量 ${formatAsCurrency(parseInt(data.volume), 2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">MA5 ${parseFloat(ma5.value).toFixed(2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">MA20 ${parseFloat(ma20.value).toFixed(2)}</div>
+<div style="margin: 4px 0px; color: ${'black'}">MA60 ${parseFloat(ma60.value).toFixed(2)}</div>
 <div style="color: ${'black'}">${dateStr}</div>`;
 
                         const y = param.point.y;
