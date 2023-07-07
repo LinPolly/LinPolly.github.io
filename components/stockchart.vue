@@ -20,7 +20,6 @@ export default {
         baselineExtraData: new Map(),
         volumeExtraData: new Map(),
         chartRawData: null as unknown as Object,
-        observer: null as unknown as ResizeObserver,
         timer: {
             lastudt: new Date()
         }
@@ -32,10 +31,6 @@ export default {
         }
     },
     mounted() {
-        this.observer = new ResizeObserver(function (entries) {
-            chart?.timeScale().fitContent()
-        });
-        this.observer.observe(this.$refs.chart as HTMLElement)
         this.init()
         this.repeat()
     },
