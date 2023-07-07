@@ -19,6 +19,9 @@ export default {
         ma20Series: null as unknown as ISeriesApi<"Line">,
         ma60Series: null as unknown as ISeriesApi<"Line">,
         candlestickExtraData: new Map(),
+        ma5ExtraData: new Map(),
+        ma20ExtraData: new Map(),
+        ma60ExtraData: new Map(),
         chartRawData: null as unknown as Object,
         observer: null as unknown as ResizeObserver,
         timer: {
@@ -129,7 +132,7 @@ export default {
 
                     this.candlestickExtraData.clear()
                     candlestickData.forEach(x => {
-                        this.candlestickExtraData.set(x.time, x.value)
+                        this.candlestickExtraData.set(x.time, x)
                     })
                     // @ts-ignore
                     this.candlestickSeries.setData(candlestickData)
@@ -157,6 +160,18 @@ export default {
                     var ma5 = this.calculateSMA(candlestickData, 5)
                     var ma20 = this.calculateSMA(candlestickData, 20)
                     var ma60 = this.calculateSMA(candlestickData, 60)
+
+                    ma5.forEach(x => {
+                        this.ma5ExtraData.set(x.time, x.value)
+                    })
+
+                    ma20.forEach(x => {
+                        this.ma20ExtraData.set(x.time, x.value)
+                    })
+
+                    ma60.forEach(x => {
+                        this.ma60ExtraData.set(x.time, x.value)
+                    })
 
                     this.ma5Series.setData(ma5)
                     this.ma20Series.setData(ma20)
@@ -187,10 +202,11 @@ export default {
                         // thus it will be YYYY-MM-DD 
                         const dateStr = param.time;
                         toolTip.style.display = 'block';
-                        const data = param.seriesData.get(this.candlestickSeries);
-                        const ma5 = param.seriesData.get(this.ma5Series);
-                        const ma20 = param.seriesData.get(this.ma20Series);
-                        const ma60 = param.seriesData.get(this.ma60Series);
+
+                        const data = this.candlestickExtraData.get(param.time)
+                        const ma5 = this.ma5ExtraData.get(param.time)
+                        const ma20 = this.ma20ExtraData.get(param.time)
+                        const ma60 = this.ma60ExtraData.get(param.time)
                         toolTip.innerHTML = `
 <div style="color: ${'rgba(255, 82, 82, 1)'}">${this.symbol.n}</div>
 <div style="font-size: 24px; margin: 4px 0px; color: ${'black'}">開 ${data.open}</div>
