@@ -203,7 +203,7 @@ export default {
                     } else {
                         // time will be in the same format that we supplied to setData.
                         // thus it will be YYYY-MM-DD 
-                        const dateStr = param.time;
+                        const dateStr = this.timestampToTime(parseInt(`${param.time}`));
                         toolTip.style.display = 'block';
 
                         const data = this.candlestickExtraData.get(param.time)
