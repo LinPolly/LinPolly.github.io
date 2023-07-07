@@ -29,7 +29,10 @@
         </v-col>
     </v-row>
     <v-row style="height: 8px;"></v-row>
-    <v-layout v-if="realtimeData.main">
+    <v-layout v-if="realtimeData.main"
+        style="box-shadow: 0px 3px 5px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)), 0px 5px 8px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0px 1px 14px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
+        background: rgb(var(--v-theme-surface));
+        color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));">
         <v-row style="height: 650px;margin-left: 25px;padding-right: 25px;padding-bottom: 95px;padding-top: 40px;">
             <stockhischart v-if="realtimeData.main?.c"
                 :symbol="realtimeData.main"
@@ -302,7 +305,7 @@ export default {
             if (this.code.endsWith('_odd')) {
                 c = this.code.substring(0, this.code.length - '_odd'.length)
             }
-            const { data } = await useAsyncData(`${c}_json`, () => $fetch(`/stock/${c}.json`), { server: false })
+            const { data } = await useFetch(`/stock/${c}.json`, { server: false })
             // @ts-ignore
             if (Array.isArray(data.value)) {
                 // @ts-ignore
@@ -382,7 +385,8 @@ export default {
                         label: 'Dataset 1',
                         axis: 'y',
                         fill: false,
-                        data: new Array<number>()
+                        data: new Array<number>(),
+                        backgroundColor: 'white'
                     }
                 ]
             }
@@ -401,6 +405,7 @@ export default {
         },
         chartOptions() {
             return {
+                color: 'white',
                 indexAxis: 'y',
                 elements: {
                     bar: {
@@ -414,11 +419,22 @@ export default {
                     intersect: false,
                 },
                 stacked: false,
+                scales: {
+                    y: {
+                        ticks: { color: 'white' }
+                    },
+                    x: {
+                        ticks: { color: 'white' }
+                    }
+                },
                 plugins: {
                     legend: {
+                        labels: {
+                            color: 'white'
+                        },
                         position: 'top',
                     },
-                }
+                },
             }
         },
         compareData() {
@@ -476,11 +492,22 @@ export default {
                     intersect: false,
                 },
                 stacked: false,
+                scales: {
+                    y: {
+                        ticks: { color: 'white' }
+                    },
+                    x: {
+                        ticks: { color: 'white' }
+                    }
+                },
                 plugins: {
                     legend: {
+                        labels: {
+                            color: 'white'
+                        },
                         position: 'top',
                     },
-                }
+                },
             }
         },
     },

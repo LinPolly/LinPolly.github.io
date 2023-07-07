@@ -10,15 +10,15 @@
 import { IChartApi, ISeriesApi, createChart } from 'lightweight-charts'
 import { MsgArray } from '~/models/stock/twse'
 
-let chart = null as unknown as IChartApi
-
 export default {
     data: () => ({
+        chart: shallowRef(null as unknown as IChartApi),
         baselineSeries: null as unknown as ISeriesApi<"Baseline">,
         volumeSeries: null as unknown as ISeriesApi<"Histogram">,
         baselineExtraData: new Map(),
         volumeExtraData: new Map(),
         chartRawData: null as unknown as Object,
+        observer: null as unknown as ResizeObserver,
         timer: {
             lastudt: new Date()
         }
@@ -31,13 +31,19 @@ export default {
     },
     mounted() {
         this.init()
+        var me = this
+        this.observer = new ResizeObserver(function (entries) {
+            me.chart?.timeScale().fitContent()
+        });
+        this.observer.observe(this.$refs.chartDiv as HTMLElement)
+
         this.repeat()
     },
     unmounted() {
-        if (chart) {
-            chart.remove();
+        if (this.chart) {
+            this.chart.remove();
             // @ts-ignore
-            chart = null;
+            this.chart = null;
         }
     },
     methods: {
@@ -48,11 +54,33 @@ export default {
             this.chartRawData = data.value
             if (this.chartRawData) {
                 var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
-                if (chart == null) {
-                    chart = createChart(this.$refs.chartDiv as HTMLElement, {
+                if (this.chart == null) {
+                    this.chart = createChart(this.$refs.chartDiv as HTMLElement, {
                         autoSize: true,
                         handleScroll: false,
                         handleScale: false,
+                        layout: {
+                            background: {
+                                type: 'solid',
+                                color: '#2B2B43',
+                            },
+                            lineColor: '#2B2B43',
+                            textColor: '#D9D9D9',
+                        },
+                        watermark: {
+                            color: 'rgba(0, 0, 0, 0)',
+                        },
+                        crosshair: {
+                            color: '#758696',
+                        },
+                        grid: {
+                            vertLines: {
+                                color: '#2B2B43',
+                            },
+                            horzLines: {
+                                color: '#363C4E',
+                            },
+                        },
                         timeScale: {
                             rightOffset: 12,
                             barSpacing: 3,
@@ -84,7 +112,7 @@ export default {
                 }
 
                 if (this.baselineSeries == null) {
-                    this.baselineSeries = chart.addBaselineSeries({
+                    this.baselineSeries = this.chart.addBaselineSeries({
                         baseValue: { type: 'price', price: parseFloat(this.symbol.y) },
                         topLineColor: 'rgba( 239, 83, 80, 1)',
                         topFillColor1: 'rgba( 239, 83, 80, 0.05)',
@@ -134,7 +162,7 @@ export default {
                 }
 
                 if (this.volumeSeries == null) {
-                    this.volumeSeries = chart.addHistogramSeries({
+                    this.volumeSeries = this.chart.addHistogramSeries({
                         color: '#26a69a',
                         priceFormat: {
                             type: 'volume',
@@ -192,7 +220,7 @@ export default {
                 var container = this.$refs.chartDiv as HTMLElement
                 const toolTip = this.$refs.tooltip as HTMLElement
 
-                chart.subscribeCrosshairMove((param) => {
+                this.chart.subscribeCrosshairMove((param) => {
                     if (!param.point) {
                         // @ts-ignore
                         toolTip.textContent = ''
@@ -220,7 +248,7 @@ export default {
                     }
                 })
 
-                chart.timeScale().fitContent()
+                this.chart.timeScale().fitContent()
 
                 var delay = new Promise((resolve, reject) => {
                     setTimeout(resolve, 5000)

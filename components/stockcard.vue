@@ -11,7 +11,7 @@
                         <hr style="margin-bottom: 8px;">
                         <v-list-item-subtitle>
                             <span
-                                :style="{ fontSize: '16px', marginRight: '8px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? 'black' : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
+                                :style="{ fontSize: '16px', marginRight: '8px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                                 {{
                                     isNumeric(symbol.z) ? trimEnd(formatAsCurrency(parseFloat(symbol.z), 2), '0') : symbol.z
                                 }}
@@ -37,16 +37,16 @@
                                     fill="#D3321C"></path>
                             </svg>
                             <span
-                                :style="{ fontSize: '10px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? 'black' : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
+                                :style="{ fontSize: '10px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                                 {{ isNumeric(symbol.z) ? Math.abs(diff(symbol?.z, symbol?.y)) : symbol.z }}
                             </span>
                             <span
-                                :style="{ fontSize: '10px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? 'black' : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
+                                :style="{ fontSize: '10px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                                 ({{ isNumeric(symbol.z) ? Math.abs(diffp(symbol?.z, symbol?.y)) : symbol.z }}%)
                             </span>
                         </v-list-item-subtitle>
                         <v-list-item-subtitle>
-                            總量 {{ trimEnd(formatAsCurrency(parseFloat(symbol?.v), 2), '0') }}
+                            總量 {{ trimEnd(formatAsCurrency(parseFloat(symbol?.v), 2), '0') }}張
                         </v-list-item-subtitle>
                     </v-list-item>
                     <v-col cols="5"
@@ -63,7 +63,7 @@
             <hr v-if="cardStyle != 'mini'">
             <v-card-title v-if="cardStyle != 'mini'">
                 <span
-                    :style="{ fontSize: '32px', marginRight: '8px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? 'black' : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
+                    :style="{ fontSize: '32px', marginRight: '8px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                     {{
                         isNumeric(symbol.z) ? trimEnd(formatAsCurrency(parseFloat(symbol.z), 2), '0') : symbol.z
                     }}
@@ -89,11 +89,11 @@
                         fill="#D3321C"></path>
                 </svg>
                 <span
-                    :style="{ fontSize: '20px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? 'black' : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
+                    :style="{ fontSize: '20px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                     {{ isNumeric(symbol.z) ? Math.abs(diff(symbol?.z, symbol?.y)) : symbol.z }}
                 </span>
                 <span
-                    :style="{ fontSize: '20px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? 'black' : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
+                    :style="{ fontSize: '20px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                     ({{ isNumeric(symbol.z) ? Math.abs(diffp(symbol?.z, symbol?.y)) : symbol.z }}%)
                 </span>
             </v-card-title>
@@ -125,7 +125,7 @@
                         <v-list-item title="漲跌幅(%)"
                             :subtitle="(isNumeric(symbol.z) ? `${diffp(symbol?.z, symbol?.y)}%` : symbol.z)"></v-list-item>
                         <v-list-item title="總量"
-                            :subtitle="symbol?.v"></v-list-item>
+                            :subtitle="trimEnd(formatAsCurrency(parseFloat(symbol?.v), 2), '0')"></v-list-item>
                     </v-list>
                 </v-col>
             </v-row>
@@ -165,7 +165,7 @@
                                     v-for="(item, i) in trimEnd(symbol?.b ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
                                     :key="i">
                                     <v-list-item-title
-                                        :style="{ color: symbol?.y == item ? 'black' : (parseFloat(item) > parseFloat(symbol?.y) ? 'red' : 'green') }"
+                                        :style="{ color: symbol?.y == item ? null : (parseFloat(item) > parseFloat(symbol?.y) ? 'red' : 'green') }"
                                         v-text="trimEnd(item, '0')"></v-list-item-title>
                                 </v-list-item>
                             </v-list>
@@ -203,7 +203,7 @@
                                     v-for="(item, i) in trimEnd(symbol?.a ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
                                     :key="i">
                                     <v-list-item-title
-                                        :style="{ color: symbol?.y == item ? 'black' : (parseFloat(item) > parseFloat(symbol?.y) ? 'red' : 'green') }"
+                                        :style="{ color: symbol?.y == item ? null : (parseFloat(item) > parseFloat(symbol?.y) ? 'red' : 'green') }"
                                         v-text="trimEnd(item, '0')"></v-list-item-title>
                                 </v-list-item>
                             </v-list>

@@ -36,7 +36,7 @@ export default defineNuxtPlugin(nuxtApp => {
     const vuetify = createVuetify({
         ssr: false,
         theme: {
-            defaultTheme: 'light',
+            defaultTheme: 'dark',
             themes: {
                 light,
                 dark

@@ -14,10 +14,9 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
 import { IChartApi, ISeriesApi, createChart } from 'lightweight-charts'
 import { MsgArray } from '~/models/stock/twse'
 
-let chart = null as unknown as IChartApi
-
 export default {
     data: () => ({
+        chart: shallowRef(null as unknown as IChartApi),
         candlestickSeries: null as unknown as ISeriesApi<"Candlestick">,
         ma5Series: null as unknown as ISeriesApi<"Line">,
         ma20Series: null as unknown as ISeriesApi<"Line">,
@@ -41,10 +40,10 @@ export default {
         this.init()
     },
     unmounted() {
-        if (chart) {
-            chart.remove();
+        if (this.chart) {
+            this.chart.remove();
             // @ts-ignore
-            chart = null;
+            this.chart = null;
         }
     },
     methods: {
@@ -56,9 +55,31 @@ export default {
             if (this.chartRawData) {
                 var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
                 timeOffset = 0
-                if (chart == null) {
-                    chart = createChart(this.$refs.chartDiv as HTMLElement, {
+                if (this.chart == null) {
+                    this.chart = createChart(this.$refs.chartDiv as HTMLElement, {
                         autoSize: true,
+                        layout: {
+                            background: {
+                                type: 'solid',
+                                color: '#2B2B43',
+                            },
+                            lineColor: '#2B2B43',
+                            textColor: '#D9D9D9',
+                        },
+                        watermark: {
+                            color: 'rgba(0, 0, 0, 0)',
+                        },
+                        crosshair: {
+                            color: '#758696',
+                        },
+                        grid: {
+                            vertLines: {
+                                color: '#2B2B43',
+                            },
+                            horzLines: {
+                                color: '#363C4E',
+                            },
+                        },
                         timeScale: {
                             rightOffset: 12,
                             barSpacing: 3,
@@ -90,7 +111,7 @@ export default {
                 }
 
                 if (this.candlestickSeries == null) {
-                    this.candlestickSeries = chart.addCandlestickSeries({
+                    this.candlestickSeries = this.chart.addCandlestickSeries({
                         wickUpColor: 'rgb(223, 63, 63)',
                         upColor: 'rgb(223, 63, 63)',
                         wickDownColor: 'rgb(51, 139, 72)',
@@ -136,19 +157,19 @@ export default {
                 }
 
                 if (this.ma5Series == null) {
-                    this.ma5Series = chart.addLineSeries({
+                    this.ma5Series = this.chart.addLineSeries({
                         color: 'rgb(25, 71, 163)',
                         lineWidth: 2,
                     })
                 }
                 if (this.ma20Series == null) {
-                    this.ma20Series = chart.addLineSeries({
+                    this.ma20Series = this.chart.addLineSeries({
                         color: 'rgb(245, 111, 10)',
                         lineWidth: 2,
                     })
                 }
                 if (this.ma60Series == null) {
-                    this.ma60Series = chart.addLineSeries({
+                    this.ma60Series = this.chart.addLineSeries({
                         color: 'rgb(62, 145, 82)',
                         lineWidth: 2,
                     })
@@ -180,11 +201,8 @@ export default {
                 const toolTipHeight = 80;
                 const toolTipMargin = 15;
                 const toolTip = this.$refs.tooltip as HTMLElement
-                toolTip.style.background = 'white';
-                toolTip.style.color = 'black';
-                toolTip.style.borderColor = 'rgba(255, 82, 82, 1)';
 
-                chart.subscribeCrosshairMove(param => {
+                this.chart.subscribeCrosshairMove(param => {
                     if (
                         param.point === undefined ||
                         !param.time ||
@@ -203,7 +221,7 @@ export default {
                         const ma5 = this.ma5ExtraData.get(param.time)
                         const ma20 = this.ma20ExtraData.get(param.time)
                         const ma60 = this.ma60ExtraData.get(param.time)
-                        toolTip.innerHTML = `${dateStr} 開${parseFloat(data.open).toFixed(2)} 高${parseFloat(data.high).toFixed(2)} 低${parseFloat(data.low).toFixed(2)} 收${parseFloat(data.close).toFixed(2)} 量${trimEnd(formatAsCurrency(parseInt(data.volume), 2), '0')}
+                        toolTip.innerHTML = `${dateStr} 開${parseFloat(data.open).toFixed(2)} 高${parseFloat(data.high).toFixed(2)} 低${parseFloat(data.low).toFixed(2)} 收${parseFloat(data.close).toFixed(2)} 量${trimEnd(formatAsCurrency(parseInt(data.volume), 2), '0')}股
                         <br>
                         MA5 ${parseFloat(ma5).toFixed(2)} MA20 ${parseFloat(ma20).toFixed(2)} MA60 ${parseFloat(ma60).toFixed(2)}`;
 
@@ -222,7 +240,7 @@ export default {
                     }
                 });
 
-                chart.timeScale().setVisibleRange({
+                this.chart.timeScale().setVisibleRange({
                     from: new Date(new Date().getFullYear(), new Date().getMonth() - 6, new Date().getDay()).getTime() / 1000,
                     to: new Date().getTime() / 1000,
                 })
