@@ -14,9 +14,10 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
 import { IChartApi, ISeriesApi, createChart } from 'lightweight-charts'
 import { MsgArray } from '~/models/stock/twse'
 
+let chart = null as unknown as IChartApi
+
 export default {
     data: () => ({
-        chart: null as unknown as IChartApi,
         candlestickSeries: null as unknown as ISeriesApi<"Candlestick">,
         ma5Series: null as unknown as ISeriesApi<"Line">,
         ma20Series: null as unknown as ISeriesApi<"Line">,
@@ -38,7 +39,6 @@ export default {
         }
     },
     mounted() {
-        var chart = this.chart
         this.observer = new ResizeObserver(function (entries) {
             chart?.timeScale().fitContent()
         });
@@ -46,10 +46,10 @@ export default {
         this.init()
     },
     unmounted() {
-        if (this.chart) {
-            this.chart.remove();
+        if (chart) {
+            chart.remove();
             // @ts-ignore
-            this.chart = null;
+            chart = null;
         }
     },
     methods: {
@@ -61,9 +61,9 @@ export default {
             if (this.chartRawData) {
                 var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
                 timeOffset = 0
-                if (this.chart == null) {
+                if (chart == null) {
                     // @ts-ignore
-                    this.chart = createChart(this.$refs.chart, {
+                    chart = createChart(this.$refs.chart, {
                         autoSize: true,
                         timeScale: {
                             rightOffset: 12,
@@ -96,7 +96,7 @@ export default {
                 }
 
                 if (this.candlestickSeries == null) {
-                    this.candlestickSeries = this.chart.addCandlestickSeries({
+                    this.candlestickSeries = chart.addCandlestickSeries({
                         wickUpColor: 'rgb(223, 63, 63)',
                         upColor: 'rgb(223, 63, 63)',
                         wickDownColor: 'rgb(51, 139, 72)',
@@ -142,19 +142,19 @@ export default {
                 }
 
                 if (this.ma5Series == null) {
-                    this.ma5Series = this.chart.addLineSeries({
+                    this.ma5Series = chart.addLineSeries({
                         color: 'rgb(25, 71, 163)',
                         lineWidth: 2,
                     })
                 }
                 if (this.ma20Series == null) {
-                    this.ma20Series = this.chart.addLineSeries({
+                    this.ma20Series = chart.addLineSeries({
                         color: 'rgb(245, 111, 10)',
                         lineWidth: 2,
                     })
                 }
                 if (this.ma60Series == null) {
-                    this.ma60Series = this.chart.addLineSeries({
+                    this.ma60Series = chart.addLineSeries({
                         color: 'rgb(62, 145, 82)',
                         lineWidth: 2,
                     })
@@ -190,7 +190,7 @@ export default {
                 toolTip.style.color = 'black';
                 toolTip.style.borderColor = 'rgba(255, 82, 82, 1)';
 
-                this.chart.subscribeCrosshairMove(param => {
+                chart.subscribeCrosshairMove(param => {
                     if (
                         param.point === undefined ||
                         !param.time ||
@@ -237,7 +237,7 @@ export default {
                     }
                 });
 
-                this.chart.timeScale().setVisibleRange({
+                chart.timeScale().setVisibleRange({
                     from: new Date(new Date().getFullYear(), new Date().getMonth() - 6, new Date().getDay()).getTime() / 1000,
                     to: new Date().getTime() / 1000,
                 })

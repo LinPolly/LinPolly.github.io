@@ -10,9 +10,11 @@
 import { IChartApi, ISeriesApi, createChart } from 'lightweight-charts'
 import { MsgArray } from '~/models/stock/twse'
 
+let chart = null as unknown as IChartApi
+
 export default {
     data: () => ({
-        chart: null as unknown as IChartApi,
+
         baselineSeries: null as unknown as ISeriesApi<"Baseline">,
         volumeSeries: null as unknown as ISeriesApi<"Histogram">,
         baselineExtraData: new Map(),
@@ -30,7 +32,6 @@ export default {
         }
     },
     mounted() {
-        var chart = this.chart
         this.observer = new ResizeObserver(function (entries) {
             chart?.timeScale().fitContent()
         });
@@ -39,10 +40,10 @@ export default {
         this.repeat()
     },
     unmounted() {
-        if (this.chart) {
-            this.chart.remove();
+        if (chart) {
+            chart.remove();
             // @ts-ignore
-            this.chart = null;
+            chart = null;
         }
     },
     methods: {
@@ -53,9 +54,9 @@ export default {
             this.chartRawData = data.value
             if (this.chartRawData) {
                 var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
-                if (this.chart == null) {
+                if (chart == null) {
                     // @ts-ignore
-                    this.chart = createChart(this.$refs.chart, {
+                    chart = createChart(this.$refs.chart, {
                         autoSize: true,
                         handleScroll: false,
                         handleScale: false,
@@ -90,7 +91,7 @@ export default {
                 }
 
                 if (this.baselineSeries == null) {
-                    this.baselineSeries = this.chart.addBaselineSeries({
+                    this.baselineSeries = chart.addBaselineSeries({
                         baseValue: { type: 'price', price: parseFloat(this.symbol.y) },
                         topLineColor: 'rgba( 239, 83, 80, 1)',
                         topFillColor1: 'rgba( 239, 83, 80, 0.05)',
@@ -122,11 +123,7 @@ export default {
                     for (let i = 1; i < this.chartRawData.chart.timestamp.length; i++) {
                         var r = {
                             // @ts-ignore
-                            time: this.chartRawData.chart.timestamp[i] - timeOffset,
-                            // open: this.chartRawData.chart.indicators.quote[0].open[i],
-                            // high: this.chartRawData.chart.indicators.quote[0].high[i],
-                            // low: this.chartRawData.chart.indicators.quote[0].low[i],
-                            // close: this.chartRawData.chart.indicators.quote[0].close[i],
+                            time: this.chartRawData.chart.timestamp[i] - timeOffset,                          
                             // @ts-ignore
                             value: this.chartRawData.chart.indicators.quote[0].close[i],
                         }
@@ -144,7 +141,7 @@ export default {
                 }
 
                 if (this.volumeSeries == null) {
-                    this.volumeSeries = this.chart.addHistogramSeries({
+                    this.volumeSeries = chart.addHistogramSeries({
                         color: '#26a69a',
                         priceFormat: {
                             type: 'volume',
@@ -202,7 +199,7 @@ export default {
                 var container = this.$refs.chart as HTMLElement
                 const toolTip = this.$refs.tooltip as HTMLElement
 
-                this.chart.subscribeCrosshairMove((param) => {
+                chart.subscribeCrosshairMove((param) => {
                     if (!param.point) {
                         // @ts-ignore
                         toolTip.textContent = ''
@@ -230,7 +227,7 @@ export default {
                     }
                 })
 
-                this.chart.timeScale().fitContent()
+                chart.timeScale().fitContent()
 
                 var delay = new Promise((resolve, reject) => {
                     setTimeout(resolve, 5000)
