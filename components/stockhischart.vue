@@ -90,7 +90,14 @@ export default {
                 }
 
                 if (this.candlestickSeries == null) {
-                    this.candlestickSeries = this.chart.addCandlestickSeries()
+                    this.candlestickSeries = this.chart.addCandlestickSeries({
+                        upColor: 'rgb(255,0,0)',
+                        downColor: 'rgb(0,255,0)',
+                        borderUpColor: 'rgb(255,0,0)',
+                        borderDownColor: 'rgb(0,255,0)',
+                        wickUpColor: 'rgb(255,0,0)',
+                        wickDownColor: 'rgb(0,255,0)',
+                    })
                 }
 
                 // Replace with your own data
