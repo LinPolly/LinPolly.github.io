@@ -158,9 +158,9 @@ export default {
                     return position;
                 },
             },
-            exporting: {
-                enabled: true
-            },
+            // exporting: {
+            //     enabled: true
+            // },
             series: [
                 {
                     type: 'candlestick',
@@ -237,73 +237,70 @@ export default {
     },
     methods: {
         async init() {
-            try {
-                const { data } = await useFetch(`/api/charthis?code=${this.symbol.c}`)
-                const me = this
+            const { data } = await useFetch(`/api/charthis?code=${this.symbol.c}`)
+            const me = this
 
-                this.chartRawData = data.value
-                if (this.chartRawData) {
-                    var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
+            this.chartRawData = data.value
+            if (this.chartRawData) {
+                var timeOffset = new Date().getTimezoneOffset() * 60 * 1000
 
-                    {
-                        // Replace with your own data
-                        const data = []
-                        const volumeData = []
-                        for (let i = 1; i < this.chartRawData.timestamp.length; i++) {
-                            var r = []
-                            var v = []
+                {
+                    // Replace with your own data
+                    const data = []
+                    const volumeData = []
+                    for (let i = 1; i < this.chartRawData.timestamp.length; i++) {
+                        var r = []
+                        var v = []
 
-                            r.push(this.chartRawData.timestamp[i] * 1000)
-                            r.push(parseFloat(this.chartRawData.indicators.quote[0].open[i].toFixed(2)))
-                            r.push(parseFloat(this.chartRawData.indicators.quote[0].high[i].toFixed(2)))
-                            r.push(parseFloat(this.chartRawData.indicators.quote[0].low[i].toFixed(2)))
-                            r.push(parseFloat(this.chartRawData.indicators.quote[0].close[i].toFixed(2)))
+                        r.push(this.chartRawData.timestamp[i] * 1000)
+                        r.push(parseFloat(this.chartRawData.indicators.quote[0].open[i]?.toFixed(2)))
+                        r.push(parseFloat(this.chartRawData.indicators.quote[0].high[i]?.toFixed(2)))
+                        r.push(parseFloat(this.chartRawData.indicators.quote[0].low[i]?.toFixed(2)))
+                        r.push(parseFloat(this.chartRawData.indicators.quote[0].close[i]?.toFixed(2)))
 
-                            v.push(this.chartRawData.timestamp[i] * 1000)
-                            v.push(this.chartRawData.indicators.quote[0].volume[i] / 1000)
-                            data.push(r)
-                            volumeData.push(v)
-                        }
-
-                        this.chartOptions.series[0].data = data
-                        this.chartOptions.series[2].data = volumeData
-                        // lineSeries.setData(data)
-                    }
-                }
-
-                this.chartOptions.xAxis.labels.formatter = function () {
-                    return me.timestampToTime(this.value / 1000)
-                }
-                this.chartOptions.tooltip.formatter = function () {
-                    var dateStr = me.timestampToTime(this.point.x / 1000)
-
-                    const volume = this.points[2].y
-                    const ma5 = this.points[3]?.y ?? ''
-                    const ma20 = this.points[4]?.y ?? ''
-                    const ma60 = this.points[5]?.y ?? ''
-                    var str = `${dateStr} 開${parseFloat(this.point.open.toString()).toFixed(2)} 高${parseFloat(this.point.high.toString()).toFixed(2)} 低${parseFloat(this.point.low.toString()).toFixed(2)} 收${parseFloat(this.point.close.toString()).toFixed(2)} 量${trimEnd(formatAsCurrency(parseInt(volume.toString()), 2), '0')}張`
-                    if (ma5 || ma20 || ma60) {
-                        str += '<br>'
-
-                        if (ma5) {
-                            str += `MA5 ${parseFloat(ma5.toString()).toFixed(2)}`
-                        }
-                        if (ma20) {
-                            if (ma5) str += ' '
-                            str += `MA20 ${parseFloat(ma20.toString()).toFixed(2)}`
-                        }
-                        if (ma60) {
-                            if (ma20) str += ' '
-                            str += `MA60 ${parseFloat(ma60.toString()).toFixed(2)}`
-                        }
+                        v.push(this.chartRawData.timestamp[i] * 1000)
+                        v.push(this.chartRawData.indicators.quote[0].volume[i] / 1000)
+                        data.push(r)
+                        volumeData.push(v)
                     }
 
-                    return str
+                    this.chartOptions.series[0].data = data
+                    this.chartOptions.series[2].data = volumeData
+                    // lineSeries.setData(data)
                 }
-
-                this.loaded = true
-            } catch (e) {
             }
+
+            this.chartOptions.xAxis.labels.formatter = function () {
+                return me.timestampToTime(this.value / 1000)
+            }
+            this.chartOptions.tooltip.formatter = function () {
+                var dateStr = me.timestampToTime(this.point.x / 1000)
+
+                const volume = this.points[2].y
+                const ma5 = this.points[3]?.y ?? ''
+                const ma20 = this.points[4]?.y ?? ''
+                const ma60 = this.points[5]?.y ?? ''
+                var str = `${dateStr} 開${parseFloat(this.point.open.toString()).toFixed(2)} 高${parseFloat(this.point.high.toString()).toFixed(2)} 低${parseFloat(this.point.low.toString()).toFixed(2)} 收${parseFloat(this.point.close.toString()).toFixed(2)} 量${trimEnd(formatAsCurrency(parseInt(volume.toString()), 2), '0')}張`
+                if (ma5 || ma20 || ma60) {
+                    str += '<br>'
+
+                    if (ma5) {
+                        str += `MA5 ${parseFloat(ma5.toString()).toFixed(2)}`
+                    }
+                    if (ma20) {
+                        if (ma5) str += ' '
+                        str += `MA20 ${parseFloat(ma20.toString()).toFixed(2)}`
+                    }
+                    if (ma60) {
+                        if (ma20) str += ' '
+                        str += `MA60 ${parseFloat(ma60.toString()).toFixed(2)}`
+                    }
+                }
+
+                return str
+            }
+
+            this.loaded = true
         },
         timestampToTime(timestamp: number) {
             var date = new Date(timestamp * 1000);
@@ -328,6 +325,9 @@ export default {
     mounted() {
         this.init()
     },
+    // beforeMount() {
+    //     this.init()
+    // },
     watch: {
         'showMode': function (newValue) {
             var y2 = this.chartOptions.series.filter(x => x.yAxis == 1)
