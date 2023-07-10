@@ -260,8 +260,14 @@ export default {
 
                         v.push(this.chartRawData.timestamp[i] * 1000)
                         v.push(this.chartRawData.indicators.quote[0].volume[i] / 1000)
-                        data.push(r)
-                        volumeData.push(v)
+
+                        if (r.some(x => x == null) == false) {
+                            data.push(r)
+                        }
+
+                        if (volumeData.some(x => x == null) == false) {
+                            volumeData.push(v)
+                        }
                     }
 
                     this.chartOptions.series[0].data = data
