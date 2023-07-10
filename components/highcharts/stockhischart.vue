@@ -20,19 +20,19 @@ import 'highcharts/css/annotations/popup.css'
 import Highcharts from 'highcharts'
 import { Chart } from 'highcharts-vue'
 
-import indicators from "highcharts/indicators/indicators";
-import stochastic from "highcharts/indicators/stochastic";
-import kdj from '~/indicators/kdj-indicator';
+import indicators from "highcharts/indicators/indicators"
+import stochastic from "highcharts/indicators/stochastic"
 import dragpanes from 'highcharts/modules/drag-panes'
 
 import annotationsadvanced from 'highcharts/modules/annotations-advanced'
 import priceindicator from 'highcharts/modules/price-indicator'
 import fullscreen from 'highcharts/modules/full-screen'
 
-import StockModule from "highcharts/modules/stock";
+import StockModule from "highcharts/modules/stock"
 
-import AccessibilityModule from "highcharts/modules/accessibility";
-import StockToolsModule from "highcharts/modules/stock-tools";
+import AccessibilityModule from "highcharts/modules/accessibility"
+import StockToolsModule from "highcharts/modules/stock-tools"
+import exporting from 'highcharts/modules/exporting'
 
 Highcharts.setOptions({
     lang: {
@@ -45,17 +45,16 @@ Highcharts.setOptions({
         rangeSelectorFrom: '從',
         rangeSelectorTo: '到',
         rangeSelectorZoom: "縮放",
-        downloadPNG: '下載PNG格式',
-        downloadJPEG: '下載JPEG格式',
-        downloadPDF: '下載PDF格式',
-        downloadSVG: '下載SVG格式'
+        downloadPNG: '下載 PNG',
+        downloadJPEG: '下載 JPEG',
+        downloadPDF: '下載 PDF',
+        downloadSVG: '下載 SVG'
     }
 });
 
 indicators(Highcharts)
 stochastic(Highcharts)
 dragpanes(Highcharts)
-kdj(Highcharts)
 
 annotationsadvanced(Highcharts)
 priceindicator(Highcharts)
@@ -67,6 +66,7 @@ StockToolsModule(Highcharts)
 // hollowcandlestick(Highcharts)
 AccessibilityModule(Highcharts)
 StockModule(Highcharts)
+exporting(Highcharts)
 
 export default {
     data: () => ({
@@ -158,11 +158,14 @@ export default {
                     return position;
                 },
             },
+            exporting: {
+                enabled: true
+            },
             series: [
                 {
                     type: 'candlestick',
                     id: 'main-series',
-                    name: '',
+                    name: 'K線',
                     data: [],
                     yAxis: 0,
                     upColor: 'rgb(223, 63, 63)',
