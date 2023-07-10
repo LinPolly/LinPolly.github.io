@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
         var yahooSymbol = encodeURIComponent(`["${symbol}"]`)
 
-        const url = `https://tw.stock.yahoo.com/_td-stock/api/resource/FinanceChartService.ApacLibraCharts;symbols=${yahooSymbol};type=tick?bkt=&device=desktop&ecma=modern&feature=useNewQuoteTabColor%2CenableNewPk&intl=tw&lang=zh-Hant-TW&partner=none&prid=08iveohia9l4c&region=TW&site=finance&tz=Asia%2FTaipei&returnMeta=true`
+        const url = `https://tw.stock.yahoo.com/_td-stock/api/resource/FinanceChartService.ApacLibraCharts;autoRefresh=${Math.round(new Date().getTime() / 1000)};symbols=${yahooSymbol};type=tick?bkt=&device=desktop&ecma=modern&feature=useNewQuoteTabColor%2CenableNewPk&intl=tw&lang=zh-Hant-TW&partner=none&prid=08iveohia9l4c&region=TW&site=finance&tz=Asia%2FTaipei&returnMeta=true`
         const headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'
         };
