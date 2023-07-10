@@ -282,11 +282,16 @@ export default {
             this.chartOptions.tooltip.formatter = function () {
                 var dateStr = me.timestampToTime(this.point.x / 1000)
 
-                const volume = this.points[2].y
+                const volume = this.points[2]?.y
                 const ma5 = this.points[3]?.y ?? ''
                 const ma20 = this.points[4]?.y ?? ''
                 const ma60 = this.points[5]?.y ?? ''
-                var str = `${dateStr} 開${parseFloat(this.point.open.toString()).toFixed(2)} 高${parseFloat(this.point.high.toString()).toFixed(2)} 低${parseFloat(this.point.low.toString()).toFixed(2)} 收${parseFloat(this.point.close.toString()).toFixed(2)} 量${trimEnd(formatAsCurrency(parseInt(volume.toString()), 2), '0')}張`
+                var str = `${dateStr} 開${parseFloat(this.point.open.toString()).toFixed(2)} 高${parseFloat(this.point.high.toString()).toFixed(2)} 低${parseFloat(this.point.low.toString()).toFixed(2)} 收${parseFloat(this.point.close.toString()).toFixed(2)}`
+
+                if (volume) {
+                    str += ` 量${trimEnd(formatAsCurrency(parseInt(volume.toString()), 2), '0')}張`
+                }
+
                 if (ma5 || ma20 || ma60) {
                     str += '<br>'
 
