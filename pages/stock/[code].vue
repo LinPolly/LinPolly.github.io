@@ -291,7 +291,7 @@ export default {
         async loadInfo() {
             // @ts-ignore
             const { data } = await useFetch(`/stock/18419.json`)
-            console.log(data.value)
+            // console.log(data.value)
             // @ts-ignore
             this.infos = data.value
         },

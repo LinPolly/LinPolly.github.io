@@ -238,7 +238,6 @@ export default {
     methods: {
         async init() {
             try {
-                console.log(this.symbol.c)
                 const { data } = await useFetch(`/api/charthis?code=${this.symbol.c}`)
                 const me = this
 
