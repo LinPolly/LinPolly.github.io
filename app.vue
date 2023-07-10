@@ -4,7 +4,7 @@ useHead({
     { "http-equiv": 'Permissions-Policy', content: 'interest-cohort=()' }
   ],
   link: [
-    { rel: 'canonical', href: 'https://linpolly.github.io/' }
+    { rel: 'canonical', href: 'https://linpolly.netlify.app/' }
   ]
 })
 </script>

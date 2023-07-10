@@ -99,9 +99,9 @@
             </v-card-title>
             <v-row style="height: 350px;padding: 0;margin: 0;"
                 v-if="!isOdd && cardStyle != 'nochart' && cardStyle != 'mini'">
-                <stockchart v-if="symbol?.c"
+                <lightweight-charts-stockchart v-if="symbol?.c"
                     :symbol="symbol"
-                    style="width: 100%;"></stockchart>
+                    style="width: 100%;"></lightweight-charts-stockchart>
             </v-row>
             <v-row v-if="cardStyle != 'mini'">
                 <v-col cols="6">

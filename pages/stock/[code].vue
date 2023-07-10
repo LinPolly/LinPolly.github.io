@@ -29,16 +29,11 @@
         </v-col>
     </v-row>
     <v-row style="height: 8px;"></v-row>
-    <v-layout v-if="realtimeData.main"
-        style="box-shadow: 0px 3px 5px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)), 0px 5px 8px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0px 1px 14px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
-        background: rgb(var(--v-theme-surface));
-        color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));">
-        <v-row style="height: 650px;margin-left: 25px;padding-right: 25px;padding-bottom: 95px;padding-top: 40px;">
-            <stockhischart v-if="realtimeData.main?.c"
-                :symbol="realtimeData.main"
-                style="width: 100%;"></stockhischart>
-        </v-row>
-    </v-layout>
+    <v-row style="margin: 4px;padding: 4px;">
+        <HighchartsStockhischart v-if="realtimeData.main?.c"
+            :symbol="realtimeData.main">
+        </HighchartsStockhischart>
+    </v-row>
     <div v-if="stocks">
         <h2>{{ code.endsWith('_odd') ? code.substring(0, code.length - '_odd'.length) : code }} 每日成分股異動 {{
             (stocks?.length ?? 0) > 0 ? stocks[0]?.date : '' }} - {{

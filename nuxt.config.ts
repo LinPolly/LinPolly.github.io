@@ -6,6 +6,7 @@ const routerBase = process.env.DEPLOY_ENV === 'GH_PAGES' ? {
 } : {}
 export default defineNuxtConfig({
     ...routerBase,
+    ssr: false,
     css: [
         'vuetify/lib/styles/main.css',
         '@mdi/font/css/materialdesignicons.min.css'
