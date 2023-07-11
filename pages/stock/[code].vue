@@ -239,7 +239,7 @@ export default {
 
                     if (this.realtimeData.data.length == 0)
                         this.realtimeData.data = newData
-                        
+
                     newData.forEach(async item => {
                         var keys = Object.keys(item)
                         keys.forEach(x => {
@@ -313,7 +313,7 @@ export default {
             if (this.code.endsWith('_odd')) {
                 c = this.code.substring(0, this.code.length - '_odd'.length)
             }
-            const { data } = await useFetch(`https://script.google.com/macros/s/AKfycbzJHF-q_EehRmg-IvW4OMgFu7XqAStlD6VaufoAVqxcq6OIxAo9qBHj_bXZQzk7eOV_/exec?code=${c}`, { server: false })
+            const { data } = await useFetch(`https://script.google.com/macros/s/AKfycbyK8y078kb7e3RjcrIFJWJSwqWQxggUhcZ0aK5e_5fDvFld4BuHuiaVacV9lKRPzumG/exec?code=${c}`, { server: false })
 
             // @ts-ignore
             if (Array.isArray(data.value)) {
