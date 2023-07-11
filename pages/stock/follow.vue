@@ -288,17 +288,23 @@ export default {
                                 }
                             })
 
-                            if (d.z == '-'
-                                || d.z == undefined
-                                || d.z == null
-                                // 價格跳太快從yahoo修正當前價格
-                                || parseFloat(d.z) > parseFloat(trimEnd(d.a ?? '', '_').split('_')[0])
-                                || parseFloat(d.z) < parseFloat(trimEnd(d?.b ?? '', '_').split('_')[0])
-                            ) {
-                                if (this.follow.some(x => x.startsWith(d.c) && x.endsWith('_odd')) == false) {
-                                    const { data } = await useAsyncData(`yahoo_${d.c}`, () => $fetch(`/api/price?code=${d.c}`))
-                                    // @ts-ignore
-                                    d.z = data.value?.toString()
+                            var start = new Date(1, 1, 1, 9, 0, 0)
+                            var end = new Date(1, 1, 1, 13, 31, 0)
+                            var last = new Date(1, 1, 1, this.timer.lastudt.getHours(), this.timer.lastudt.getMinutes(), 0)
+
+                            if (start <= last && last < end) {
+                                if (d.z == '-'
+                                    || d.z == undefined
+                                    || d.z == null
+                                    // 價格跳太快從yahoo修正當前價格
+                                    || parseFloat(d.z) > parseFloat(trimEnd(d.a ?? '', '_').split('_')[0])
+                                    || parseFloat(d.z) < parseFloat(trimEnd(d?.b ?? '', '_').split('_')[0])
+                                ) {
+                                    if (this.follow.some(x => x.startsWith(d.c) && x.endsWith('_odd')) == false) {
+                                        const { data } = await useAsyncData(`yahoo_${d.c}`, () => $fetch(`/api/price?code=${d.c}`))
+                                        // @ts-ignore
+                                        d.z = data.value?.toString()
+                                    }
                                 }
                             }
                         })
@@ -346,21 +352,21 @@ export default {
             this.repeat();
         },
         async repeat() {
-            if (this.timer.lastudt.getHours() <= 7
-                || (this.timer.lastudt.getHours() <= 8 && this.timer.lastudt.getMinutes() < 50)
-                || this.timer.lastudt.getHours() >= 14
-                || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
+            var start = new Date(1, 1, 1, 8, 30, 0)
+            var end = new Date(1, 1, 1, 13, 31, 0)
+            var last = new Date(1, 1, 1, this.timer.lastudt.getHours(), this.timer.lastudt.getMinutes(), 0)
+
+            if (start <= last && last < end) {
+                // @ts-ignore
+                if (new Date() - this.timer.lastudt > 5_000) {
+                    this.timer.lastudt = new Date()
+                    await this.loadRealTimeData()
+                }
+            } else {
                 this.timer.lastudt = new Date()
-                setTimeout(this.repeat, 1000);
-                return
-            }
-            // @ts-ignore
-            if (new Date() - this.timer.lastudt > 5_000) {
-                this.timer.lastudt = new Date()
-                await this.loadRealTimeData()
             }
 
-            setTimeout(this.repeat, 5000)
+            setTimeout(this.repeat, 1000 / 60);        
         },
         async followstock() {
             if (this.follow.some(x => x == this.inputfollow)) {

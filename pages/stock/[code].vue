@@ -200,19 +200,26 @@ export default {
                 }
             })
 
-            if (!this.code.endsWith('_odd')) {
-                if (this.realtimeData.main.z == '-'
-                    || this.realtimeData.main.z == undefined
-                    || this.realtimeData.main.z == null
-                    // 價格跳太快從yahoo修正當前價格
-                    || parseFloat(this.realtimeData.main.z) > parseFloat(trimEnd(this.realtimeData.main.a ?? '', '_').split('_')[0])
-                    || parseFloat(this.realtimeData.main.z) < parseFloat(trimEnd(this.realtimeData.main?.b ?? '', '_').split('_')[0])
-                ) {
-                    const { data } = await useAsyncData(`yahoo_${this.realtimeData.main.c}`, () => $fetch(`/api/price?code=${this.realtimeData.main.c}`))
-                    // @ts-ignore
-                    this.realtimeData.main.z = data.value?.toString()
+            var start = new Date(1, 1, 1, 9, 0, 0)
+            var end = new Date(1, 1, 1, 13, 31, 0)
+            var last = new Date(1, 1, 1, this.timer.lastudt.getHours(), this.timer.lastudt.getMinutes(), 0)
+
+            if (start <= last && last < end) {
+                if (!this.code.endsWith('_odd')) {
+                    if (this.realtimeData.main.z == '-'
+                        || this.realtimeData.main.z == undefined
+                        || this.realtimeData.main.z == null
+                        // 價格跳太快從yahoo修正當前價格
+                        || parseFloat(this.realtimeData.main.z) > parseFloat(trimEnd(this.realtimeData.main.a ?? '', '_').split('_')[0])
+                        || parseFloat(this.realtimeData.main.z) < parseFloat(trimEnd(this.realtimeData.main?.b ?? '', '_').split('_')[0])
+                    ) {
+                        const { data } = await useAsyncData(`yahoo_${this.realtimeData.main.c}`, () => $fetch(`/api/price?code=${this.realtimeData.main.c}`))
+                        // @ts-ignore
+                        this.realtimeData.main.z = data.value?.toString()
+                    }
                 }
             }
+
             this.realtimeData.ismainreload = false
         },
         async loadRealTimeData() {
@@ -244,17 +251,23 @@ export default {
                             }
                         })
 
-                        var dd = this.realtimeData.data.find(x => x.c == item.c) as MsgArray
-                        if (dd.z == '-'
-                            || dd.z == undefined
-                            || dd.z == null
-                            // 價格跳太快從yahoo修正當前價格
-                            || parseFloat(dd.z) > parseFloat(trimEnd(dd.a ?? '', '_').split('_')[0])
-                            || parseFloat(dd.z) < parseFloat(trimEnd(dd?.b ?? '', '_').split('_')[0])
-                        ) {
-                            const { data } = await useAsyncData(`yahoo_${dd.c}`, () => $fetch(`/api/price?code=${dd.c}`))
-                            // @ts-ignore
-                            dd.z = data.value?.toString()
+                        var start = new Date(1, 1, 1, 9, 0, 0)
+                        var end = new Date(1, 1, 1, 13, 31, 0)
+                        var last = new Date(1, 1, 1, this.timer.lastudt.getHours(), this.timer.lastudt.getMinutes(), 0)
+
+                        if (start <= last && last < end) {
+                            var dd = this.realtimeData.data.find(x => x.c == item.c) as MsgArray
+                            if (dd.z == '-'
+                                || dd.z == undefined
+                                || dd.z == null
+                                // 價格跳太快從yahoo修正當前價格
+                                || parseFloat(dd.z) > parseFloat(trimEnd(dd.a ?? '', '_').split('_')[0])
+                                || parseFloat(dd.z) < parseFloat(trimEnd(dd?.b ?? '', '_').split('_')[0])
+                            ) {
+                                const { data } = await useAsyncData(`yahoo_${dd.c}`, () => $fetch(`/api/price?code=${dd.c}`))
+                                // @ts-ignore
+                                dd.z = data.value?.toString()
+                            }
                         }
                     })
                 }
@@ -331,17 +344,18 @@ export default {
             this.repeat();
         },
         async repeat() {
-            if (this.timer.lastudt.getHours() < 9
-                || this.timer.lastudt.getHours() >= 14
-                || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
-                setTimeout(this.repeat, 1000 / 60);
-                return
-            }
+            var start = new Date(1, 1, 1, 8, 30, 0)
+            var end = new Date(1, 1, 1, 13, 31, 0)
+            var last = new Date(1, 1, 1, this.timer.lastudt.getHours(), this.timer.lastudt.getMinutes(), 0)
 
-            // @ts-ignore
-            if (new Date() - this.timer.lastudt > 5_000) {
+            if (start <= last && last < end) {
+                // @ts-ignore
+                if (new Date() - this.timer.lastudt > 5_000) {
+                    this.timer.lastudt = new Date()
+                    await this.loadRealTimeData()
+                }
+            } else {
                 this.timer.lastudt = new Date()
-                await this.loadRealTimeData()
             }
 
             setTimeout(this.repeat, 1000 / 60);

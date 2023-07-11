@@ -6,7 +6,7 @@ function getJ(xData: any, yData: any) {
         yData,
         values: yData.map((stochasticValues: [number, number]) => {
             const [k, d] = stochasticValues;
-            const j = 3 * d - 2 * k;
+            const j = (3 * d) - (2 * k);
             return j;
         }),
     };
@@ -14,10 +14,10 @@ function getJ(xData: any, yData: any) {
 
 export default function (highcharts: typeof Highcharts) {
     highcharts.seriesType(
-        'kdj', // Calculates %J from %K and %D
+        'stochastic-j', // Calculates %J from %K and %D
         'stochastic', // Calculates %K & %D
         {
-            name: 'KDJ'
+            name: 'stochastic-j'
         },
         {
             getValues: function (series: any): any {

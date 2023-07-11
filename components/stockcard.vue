@@ -257,7 +257,8 @@ export default {
         },
         isOdd: {
             type: Boolean,
-            required: true
+            required: false,
+            default: false,
         },
         cardStyle: 'default' | 'nochart' | 'mini',
         targetOdd: Function,

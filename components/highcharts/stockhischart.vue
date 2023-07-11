@@ -2,7 +2,7 @@
     <client-only>
         <v-btn-toggle v-model="showMode">
             <v-btn :class="{ 'bg-primary': showMode == 0 }">成交量</v-btn>
-            <v-btn :class="{ 'bg-primary': showMode == 1 }">KD</v-btn>
+            <v-btn :class="{ 'bg-primary': showMode == 1 }">KD,J</v-btn>
         </v-btn-toggle>
         <hr>
         <highcharts :constructor-type="'stockChart'"
@@ -12,6 +12,20 @@
 </template>
 
 <script lang="ts">
+import {
+    sma
+} from 'moving-averages'
+
+import {
+    sub,
+    div,
+    mul
+} from 'math-array'
+
+import {
+    hhv,
+    llv
+} from 'hhv-llv'
 import { MsgArray } from '~/models/stock/twse'
 import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
 import 'highcharts/css/stocktools/gui.css'
@@ -21,6 +35,7 @@ import Highcharts from 'highcharts'
 import { Chart } from 'highcharts-vue'
 
 import indicators from "highcharts/indicators/indicators"
+import kdj_indicators from "~/indicators/kdj-indicator"
 import stochastic from "highcharts/indicators/stochastic"
 import dragpanes from 'highcharts/modules/drag-panes'
 
@@ -55,6 +70,7 @@ Highcharts.setOptions({
 indicators(Highcharts)
 stochastic(Highcharts)
 dragpanes(Highcharts)
+kdj_indicators(Highcharts)
 
 annotationsadvanced(Highcharts)
 priceindicator(Highcharts)
@@ -92,14 +108,14 @@ export default {
                 }
             },
             legend: {
-                enabled: true
+                enabled: false
             },
             plotOptions: {
                 series: {
                     showInLegend: true
                 }
             },
-            xAxis: { // Y軸亦同
+            xAxis: { // 
                 labels: {
                     format: "",
                 }
@@ -183,46 +199,46 @@ export default {
                     visible: false
                 },
                 {
+                    yAxis: 1,
+                    name: 'J',
+                    type: 'stochastic-j',
+                    linkedTo: 'main-series',
+                    color: "green",
+                    visible: false,
+                    dashStyle: 'Dash',
+                },
+                {
                     type: 'column',
                     name: '成交量',
                     data: [],
                     yAxis: 1,
                 },
                 {
-                    type: 'sma',
                     name: 'MA5',
-                    linkedTo: 'main-series',
-                    params: {
-                        period: 5
-                    },
+                    data: [],
                     marker: {
                         enabled: false
                     },
                     color: 'rgb(25, 71, 163)',
+                    yAxis: 0,
                 },
                 {
-                    type: 'sma',
                     name: 'MA20',
-                    linkedTo: 'main-series',
-                    params: {
-                        period: 20
-                    },
+                    data: [],
                     marker: {
                         enabled: false
                     },
                     color: 'rgb(245, 111, 10)',
+                    yAxis: 0,
                 },
                 {
-                    type: 'sma',
                     name: 'MA60',
-                    linkedTo: 'main-series',
-                    params: {
-                        period: 60
-                    },
+                    data: [],
                     marker: {
                         enabled: false
                     },
                     color: 'rgb(62, 145, 82)',
+                    yAxis: 0,
                 }
             ],
         },
@@ -261,17 +277,21 @@ export default {
                         v.push(this.chartRawData.timestamp[i] * 1000)
                         v.push(this.chartRawData.indicators.quote[0].volume[i] / 1000)
 
-                        if (r.some(x => x == null) == false) {
-                            data.push(r)
-                        }
-
-                        if (volumeData.some(x => x == null) == false) {
-                            volumeData.push(v)
-                        }
+                        data.push(r)
+                        volumeData.push(v)
                     }
 
-                    this.chartOptions.series[0].data = data
-                    this.chartOptions.series[2].data = volumeData
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'K線')].data = data
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == '成交量')].data = volumeData
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA5')].data = this.calculateSMA(data, 5)
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA20')].data = this.calculateSMA(data, 20)
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA60')].data = this.calculateSMA(data, 60)
+
+                    // var kdj = this.calculateKDJ(data)                    
+                    // this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'K')].data = kdj.time.map((x, i) => [x, kdj.k[i]])
+                    // this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'D')].data = kdj.time.map((x, i) => [x, kdj.d[i]])
+                    // this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'J')].data = kdj.time.map((x, i) => [x, kdj.j[i]])
+
                     // lineSeries.setData(data)
                 }
             }
@@ -282,10 +302,23 @@ export default {
             this.chartOptions.tooltip.formatter = function () {
                 var dateStr = me.timestampToTime(this.point.x / 1000)
 
-                const volume = this.points[2]?.y
-                const ma5 = this.points[3]?.y ?? ''
-                const ma20 = this.points[4]?.y ?? ''
-                const ma60 = this.points[5]?.y ?? ''
+                const volume = this.points[this.points.findIndex(x => x.series.name == '成交量')]?.y ?? ''
+
+                const ma5 = this.points[this.points.findIndex(x => x.series.name == 'MA5')]?.y ?? ''
+                const ma20 = this.points[this.points.findIndex(x => x.series.name == 'MA20')]?.y ?? ''
+                const ma60 = this.points[this.points.findIndex(x => x.series.name == 'MA60')]?.y ?? ''
+
+                // const k = this.points[this.points.findIndex(x => x.series.name == 'K')]?.y ?? ''
+                // const d = this.points[this.points.findIndex(x => x.series.name == 'D')]?.y ?? ''
+                // const j = this.points[this.points.findIndex(x => x.series.name == 'J')]?.y ?? ''
+
+                if (this.point?.open == null
+                    || this.point?.high == null
+                    || this.point?.low == null
+                    || this.point?.close == null) {
+                    return ''
+                }
+
                 var str = `${dateStr} 開${parseFloat(this.point.open.toString()).toFixed(2)} 高${parseFloat(this.point.high.toString()).toFixed(2)} 低${parseFloat(this.point.low.toString()).toFixed(2)} 收${parseFloat(this.point.close.toString()).toFixed(2)}`
 
                 if (volume) {
@@ -307,6 +340,22 @@ export default {
                         str += `MA60 ${parseFloat(ma60.toString()).toFixed(2)}`
                     }
                 }
+
+                // if (k || d || j) {
+                //     str += '<br>'
+
+                //     if (k) {
+                //         str += `K ${parseFloat(k.toString()).toFixed(2)}`
+                //     }
+                //     if (d) {
+                //         if (k) str += ' '
+                //         str += `J ${parseFloat(d.toString()).toFixed(2)}`
+                //     }
+                //     if (j) {
+                //         if (d) str += ' '
+                //         str += `J ${parseFloat(j.toString()).toFixed(2)}`
+                //     }
+                // }
 
                 return str
             }
@@ -331,6 +380,66 @@ export default {
 
             list.push(maxVal)
             return list
+        },
+        calculateSMA(data: Array<Array<number>>, count: number): Array<Array<number>> {
+            var avg = function (data: Array<Array<number>>) {
+                var sum = 0;
+                for (var i = 0; i < data.length; i++) {
+                    sum += data[i][4];
+                }
+                return sum / data.length;
+            };
+            var result = [];
+            for (var i = count - 1, len = data.length; i < len; i++) {
+                var val = avg(data.slice(i - count + 1, i));
+                result.push([data[i][0], val]);
+            }
+            return result;
+        },
+        calculateKDJ(data: number[][], period = 14): { time: number[], k: number[], d: number[], j: number[] } {
+            const high: number[] = [];
+            const low: number[] = [];
+            const close: number[] = [];
+            const timestamps: number[] = [];
+
+            for (let i = 0; i < data.length; i++) {
+                const [timestamp, _, highPrice, lowPrice, closePrice] = data[i];
+                timestamps.push(timestamp);
+                high.push(highPrice);
+                low.push(lowPrice);
+                close.push(closePrice);
+            }
+
+            const kValues: number[] = [];
+            const dValues: number[] = [];
+            const jValues: number[] = [];
+
+            let k = 50; // 初始 K 值
+            let d = 50; // 初始 D 值
+
+            for (let i = period; i < high.length; i++) {
+                const highestHigh = Math.max(...high.slice(i - period, i));
+                const lowestLow = Math.min(...low.slice(i - period, i));
+                const r = highestHigh - lowestLow;
+
+                const rsv = (close[i] - lowestLow) / r * 100;
+
+                k = (2 / 3) * k + (1 / 3) * rsv;
+                d = (2 / 3) * d + (1 / 3) * k;
+
+                const j = 3 * k - 2 * d;
+
+                kValues.push(k);
+                dValues.push(d);
+                jValues.push(j);
+            }
+
+            return {
+                k: kValues,
+                d: dValues,
+                j: jValues,
+                time: timestamps.slice(period),
+            };
         }
     },
     mounted() {
@@ -350,6 +459,8 @@ export default {
                     return;
                 case 1:
                     y2.find(x => x.name == 'KD').visible = true
+                    // y2.find(x => x.name == 'D').visible = true
+                    y2.find(x => x.name == 'J').visible = true
                     return;
             }
         }

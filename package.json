@@ -18,9 +18,12 @@
     "@vuepic/vue-datepicker": "^5.4.0",
     "chart.js": "^4.3.0",
     "cheerio": "^1.0.0-rc.12",
+    "hhv-llv": "^1.0.2",
     "highcharts": "^11.1.0",
     "highcharts-vue": "^1.4.3",
     "lightweight-charts": "^4.0.1",
+    "math-array": "^1.1.2",
+    "moving-averages": "^4.0.6",
     "vue-chartjs": "^5.2.0",
     "vuetify": "^3.3.6"
   },
