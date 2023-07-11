@@ -313,7 +313,7 @@ export default {
             if (this.code.endsWith('_odd')) {
                 c = this.code.substring(0, this.code.length - '_odd'.length)
             }
-            const { data } = await useFetch(`https://script.google.com/macros/s/AKfycbyK8y078kb7e3RjcrIFJWJSwqWQxggUhcZ0aK5e_5fDvFld4BuHuiaVacV9lKRPzumG/exec?code=${c}`, { server: false })
+            const { data } = await useFetch(`https://script.google.com/macros/s/AKfycbxHnJ4zzHLkwcHbuYLsG8CtS6R4PFZhOa3o1OfvdzKCTy19Y3XuzpGewZ6hylWe5oDZ/exec?code=${c}`, { server: false })
 
             // @ts-ignore
             if (Array.isArray(data.value)) {
