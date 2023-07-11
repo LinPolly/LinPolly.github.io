@@ -227,7 +227,7 @@ export default {
             this.realtimeData.isdatareload = true
 
             if (this.stocks) {
-                var labels = this.stocks[this.stocks.length - 1]?.stock?.sort((a, b) => b.code.localeCompare(a.code)).map(x => x.code)
+                var labels = this.stocks[this.stocks.length - 1]?.stock?.sort((a, b) => b.code.toString().localeCompare(a.code.toString())).map(x => x.code)
                 if (labels) {
                     const { data } = await useFetch('/api/stock', {
                         params: {
@@ -239,7 +239,7 @@ export default {
 
                     if (this.realtimeData.data.length == 0)
                         this.realtimeData.data = newData
-                    // console.log(this.realtimeData.data.length)
+                        
                     newData.forEach(async item => {
                         var keys = Object.keys(item)
                         keys.forEach(x => {
@@ -313,7 +313,8 @@ export default {
             if (this.code.endsWith('_odd')) {
                 c = this.code.substring(0, this.code.length - '_odd'.length)
             }
-            const { data } = await useFetch(`/stock/${c}.json`, { server: false })
+            const { data } = await useFetch(`https://script.google.com/macros/s/AKfycbzJHF-q_EehRmg-IvW4OMgFu7XqAStlD6VaufoAVqxcq6OIxAo9qBHj_bXZQzk7eOV_/exec?code=${c}`, { server: false })
+
             // @ts-ignore
             if (Array.isArray(data.value)) {
                 // @ts-ignore
@@ -375,7 +376,7 @@ export default {
             if (this.stocks == null) return data
 
             var s = this.stocks.find(x => formatDate(x.date) == formatDate(this.date))
-            s?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => {
+            s?.stock.sort((a, b) => b.code.toString().localeCompare(a.code.toString())).map(x => {
                 return {
                     name: this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code,
                     volumn: formatAsCurrency(x.volumn, 0),
@@ -406,10 +407,10 @@ export default {
             data.datasets[0].data = []
 
             var s = this.stocks.find(x => formatDate(x.date) == formatDate(this.date))
-            s?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code)
+            s?.stock.sort((a, b) => b.code.toString().localeCompare(a.code.toString())).map(x => this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code)
                 .forEach(x => data.labels.push(x))
 
-            s?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => x.weights).forEach(x => data.datasets[0].data.push(x))
+            s?.stock.sort((a, b) => b.code.toString().localeCompare(a.code.toString())).map(x => x.weights).forEach(x => data.datasets[0].data.push(x))
             return data
         },
         chartOptions() {
@@ -475,10 +476,10 @@ export default {
             var ed = this.stocks.find(x => formatDate(x.date) == formatDate(edt))
             var sd = this.stocks.find(x => formatDate(x.date) == formatDate(sdt))
 
-            ed?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code)
+            ed?.stock.sort((a, b) => b.code.toString().localeCompare(a.code.toString())).map(x => this.infos.find(y => y.公司代號 == x.code)?.公司簡稱 ?? x.code)
                 .forEach(x => data.labels.push(x))
 
-            ed?.stock.sort((a, b) => b.code.localeCompare(a.code)).map(x => {
+            ed?.stock.sort((a, b) => b.code.toString().localeCompare(a.code.toString())).map(x => {
                 var f = sd?.stock.find(y => x.code == y.code)
                 return x.volumn - (f?.volumn ?? 0)
             }).forEach(x => {
