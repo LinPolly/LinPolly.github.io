@@ -36,6 +36,7 @@ import { Chart } from 'highcharts-vue'
 
 import indicators from "highcharts/indicators/indicators"
 import kdj_indicators from "~/indicators/kdj-indicator"
+import slowstochastic from "highcharts/indicators/slow-stochastic"
 import stochastic from "highcharts/indicators/stochastic"
 import dragpanes from 'highcharts/modules/drag-panes'
 
@@ -69,6 +70,7 @@ Highcharts.setOptions({
 
 indicators(Highcharts)
 stochastic(Highcharts)
+slowstochastic(Highcharts)
 dragpanes(Highcharts)
 kdj_indicators(Highcharts)
 
@@ -189,6 +191,18 @@ export default {
                     color: 'rgb(51, 139, 72)',
                     lineColor: 'rgb(51, 139, 72)',
                 },
+                // {
+                //     yAxis: 1,
+                //     name: 'KD',
+                //     type: 'slowstochastic',
+                //     linkedTo: 'main-series',
+                //     color: "#F56F0A",
+                //     lineColor: "#1947A3",
+                //     visible: true,
+                //     params: {
+                //         periods: [9, 3, 3]
+                //     }
+                // },
                 {
                     yAxis: 1,
                     name: 'K',
@@ -303,6 +317,7 @@ export default {
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA60')].data = this.calculateSMA(data, 60)
 
                     var kdj = this.calculateKDJ(data)
+                    console.log(kdj)
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'K')].data = kdj.time.map((x, i) => [x, kdj.k[i]])
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'D')].data = kdj.time.map((x, i) => [x, kdj.d[i]])
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'J')].data = kdj.time.map((x, i) => [x, kdj.j[i]])
@@ -325,8 +340,8 @@ export default {
                 // const KDObj = this.points[this.points.findIndex(x => x.series.name == 'KD')]
                 // const KDKey = KDObj.x
                 // const KDIndex = KDObj.series.xData.indexOf(KDKey)
-                // const k = KDObj.series.yData[KDIndex][0]
-                // const d = KDObj.series.yData[KDIndex][1]
+                // const krr = KDObj.series.yData[KDIndex][0]
+                // const drr = KDObj.series.yData[KDIndex][1]
 
                 const k = this.points[this.points.findIndex(x => x.series.name == 'K')]?.y ?? ''
                 const d = this.points[this.points.findIndex(x => x.series.name == 'D')]?.y ?? ''
@@ -377,6 +392,18 @@ export default {
                     }
                 }
 
+                // if (krr || drr) {
+                //     str += '<br>'
+
+                //     if (krr) {
+                //         str += `K ${parseFloat(krr.toString()).toFixed(2)}`
+                //     }
+                //     if (drr) {
+                //         if (krr) str += ' '
+                //         str += `D ${parseFloat(drr.toString()).toFixed(2)}`
+                //     }
+                // }
+
                 return str
             }
 
@@ -416,46 +443,52 @@ export default {
             }
             return result;
         },
-        calculateKDJ(data: number[][], period = 9): { time: number[], k: number[], d: number[], j: number[], rsv: number[] } {
-            const high: number[] = [];
-            const low: number[] = [];
-            const close: number[] = [];
-            const timestamps: number[] = [];
+        calculateRSV(closingPrice: number, lowPrice: number[], highPrice: number[]): number {
+            const minLowPrice = Math.min(...lowPrice);
+            const maxHighPrice = Math.max(...highPrice);
 
-            for (let i = 0; i < data.length; i++) {
-                const [timestamp, _, highPrice, lowPrice, closePrice] = data[i];
-                timestamps.push(timestamp);
-                high.push(highPrice);
-                low.push(lowPrice);
-                close.push(closePrice);
+            const rsv = (closingPrice - minLowPrice) / (maxHighPrice - minLowPrice) * 100;
+            return rsv;
+        },
+        calculateMovingAverage(data: number[], period: number): number {
+            const sum = data.reduce((a, b) => a + b, 0);
+            const average = sum / period;
+
+            return average;
+        },
+        calculateJ(k: number[], d: number[]): number[] {
+            const j: number[] = [];
+
+            for (let i = 0; i < k.length; i++) {
+                const currentJ = 3 * k[i] - 2 * d[i];
+                j.push(currentJ);
             }
 
-            const kValues: number[] = [];
-            const dValues: number[] = [];
+            return j;
+        },
+        calculateKDJ(data: number[][], period = 9, smaPeriod = 3): { time: number[], k: number[], d: number[], j: number[], rsv: number[] } {
+            const kValues: number[] = [50];
+            const dValues: number[] = [50];
             const jValues: number[] = [];
             const rsvValues: number[] = [];
 
-            for (let i = period; i < timestamps.length; i++) {
-                const highestHigh = Math.max(...high.slice(i - period, i));
-                const lowestLow = Math.min(...low.slice(i - period, i));
-                const r = highestHigh - lowestLow;
+            for (let i = period; i < data.length; i++) {
+                // time, open, high, low, close
+                let close = data[i][4]
 
-                const rsv = (close[i] - lowestLow) / r * 100;
+                let highestHigh = Math.max(...data.slice(i - period, i).map(x => x[2]));
+                let lowestLow = Math.min(...data.slice(i - period, i).map(x => x[3]));
+                let r = highestHigh - lowestLow;
 
-                var prevK = 50
-                var prevD = 50
+                let rsv = ((close - lowestLow) / r) * 100;
 
-                if (kValues.length > 0) {
-                    prevK = kValues[kValues.length - 1]
-                }
-                if (dValues.length > 0) {
-                    prevD = dValues[dValues.length - 1]
-                }
+                var prevK = kValues[kValues.length - 1]
+                var prevD = dValues[dValues.length - 1]
 
-                var k = ((2 / 3) * prevK) + ((1 / 3) * rsv);
-                var d = ((2 / 3) * prevD) + ((1 / 3) * k);
+                var k = (prevK * 2 / 3) + (rsv / 3);
+                var d = (prevD * 2 / 3) + (k / 3);
 
-                const j = 3 * k - 2 * d;
+                const j = (3 * d) - (2 * k);
 
                 kValues.push(k);
                 dValues.push(d);
@@ -467,8 +500,8 @@ export default {
                 k: kValues,
                 d: dValues,
                 j: jValues,
-                rsv: rsvValues,
-                time: timestamps.slice(period),
+                rsv: [],
+                time: data.slice(period).map(x => x[0]),
             };
         }
     },
@@ -488,6 +521,7 @@ export default {
                     y2.find(x => x.name == '成交量').visible = true
                     return;
                 case 1:
+                    // y2.find(x => x.name == 'KD').visible = true
                     y2.find(x => x.name == 'K').visible = true
                     y2.find(x => x.name == 'D').visible = true
                     y2.find(x => x.name == 'J').visible = true
