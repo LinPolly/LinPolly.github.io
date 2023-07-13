@@ -148,9 +148,9 @@
                                 <v-list-item
                                     v-for="(item, i) in trimEnd(symbol?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
                                     :key="i">
-                                    <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
+                                    <v-list-item-title v-text="item == '-' ? '-' : formatAsCurrency(parseInt(item), 0)">
                                     </v-list-item-title>
-                                    <v-list-item-action>
+                                    <v-list-item-action v-if="item != '-'">
                                         <v-progress-linear :model-value="parseInt(item)"
                                             :max="trimEnd(symbol?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).sort((a, b) => b - a)[0]"
                                             reverse>
@@ -165,8 +165,8 @@
                                     v-for="(item, i) in trimEnd(symbol?.b ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
                                     :key="i">
                                     <v-list-item-title
-                                        :style="{ color: symbol?.y == item ? null : (parseFloat(item) > parseFloat(symbol?.y) ? 'red' : 'green') }"
-                                        v-text="trimEnd(item, '0')"></v-list-item-title>
+                                        :style="{ color: symbol?.y == item || item == '-' ? null : ((parseFloat(item) == 0 || parseFloat(item) == parseFloat(symbol.h) ? parseFloat(symbol.h) : parseFloat(item)) > parseFloat(symbol?.y) ? 'red' : 'green') }"
+                                        v-text="trimEnd((i == 0 && (parseFloat(item) == 0 || parseFloat(item) == parseFloat(symbol.h)) ? '市價' : item), '0')"></v-list-item-title>
                                 </v-list-item>
                             </v-list>
                         </v-col>
@@ -175,7 +175,7 @@
                     <v-row>
                         <v-col>
                             <v-list-item
-                                :title="symbol?.g ? formatAsCurrency(trimEnd(symbol?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0) : 0">
+                                :title="symbol?.g && symbol?.g != '-' ? formatAsCurrency(trimEnd(symbol?.g ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0) : 0">
                             </v-list-item>
                         </v-col>
                         <v-col>
@@ -203,8 +203,8 @@
                                     v-for="(item, i) in trimEnd(symbol?.a ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
                                     :key="i">
                                     <v-list-item-title
-                                        :style="{ color: symbol?.y == item ? null : (parseFloat(item) > parseFloat(symbol?.y) ? 'red' : 'green') }"
-                                        v-text="trimEnd(item, '0')"></v-list-item-title>
+                                        :style="{ color: symbol?.y == item || item == '-' ? null : ((parseFloat(item) == 0 || parseFloat(item) == parseFloat(symbol.l) ? parseFloat(symbol.l) : parseFloat(item)) > parseFloat(symbol?.y) ? 'red' : 'green') }"
+                                        v-text="trimEnd((i == 0 && (parseFloat(item) == 0 || parseFloat(item) == parseFloat(symbol.l)) ? symbol.l : item), '0')"></v-list-item-title>
                                 </v-list-item>
                             </v-list>
                         </v-col>
@@ -213,9 +213,9 @@
                                 <v-list-item
                                     v-for="(item, i) in trimEnd(symbol?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5)"
                                     :key="i">
-                                    <v-list-item-title v-text="formatAsCurrency(parseInt(item), 0)">
+                                    <v-list-item-title v-text="item == '-' ? '-' : formatAsCurrency(parseInt(item), 0)">
                                     </v-list-item-title>
-                                    <v-list-item-action>
+                                    <v-list-item-action v-if="item != '-'">
                                         <v-progress-linear :model-value="parseInt(item)"
                                             :max="trimEnd(symbol?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).sort((a, b) => b - a)[0]">
                                         </v-progress-linear>
@@ -232,7 +232,7 @@
                         </v-col>
                         <v-col>
                             <v-list-item
-                                :title="symbol?.f ? formatAsCurrency(trimEnd(symbol?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0) : 0">
+                                :title="symbol?.f && symbol?.f != '-' ? formatAsCurrency(trimEnd(symbol?.f ?? '', '_').split('_').filter(x => x != '').slice(0, 5).map(x => parseInt(x)).reduce((a, b) => a + b), 0) : 0">
                             </v-list-item>
                         </v-col>
                     </v-row>

@@ -1,4 +1,5 @@
 import * as cache from '~~/server/cache/stock';
+import * as 上櫃 from '~~/server/static/上櫃'
 
 export default defineEventHandler(async (event) => {
     try {
@@ -7,6 +8,10 @@ export default defineEventHandler(async (event) => {
         const interval = query.interval ?? '1d'
         let controller = new AbortController();
         var symbol = `${code}.TW`
+
+        if (上櫃.has(code.toString())) {
+            symbol += 'O'
+        }
 
         var ff = cache.get(`chart_his_${symbol}_${interval}`)
         if (ff) {
