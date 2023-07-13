@@ -97,7 +97,8 @@ export default {
 
                         chart.xAxis[0].setExtremes(startDate, endDate)
                     }
-                }
+                },
+                marginRight: 50,
             },
             rangeSelector: {
                 inputEnabled: false
@@ -112,19 +113,20 @@ export default {
             },
             plotOptions: {
                 series: {
-                    showInLegend: true
+                    showInLegend: false
                 }
             },
             xAxis: { // 
                 labels: {
                     format: "",
-                }
+                },
+                crosshair: true,
             },
             yAxis: [
                 {
                     labels: {
                         align: 'right',
-                        x: -3
+                        x: 30
                     },
                     height: '75%',
                     lineWidth: 2,
@@ -135,7 +137,7 @@ export default {
                 {
                     labels: {
                         align: 'right',
-                        x: -3
+                        x: 30
                     },
                     top: '77%',
                     height: '23%',
@@ -188,7 +190,7 @@ export default {
                     upLineColor: 'rgb(223, 63, 63)',
                     color: 'rgb(51, 139, 72)',
                     lineColor: 'rgb(51, 139, 72)',
-                },            
+                },
                 {
                     yAxis: 1,
                     name: 'K',
@@ -508,7 +510,7 @@ export default {
     },
     mounted() {
         this.init()
-    }, 
+    },
     watch: {
         'showMode': function (newValue) {
             var y2 = this.chartOptions.series.filter(x => x.yAxis == 1)
