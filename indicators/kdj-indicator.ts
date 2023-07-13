@@ -6,7 +6,7 @@ function getJ(xData: any, yData: any) {
         yData,
         values: yData.map((stochasticValues: [number, number]) => {
             const [k, d] = stochasticValues;
-            const j = (3 * d) - (2 * k);
+            const j = (3 * k) - (2 * d);
             return j;
         }),
     };

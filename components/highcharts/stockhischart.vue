@@ -191,21 +191,36 @@ export default {
                 },
                 {
                     yAxis: 1,
-                    name: 'KD',
-                    type: 'stochastic',
+                    name: 'K',
                     linkedTo: 'main-series',
+                    data: [],
+                    color: "#1947A3",
+                    visible: true
+                },
+                {
+                    yAxis: 1,
+                    name: 'D',
+                    linkedTo: 'main-series',
+                    data: [],
                     color: "#F56F0A",
-                    lineColor: "#1947A3",
-                    visible: false
+                    visible: true,
                 },
                 {
                     yAxis: 1,
                     name: 'J',
-                    type: 'stochastic-j',
                     linkedTo: 'main-series',
+                    data: [],
                     color: "green",
-                    visible: false,
+                    visible: true,
                     dashStyle: 'Dash',
+                },
+                {
+                    yAxis: 1,
+                    name: 'RSV',
+                    linkedTo: 'main-series',
+                    data: [],
+                    color: "green",
+                    visible: true,
                 },
                 {
                     type: 'column',
@@ -287,12 +302,11 @@ export default {
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA20')].data = this.calculateSMA(data, 20)
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA60')].data = this.calculateSMA(data, 60)
 
-                    // var kdj = this.calculateKDJ(data)                    
-                    // this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'K')].data = kdj.time.map((x, i) => [x, kdj.k[i]])
-                    // this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'D')].data = kdj.time.map((x, i) => [x, kdj.d[i]])
-                    // this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'J')].data = kdj.time.map((x, i) => [x, kdj.j[i]])
-
-                    // lineSeries.setData(data)
+                    var kdj = this.calculateKDJ(data)
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'K')].data = kdj.time.map((x, i) => [x, kdj.k[i]])
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'D')].data = kdj.time.map((x, i) => [x, kdj.d[i]])
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'J')].data = kdj.time.map((x, i) => [x, kdj.j[i]])
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'RSV')].data = kdj.time.map((x, i) => [x, kdj.rsv[i]])
                 }
             }
 
@@ -308,9 +322,15 @@ export default {
                 const ma20 = this.points[this.points.findIndex(x => x.series.name == 'MA20')]?.y ?? ''
                 const ma60 = this.points[this.points.findIndex(x => x.series.name == 'MA60')]?.y ?? ''
 
-                // const k = this.points[this.points.findIndex(x => x.series.name == 'K')]?.y ?? ''
-                // const d = this.points[this.points.findIndex(x => x.series.name == 'D')]?.y ?? ''
-                // const j = this.points[this.points.findIndex(x => x.series.name == 'J')]?.y ?? ''
+                // const KDObj = this.points[this.points.findIndex(x => x.series.name == 'KD')]
+                // const KDKey = KDObj.x
+                // const KDIndex = KDObj.series.xData.indexOf(KDKey)
+                // const k = KDObj.series.yData[KDIndex][0]
+                // const d = KDObj.series.yData[KDIndex][1]
+
+                const k = this.points[this.points.findIndex(x => x.series.name == 'K')]?.y ?? ''
+                const d = this.points[this.points.findIndex(x => x.series.name == 'D')]?.y ?? ''
+                const j = this.points[this.points.findIndex(x => x.series.name == 'J')]?.y ?? ''
 
                 if (this.point?.open == null
                     || this.point?.high == null
@@ -341,21 +361,21 @@ export default {
                     }
                 }
 
-                // if (k || d || j) {
-                //     str += '<br>'
+                if (k || d || j) {
+                    str += '<br>'
 
-                //     if (k) {
-                //         str += `K ${parseFloat(k.toString()).toFixed(2)}`
-                //     }
-                //     if (d) {
-                //         if (k) str += ' '
-                //         str += `J ${parseFloat(d.toString()).toFixed(2)}`
-                //     }
-                //     if (j) {
-                //         if (d) str += ' '
-                //         str += `J ${parseFloat(j.toString()).toFixed(2)}`
-                //     }
-                // }
+                    if (k) {
+                        str += `K ${parseFloat(k.toString()).toFixed(2)}`
+                    }
+                    if (d) {
+                        if (k) str += ' '
+                        str += `D ${parseFloat(d.toString()).toFixed(2)}`
+                    }
+                    if (j) {
+                        if (d) str += ' '
+                        str += `J ${parseFloat(j.toString()).toFixed(2)}`
+                    }
+                }
 
                 return str
             }
@@ -396,7 +416,7 @@ export default {
             }
             return result;
         },
-        calculateKDJ(data: number[][], period = 14): { time: number[], k: number[], d: number[], j: number[] } {
+        calculateKDJ(data: number[][], period = 9): { time: number[], k: number[], d: number[], j: number[], rsv: number[] } {
             const high: number[] = [];
             const low: number[] = [];
             const close: number[] = [];
@@ -413,31 +433,41 @@ export default {
             const kValues: number[] = [];
             const dValues: number[] = [];
             const jValues: number[] = [];
+            const rsvValues: number[] = [];
 
-            let k = 50; // 初始 K 值
-            let d = 50; // 初始 D 值
-
-            for (let i = period; i < high.length; i++) {
+            for (let i = period; i < timestamps.length; i++) {
                 const highestHigh = Math.max(...high.slice(i - period, i));
                 const lowestLow = Math.min(...low.slice(i - period, i));
                 const r = highestHigh - lowestLow;
 
                 const rsv = (close[i] - lowestLow) / r * 100;
 
-                k = (2 / 3) * k + (1 / 3) * rsv;
-                d = (2 / 3) * d + (1 / 3) * k;
+                var prevK = 50
+                var prevD = 50
+
+                if (kValues.length > 0) {
+                    prevK = kValues[kValues.length - 1]
+                }
+                if (dValues.length > 0) {
+                    prevD = dValues[dValues.length - 1]
+                }
+
+                var k = ((2 / 3) * prevK) + ((1 / 3) * rsv);
+                var d = ((2 / 3) * prevD) + ((1 / 3) * k);
 
                 const j = 3 * k - 2 * d;
 
                 kValues.push(k);
                 dValues.push(d);
                 jValues.push(j);
+                rsvValues.push(rsv)
             }
 
             return {
                 k: kValues,
                 d: dValues,
                 j: jValues,
+                rsv: rsvValues,
                 time: timestamps.slice(period),
             };
         }
@@ -458,8 +488,8 @@ export default {
                     y2.find(x => x.name == '成交量').visible = true
                     return;
                 case 1:
-                    y2.find(x => x.name == 'KD').visible = true
-                    // y2.find(x => x.name == 'D').visible = true
+                    y2.find(x => x.name == 'K').visible = true
+                    y2.find(x => x.name == 'D').visible = true
                     y2.find(x => x.name == 'J').visible = true
                     return;
             }
