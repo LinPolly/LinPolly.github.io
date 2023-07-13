@@ -191,34 +191,34 @@ export default {
                     color: 'rgb(51, 139, 72)',
                     lineColor: 'rgb(51, 139, 72)',
                 },
+                {
+                    yAxis: 1,
+                    name: 'KD',
+                    type: 'slowstochastic',
+                    linkedTo: 'main-series',
+                    color: "#F56F0A",
+                    lineColor: "#1947A3",
+                    visible: true,
+                    params: {
+                        periods: [9, 3, 3]
+                    }
+                },
                 // {
                 //     yAxis: 1,
-                //     name: 'KD',
-                //     type: 'slowstochastic',
+                //     name: 'K',
                 //     linkedTo: 'main-series',
-                //     color: "#F56F0A",
-                //     lineColor: "#1947A3",
-                //     visible: true,
-                //     params: {
-                //         periods: [9, 3, 3]
-                //     }
+                //     data: [],
+                //     color: "#1947A3",
+                //     visible: true
                 // },
-                {
-                    yAxis: 1,
-                    name: 'K',
-                    linkedTo: 'main-series',
-                    data: [],
-                    color: "#1947A3",
-                    visible: true
-                },
-                {
-                    yAxis: 1,
-                    name: 'D',
-                    linkedTo: 'main-series',
-                    data: [],
-                    color: "#F56F0A",
-                    visible: true,
-                },
+                // {
+                //     yAxis: 1,
+                //     name: 'D',
+                //     linkedTo: 'main-series',
+                //     data: [],
+                //     color: "#F56F0A",
+                //     visible: true,
+                // },
                 {
                     yAxis: 1,
                     name: 'J',
@@ -337,14 +337,14 @@ export default {
                 const ma20 = this.points[this.points.findIndex(x => x.series.name == 'MA20')]?.y ?? ''
                 const ma60 = this.points[this.points.findIndex(x => x.series.name == 'MA60')]?.y ?? ''
 
-                // const KDObj = this.points[this.points.findIndex(x => x.series.name == 'KD')]
-                // const KDKey = KDObj.x
-                // const KDIndex = KDObj.series.xData.indexOf(KDKey)
-                // const krr = KDObj.series.yData[KDIndex][0]
-                // const drr = KDObj.series.yData[KDIndex][1]
+                const KDObj = this.points[this.points.findIndex(x => x.series.name == 'KD')]
+                const KDKey = KDObj?.x
+                const KDIndex = KDObj?.series?.xData?.indexOf(KDKey)
+                const krr = KDObj?.series?.yData[KDIndex][0]
+                const drr = KDObj?.series?.yData[KDIndex][1]
 
-                const k = this.points[this.points.findIndex(x => x.series.name == 'K')]?.y ?? ''
-                const d = this.points[this.points.findIndex(x => x.series.name == 'D')]?.y ?? ''
+                // const k = this.points[this.points.findIndex(x => x.series.name == 'K')]?.y ?? ''
+                // const d = this.points[this.points.findIndex(x => x.series.name == 'D')]?.y ?? ''
                 const j = this.points[this.points.findIndex(x => x.series.name == 'J')]?.y ?? ''
 
                 if (this.point?.open == null
@@ -376,33 +376,33 @@ export default {
                     }
                 }
 
-                if (k || d || j) {
-                    str += '<br>'
-
-                    if (k) {
-                        str += `K ${parseFloat(k.toString()).toFixed(2)}`
-                    }
-                    if (d) {
-                        if (k) str += ' '
-                        str += `D ${parseFloat(d.toString()).toFixed(2)}`
-                    }
-                    if (j) {
-                        if (d) str += ' '
-                        str += `J ${parseFloat(j.toString()).toFixed(2)}`
-                    }
-                }
-
-                // if (krr || drr) {
+                // if (k || d || j) {
                 //     str += '<br>'
 
-                //     if (krr) {
-                //         str += `K ${parseFloat(krr.toString()).toFixed(2)}`
+                //     if (k) {
+                //         str += `K ${parseFloat(k.toString()).toFixed(2)}`
                 //     }
-                //     if (drr) {
-                //         if (krr) str += ' '
-                //         str += `D ${parseFloat(drr.toString()).toFixed(2)}`
+                //     if (d) {
+                //         if (k) str += ' '
+                //         str += `D ${parseFloat(d.toString()).toFixed(2)}`
+                //     }
+                //     if (j) {
+                //         if (d) str += ' '
+                //         str += `J ${parseFloat(j.toString()).toFixed(2)}`
                 //     }
                 // }
+
+                if (krr || drr) {
+                    str += '<br>'
+
+                    if (krr) {
+                        str += `K ${parseFloat(krr.toString()).toFixed(2)}`
+                    }
+                    if (drr) {
+                        if (krr) str += ' '
+                        str += `D ${parseFloat(drr.toString()).toFixed(2)}`
+                    }
+                }
 
                 return str
             }
