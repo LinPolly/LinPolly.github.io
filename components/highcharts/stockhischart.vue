@@ -176,9 +176,9 @@ export default {
                     return position;
                 },
             },
-            // exporting: {
-            //     enabled: true
-            // },
+            exporting: {
+                enabled: true
+            },
             series: [
                 {
                     type: 'candlestick',
@@ -191,34 +191,43 @@ export default {
                     color: 'rgb(51, 139, 72)',
                     lineColor: 'rgb(51, 139, 72)',
                 },
+                // {
+                //     yAxis: 1,
+                //     name: 'KD',
+                //     type: 'slowstochastic',
+                //     linkedTo: 'main-series',
+                //     color: "#F56F0A",
+                //     lineColor: "#1947A3",
+                //     visible: true,
+                //     params: {
+                //         periods: [9, 3, 3]
+                //     }
+                // },
+                // {
+                //     yAxis: 1,
+                //     name: 'J',
+                //     type: 'stochastic-j',
+                //     linkedTo: 'main-series',
+                //     color: "green",
+                //     visible: true,
+                //     dashStyle: 'Dash',
+                // },
                 {
                     yAxis: 1,
-                    name: 'KD',
-                    type: 'slowstochastic',
+                    name: 'K',
                     linkedTo: 'main-series',
-                    color: "#F56F0A",
-                    lineColor: "#1947A3",
-                    visible: true,
-                    params: {
-                        periods: [9, 3, 3]
-                    }
+                    data: [],
+                    color: "#1947A3",
+                    visible: true
                 },
-                // {
-                //     yAxis: 1,
-                //     name: 'K',
-                //     linkedTo: 'main-series',
-                //     data: [],
-                //     color: "#1947A3",
-                //     visible: true
-                // },
-                // {
-                //     yAxis: 1,
-                //     name: 'D',
-                //     linkedTo: 'main-series',
-                //     data: [],
-                //     color: "#F56F0A",
-                //     visible: true,
-                // },
+                {
+                    yAxis: 1,
+                    name: 'D',
+                    linkedTo: 'main-series',
+                    data: [],
+                    color: "#F56F0A",
+                    visible: true,
+                },
                 {
                     yAxis: 1,
                     name: 'J',
@@ -248,7 +257,16 @@ export default {
                     marker: {
                         enabled: false
                     },
-                    color: 'rgb(25, 71, 163)',
+                    color: 'blue',
+                    yAxis: 0,
+                },
+                {
+                    name: 'MA10',
+                    data: [],
+                    marker: {
+                        enabled: false
+                    },
+                    color: 'red',
                     yAxis: 0,
                 },
                 {
@@ -257,7 +275,16 @@ export default {
                     marker: {
                         enabled: false
                     },
-                    color: 'rgb(245, 111, 10)',
+                    color: 'orange',
+                    yAxis: 0,
+                },
+                {
+                    name: 'MA120',
+                    data: [],
+                    marker: {
+                        enabled: false
+                    },
+                    color: 'green',
                     yAxis: 0,
                 },
                 {
@@ -266,7 +293,16 @@ export default {
                     marker: {
                         enabled: false
                     },
-                    color: 'rgb(62, 145, 82)',
+                    color: 'purple',
+                    yAxis: 0,
+                },
+                {
+                    name: 'MA240',
+                    data: [],
+                    marker: {
+                        enabled: false
+                    },
+                    color: 'brown',
                     yAxis: 0,
                 }
             ],
@@ -313,11 +349,14 @@ export default {
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'K線')].data = data
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == '成交量')].data = volumeData
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA5')].data = this.calculateSMA(data, 5)
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA10')].data = this.calculateSMA(data, 10)
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA20')].data = this.calculateSMA(data, 20)
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA60')].data = this.calculateSMA(data, 60)
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA120')].data = this.calculateSMA(data, 120)
+                    this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'MA240')].data = this.calculateSMA(data, 240)
 
-                    var kdj = this.calculateKDJ(data)
-                    console.log(kdj)
+                    var kdj = this.calculateKD(data)
+
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'K')].data = kdj.time.map((x, i) => [x, kdj.k[i]])
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'D')].data = kdj.time.map((x, i) => [x, kdj.d[i]])
                     this.chartOptions.series[me.chartOptions.series.findIndex(x => x.name == 'J')].data = kdj.time.map((x, i) => [x, kdj.j[i]])
@@ -328,23 +367,27 @@ export default {
             this.chartOptions.xAxis.labels.formatter = function () {
                 return me.timestampToTime(this.value / 1000)
             }
+
             this.chartOptions.tooltip.formatter = function () {
                 var dateStr = me.timestampToTime(this.point.x / 1000)
 
                 const volume = this.points[this.points.findIndex(x => x.series.name == '成交量')]?.y ?? ''
 
                 const ma5 = this.points[this.points.findIndex(x => x.series.name == 'MA5')]?.y ?? ''
+                const ma10 = this.points[this.points.findIndex(x => x.series.name == 'MA10')]?.y ?? ''
                 const ma20 = this.points[this.points.findIndex(x => x.series.name == 'MA20')]?.y ?? ''
                 const ma60 = this.points[this.points.findIndex(x => x.series.name == 'MA60')]?.y ?? ''
+                const ma120 = this.points[this.points.findIndex(x => x.series.name == 'MA120')]?.y ?? ''
+                const ma240 = this.points[this.points.findIndex(x => x.series.name == 'MA240')]?.y ?? ''
 
-                const KDObj = this.points[this.points.findIndex(x => x.series.name == 'KD')]
-                const KDKey = KDObj?.x
-                const KDIndex = KDObj?.series?.xData?.indexOf(KDKey)
-                const krr = KDObj?.series?.yData[KDIndex][0]
-                const drr = KDObj?.series?.yData[KDIndex][1]
+                // const KDObj = this.points[this.points.findIndex(x => x.series.name == 'KD')]
+                // const KDKey = KDObj?.x
+                // const KDIndex = KDObj?.series?.xData?.indexOf(KDKey)
+                // const krr = KDObj?.series?.yData[KDIndex][0]
+                // const drr = KDObj?.series?.yData[KDIndex][1]
 
-                // const k = this.points[this.points.findIndex(x => x.series.name == 'K')]?.y ?? ''
-                // const d = this.points[this.points.findIndex(x => x.series.name == 'D')]?.y ?? ''
+                const k = this.points[this.points.findIndex(x => x.series.name == 'K')]?.y ?? ''
+                const d = this.points[this.points.findIndex(x => x.series.name == 'D')]?.y ?? ''
                 const j = this.points[this.points.findIndex(x => x.series.name == 'J')]?.y ?? ''
 
                 if (this.point?.open == null
@@ -366,43 +409,55 @@ export default {
                     if (ma5) {
                         str += `MA5 ${parseFloat(ma5.toString()).toFixed(2)}`
                     }
-                    if (ma20) {
+                    if (ma10) {
                         if (ma5) str += ' '
+                        str += `MA10 ${parseFloat(ma10.toString()).toFixed(2)}`
+                    }
+                    if (ma20) {
+                        if (ma10) str += ' '
                         str += `MA20 ${parseFloat(ma20.toString()).toFixed(2)}`
                     }
                     if (ma60) {
                         if (ma20) str += ' '
                         str += `MA60 ${parseFloat(ma60.toString()).toFixed(2)}`
                     }
+                    if (ma120) {
+                        if (ma60) str += ' '
+                        str += `MA120 ${parseFloat(ma120.toString()).toFixed(2)}`
+                    }
+                    if (ma240) {
+                        if (ma120) str += ' '
+                        str += `MA240 ${parseFloat(ma240.toString()).toFixed(2)}`
+                    }
                 }
 
-                // if (k || d || j) {
-                //     str += '<br>'
-
-                //     if (k) {
-                //         str += `K ${parseFloat(k.toString()).toFixed(2)}`
-                //     }
-                //     if (d) {
-                //         if (k) str += ' '
-                //         str += `D ${parseFloat(d.toString()).toFixed(2)}`
-                //     }
-                //     if (j) {
-                //         if (d) str += ' '
-                //         str += `J ${parseFloat(j.toString()).toFixed(2)}`
-                //     }
-                // }
-
-                if (krr || drr) {
+                if (k || d || j) {
                     str += '<br>'
 
-                    if (krr) {
-                        str += `K ${parseFloat(krr.toString()).toFixed(2)}`
+                    if (k) {
+                        str += `K ${parseFloat(k.toString()).toFixed(2)}`
                     }
-                    if (drr) {
-                        if (krr) str += ' '
-                        str += `D ${parseFloat(drr.toString()).toFixed(2)}`
+                    if (d) {
+                        if (k) str += ' '
+                        str += `D ${parseFloat(d.toString()).toFixed(2)}`
+                    }
+                    if (j) {
+                        if (d) str += ' '
+                        str += `J ${parseFloat(j.toString()).toFixed(2)}`
                     }
                 }
+
+                // if (krr || drr) {
+                //     str += '<br>'
+
+                //     if (krr) {
+                //         str += `K ${parseFloat(krr.toString()).toFixed(2)}`
+                //     }
+                //     if (drr) {
+                //         if (krr) str += ' '
+                //         str += `D ${parseFloat(drr.toString()).toFixed(2)}`
+                //     }
+                // }
 
                 return str
             }
@@ -443,66 +498,53 @@ export default {
             }
             return result;
         },
-        calculateRSV(closingPrice: number, lowPrice: number[], highPrice: number[]): number {
-            const minLowPrice = Math.min(...lowPrice);
-            const maxHighPrice = Math.max(...highPrice);
+        calculateKD: function (data: number[][], period = 9): { time: number[], k: number[], d: number[], j: number[], k3d2: number[], rsv: number[] } {
+            var time, o, rsv, highest, lowest, j9, k3d2
+            var timeValues: number[] = []
+            var kValues: number[] = []
+            var dValues: number[] = []
+            var jValues: number[] = []
+            var k3d2Values: number[] = []
+            var rsvValues: number[] = []
 
-            const rsv = (closingPrice - minLowPrice) / (maxHighPrice - minLowPrice) * 100;
-            return rsv;
-        },
-        calculateMovingAverage(data: number[], period: number): number {
-            const sum = data.reduce((a, b) => a + b, 0);
-            const average = sum / period;
+            var k9 = .5
+            var d9 = .5
 
-            return average;
-        },
-        calculateJ(k: number[], d: number[]): number[] {
-            const j: number[] = [];
+            for (let i = 0; i < data.length; i++) {
+                time = data[i][0]
 
-            for (let i = 0; i < k.length; i++) {
-                const currentJ = 3 * k[i] - 2 * d[i];
-                j.push(currentJ);
-            }
+                if (i > period) {
+                    highest = data[i][2]
+                    lowest = data[i][3]
+                    var close = data[i][4]
+                    for (o = 1; o < period; o++) {
+                        highest = Math.max(highest, data[i - o][2])
+                        lowest = Math.min(lowest, data[i - o][3])
+                    }
 
-            return j;
-        },
-        calculateKDJ(data: number[][], period = 9, smaPeriod = 3): { time: number[], k: number[], d: number[], j: number[], rsv: number[] } {
-            const kValues: number[] = [50];
-            const dValues: number[] = [50];
-            const jValues: number[] = [];
-            const rsvValues: number[] = [];
+                    rsv = (close - lowest) / (highest - lowest) || 0
+                    k9 = (2 * k9 / 3) + (rsv / 3)
+                    d9 = (2 * d9 / 3) + (k9 / 3)
+                    j9 = (3 * d9) - (2 * k9)
+                    k3d2 = (3 * k9) - (2 * d9)
 
-            for (let i = period; i < data.length; i++) {
-                // time, open, high, low, close
-                let close = data[i][4]
-
-                let highestHigh = Math.max(...data.slice(i - period, i).map(x => x[2]));
-                let lowestLow = Math.min(...data.slice(i - period, i).map(x => x[3]));
-                let r = highestHigh - lowestLow;
-
-                let rsv = ((close - lowestLow) / r) * 100;
-
-                var prevK = kValues[kValues.length - 1]
-                var prevD = dValues[dValues.length - 1]
-
-                var k = (prevK * 2 / 3) + (rsv / 3);
-                var d = (prevD * 2 / 3) + (k / 3);
-
-                const j = (3 * d) - (2 * k);
-
-                kValues.push(k);
-                dValues.push(d);
-                jValues.push(j);
-                rsvValues.push(rsv)
+                    kValues.push(100 * k9)
+                    dValues.push(100 * d9)
+                    jValues.push(100 * j9)
+                    k3d2Values.push(100 * k3d2)
+                    rsvValues.push(100 * rsv)
+                    timeValues.push(time)
+                }
             }
 
             return {
+                time: timeValues,
                 k: kValues,
                 d: dValues,
                 j: jValues,
-                rsv: [],
-                time: data.slice(period).map(x => x[0]),
-            };
+                k3d2: k3d2Values,
+                rsv: rsvValues,
+            }
         }
     },
     mounted() {
