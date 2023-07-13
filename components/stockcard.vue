@@ -9,7 +9,7 @@
                             {{ symbol.n }} {{ symbol.c }}
                         </v-list-item-title>
                         <hr style="margin-bottom: 8px;">
-                        <v-list-item-subtitle>
+                        <v-list-item-subtitle style="opacity: 1 !important;">
                             <span
                                 :style="{ fontSize: '18px', fontWeight: 'bold', marginRight: '8px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                                 {{
@@ -45,7 +45,7 @@
                                 ({{ isNumeric(symbol.z) ? Math.abs(diffp(symbol?.z, symbol?.y)) : symbol.z }}%)
                             </span>
                         </v-list-item-subtitle>
-                        <v-list-item-subtitle>
+                        <v-list-item-subtitle style="opacity: 1 !important;">
                             總量 {{ trimEnd(formatAsCurrency(parseFloat(symbol?.v), 2), '0') }}張
                         </v-list-item-subtitle>
                     </v-list-item>
@@ -63,7 +63,7 @@
             <hr v-if="cardStyle != 'mini'">
             <v-card-title v-if="cardStyle != 'mini'">
                 <span
-                    :style="{ fontSize: '32px', marginRight: '8px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
+                    :style="{ fontSize: '32px', fontWeight: 'bold', marginRight: '8px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                     {{
                         isNumeric(symbol.z) ? trimEnd(formatAsCurrency(parseFloat(symbol.z), 2), '0') : symbol.z
                     }}
