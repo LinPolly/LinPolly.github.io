@@ -11,7 +11,7 @@
                         <hr style="margin-bottom: 8px;">
                         <v-list-item-subtitle>
                             <span
-                                :style="{ fontSize: '16px', marginRight: '8px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
+                                :style="{ fontSize: '18px', fontWeight: 'bold', marginRight: '8px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                                 {{
                                     isNumeric(symbol.z) ? trimEnd(formatAsCurrency(parseFloat(symbol.z), 2), '0') : symbol.z
                                 }}
@@ -37,11 +37,11 @@
                                     fill="#D3321C"></path>
                             </svg>
                             <span
-                                :style="{ fontSize: '10px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
+                                :style="{ fontSize: '14px', fontWeight: 'bold', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                                 {{ isNumeric(symbol.z) ? Math.abs(diff(symbol?.z, symbol?.y)) : symbol.z }}
                             </span>
                             <span
-                                :style="{ fontSize: '10px', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
+                                :style="{ fontSize: '14px', fontWeight: 'bold', color: diff(symbol?.z, symbol?.y) == 0 || !isNumeric(symbol.z) ? null : (diff(symbol?.z, symbol?.y) > 0 ? 'red' : 'green') }">
                                 ({{ isNumeric(symbol.z) ? Math.abs(diffp(symbol?.z, symbol?.y)) : symbol.z }}%)
                             </span>
                         </v-list-item-subtitle>
