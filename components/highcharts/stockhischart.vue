@@ -35,7 +35,6 @@ import Highcharts from 'highcharts'
 import { Chart } from 'highcharts-vue'
 
 import indicators from "highcharts/indicators/indicators"
-import kdj_indicators from "~/indicators/kdj-indicator"
 import slowstochastic from "highcharts/indicators/slow-stochastic"
 import stochastic from "highcharts/indicators/stochastic"
 import dragpanes from 'highcharts/modules/drag-panes'
@@ -72,7 +71,6 @@ indicators(Highcharts)
 stochastic(Highcharts)
 slowstochastic(Highcharts)
 dragpanes(Highcharts)
-kdj_indicators(Highcharts)
 
 annotationsadvanced(Highcharts)
 priceindicator(Highcharts)
@@ -190,28 +188,7 @@ export default {
                     upLineColor: 'rgb(223, 63, 63)',
                     color: 'rgb(51, 139, 72)',
                     lineColor: 'rgb(51, 139, 72)',
-                },
-                // {
-                //     yAxis: 1,
-                //     name: 'KD',
-                //     type: 'slowstochastic',
-                //     linkedTo: 'main-series',
-                //     color: "#F56F0A",
-                //     lineColor: "#1947A3",
-                //     visible: true,
-                //     params: {
-                //         periods: [9, 3, 3]
-                //     }
-                // },
-                // {
-                //     yAxis: 1,
-                //     name: 'J',
-                //     type: 'stochastic-j',
-                //     linkedTo: 'main-series',
-                //     color: "green",
-                //     visible: true,
-                //     dashStyle: 'Dash',
-                // },
+                },            
                 {
                     yAxis: 1,
                     name: 'K',
@@ -380,12 +357,6 @@ export default {
                 const ma120 = this.points[this.points.findIndex(x => x.series.name == 'MA120')]?.y ?? ''
                 const ma240 = this.points[this.points.findIndex(x => x.series.name == 'MA240')]?.y ?? ''
 
-                // const KDObj = this.points[this.points.findIndex(x => x.series.name == 'KD')]
-                // const KDKey = KDObj?.x
-                // const KDIndex = KDObj?.series?.xData?.indexOf(KDKey)
-                // const krr = KDObj?.series?.yData[KDIndex][0]
-                // const drr = KDObj?.series?.yData[KDIndex][1]
-
                 const k = this.points[this.points.findIndex(x => x.series.name == 'K')]?.y ?? ''
                 const d = this.points[this.points.findIndex(x => x.series.name == 'D')]?.y ?? ''
                 const j = this.points[this.points.findIndex(x => x.series.name == 'J')]?.y ?? ''
@@ -446,18 +417,6 @@ export default {
                         str += `J ${parseFloat(j.toString()).toFixed(2)}`
                     }
                 }
-
-                // if (krr || drr) {
-                //     str += '<br>'
-
-                //     if (krr) {
-                //         str += `K ${parseFloat(krr.toString()).toFixed(2)}`
-                //     }
-                //     if (drr) {
-                //         if (krr) str += ' '
-                //         str += `D ${parseFloat(drr.toString()).toFixed(2)}`
-                //     }
-                // }
 
                 return str
             }
@@ -549,10 +508,7 @@ export default {
     },
     mounted() {
         this.init()
-    },
-    // beforeMount() {
-    //     this.init()
-    // },
+    }, 
     watch: {
         'showMode': function (newValue) {
             var y2 = this.chartOptions.series.filter(x => x.yAxis == 1)
@@ -563,7 +519,6 @@ export default {
                     y2.find(x => x.name == '成交量').visible = true
                     return;
                 case 1:
-                    // y2.find(x => x.name == 'KD').visible = true
                     y2.find(x => x.name == 'K').visible = true
                     y2.find(x => x.name == 'D').visible = true
                     y2.find(x => x.name == 'J').visible = true
