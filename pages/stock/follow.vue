@@ -1,70 +1,9 @@
 <script setup lang="ts">
 import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
-import * as 上市 from '~~/lib/上市'
-import * as 上櫃 from '~~/lib/上櫃'
-import * as ETF from '~~/lib/ETF'
 </script>
 
 <template>
-    <v-text-field label="股票代碼"
-        v-model="inputfollow"
-        append-inner-icon="mdi-plus"
-        @click:append-inner="followstock"></v-text-field>
-    <v-card v-if="inputfollow.length > 0">
-        <v-card-title
-            v-if="上市.list.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
-            上市股
-        </v-card-title>
-        <v-row
-            v-if="上市.list.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
-            <v-col
-                v-for="(s, i) in 上市.list.filter(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)"
-                :key="i">
-                <v-btn @click="inputfollow = s.公司代號.toString()">
-                    <v-card-title>
-                        {{ s.公司簡稱 }} {{ s.公司代號 }}
-                    </v-card-title>
-                </v-btn>
-            </v-col>
-        </v-row>
-        <div style="height: 8px;"></div>
-        <hr>
-        <v-card-title
-            v-if="上櫃.list.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1)">
-            上櫃
-        </v-card-title>
-        <v-row
-            v-if="上櫃.list.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1)">
-            <v-col
-                v-for="(s, i) in 上櫃.list.filter(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1)"
-                :key="i">
-                <v-btn @click="inputfollow = s.公司代號.toString()">
-                    <v-card-title>
-                        {{ s.公司簡稱 }} {{ s.公司代號 }}
-                    </v-card-title>
-                </v-btn>
-            </v-col>
-        </v-row>
-        <div style="height: 8px;"></div>
-        <hr>
-        <v-card-title
-            v-if="ETF.list.some(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
-            ETF
-        </v-card-title>
-        <v-row
-            v-if="ETF.list.some(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
-            <v-col
-                v-for="(s, i) in ETF.list.filter(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)"
-                :key="i">
-                <v-btn @click="inputfollow = s.證券代號">
-                    <v-card-title>
-                        {{ s.證券簡稱 }} {{ s.證券代號 }}
-                    </v-card-title>
-                </v-btn>
-            </v-col>
-        </v-row>
-        <div style="height: 8px;"></div>
-    </v-card>
+    <stocksearch :followstock="followstock"></stocksearch>
     <div style="height: 8px;"></div>
     <v-btn-toggle v-model="toggle_exclusive"
         elevation="5"
@@ -222,15 +161,12 @@ import * as ETF from '~~/lib/ETF'
 </template>
 
 <script lang="ts">
-import { Info } from '~/models/stock/info'
-import { ETF } from '~/models/stock/etf';
 import { MsgArray } from '~/models/stock/twse'
 
 export default {
     data() {
         return {
             toggle_exclusive: 0,
-            inputfollow: '',
             follow: new Array<string>(),
             realtimeData: {
                 isdatareload: false,
@@ -375,33 +311,21 @@ export default {
 
             setTimeout(this.repeat, 1000 / 60);
         },
-        async followstock() {
-            if (this.follow.some(x => x == this.inputfollow)) {
-                this.inputfollow = ''
+        async followstock(code: string) {
+            if (this.follow.some(x => x == code)) {
                 return
             }
 
-            this.follow.push(this.inputfollow)
+            this.follow.push(code)
             this.follow = this.follow.filter(x => x != '')
-            this.inputfollow = ''
 
-            if (this.timer.lastudt.getHours() < 9
-                || this.timer.lastudt.getHours() >= 14
-                || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
-                await this.loadRealTimeData()
-                return
-            }
+            await this.loadRealTimeData()
         },
         async removeFollow(c: string) {
             this.follow = this.follow.filter(x => x != c && x != `${c}_odd`)
             this.realtimeData.data = this.realtimeData.data.filter(x => x.c != c)
 
-            if (this.timer.lastudt.getHours() < 9
-                || this.timer.lastudt.getHours() >= 14
-                || (this.timer.lastudt.getHours() >= 13 && this.timer.lastudt.getMinutes() > 30)) {
-                await this.loadRealTimeData()
-                return
-            }
+            await this.loadRealTimeData()
         }
     },
     watch: {

@@ -67,66 +67,70 @@ export default defineEventHandler(async (event) => {
         var result = new Array<MsgArray>()
 
         if (ex_ch != '') {
-            const url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=${ex_ch}&json=1&delay=0`
-            const data = await fetch(url,
-                {
-                    // cache: "only-if-cached",
-                    signal: controller.signal,
-                })
-                .then((res) => {
-                    if (res.status === 504) {
-                        controller.abort();
-                        controller = new AbortController();
-                        return fetch(url, {
-                            cache: "force-cache",
-                            signal: controller.signal,
-                        });
-                    }
-                    const date = res.headers.get("date"),
-                        dt = date ? new Date(date).getTime() : 0;
-                    if (dt < Date.now() - 5_000) {
-                        controller.abort();
-                        controller = new AbortController();
-                        return fetch(url, {
-                            cache: "reload",
-                            signal: controller.signal,
-                        });
-                    }
-                    return res.json();
-                }) as GetStockInfo;
+            try {
+                const url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=${ex_ch}&json=1&delay=0`
+                const data = await fetch(url,
+                    {
+                        // cache: "only-if-cached",
+                        signal: controller.signal,
+                    })
+                    .then((res) => {
+                        if (res.status === 504) {
+                            controller.abort();
+                            controller = new AbortController();
+                            return fetch(url, {
+                                cache: "force-cache",
+                                signal: controller.signal,
+                            });
+                        }
+                        const date = res.headers.get("date"),
+                            dt = date ? new Date(date).getTime() : 0;
+                        if (dt < Date.now() - 5_000) {
+                            controller.abort();
+                            controller = new AbortController();
+                            return fetch(url, {
+                                cache: "reload",
+                                signal: controller.signal,
+                            });
+                        }
+                        return res.json();
+                    }) as GetStockInfo;
 
-            result.push(...data.msgArray)
+                result.push(...data.msgArray)
+            } catch { }
         }
         if (ex_chodd != '') {
-            const url = `https://mis.twse.com.tw/stock/api/getOddInfo.jsp?ex_ch=${ex_chodd}&json=1&delay=0`
-            const data = await fetch(url,
-                {
-                    // cache: "only-if-cached",
-                    signal: controller.signal,
-                })
-                .then((res) => {
-                    if (res.status === 504) {
-                        controller.abort();
-                        controller = new AbortController();
-                        return fetch(url, {
-                            cache: "force-cache",
-                            signal: controller.signal,
-                        });
-                    }
-                    const date = res.headers.get("date"),
-                        dt = date ? new Date(date).getTime() : 0;
-                    if (dt < Date.now() - 5_000) {
-                        controller.abort();
-                        controller = new AbortController();
-                        return fetch(url, {
-                            cache: "reload",
-                            signal: controller.signal,
-                        });
-                    }
-                    return res.json();
-                }) as GetStockInfo;
+            try {
+                const url = `https://mis.twse.com.tw/stock/api/getOddInfo.jsp?ex_ch=${ex_chodd}&json=1&delay=0`
+                const data = await fetch(url,
+                    {
+                        // cache: "only-if-cached",
+                        signal: controller.signal,
+                    })
+                    .then((res) => {
+                        if (res.status === 504) {
+                            controller.abort();
+                            controller = new AbortController();
+                            return fetch(url, {
+                                cache: "force-cache",
+                                signal: controller.signal,
+                            });
+                        }
+                        const date = res.headers.get("date"),
+                            dt = date ? new Date(date).getTime() : 0;
+                        if (dt < Date.now() - 5_000) {
+                            controller.abort();
+                            controller = new AbortController();
+                            return fetch(url, {
+                                cache: "reload",
+                                signal: controller.signal,
+                            });
+                        }
+                        return res.json();
+                    }) as GetStockInfo;
 
-            result.push(...data.msgArray)
+                result.push(...data.msgArray)
+            } catch { }
         }
 
         if (Array.isArray(code)) {
@@ -151,10 +155,14 @@ export default defineEventHandler(async (event) => {
             var s = code.map(x => x.toString() as string).map(x => {
                 if (x.endsWith('_odd')) {
                     var c = x.substring(0, x.length - '_odd'.length)
-                    cache.set(x, result.find(e => e.c == c), 5)
+                    if (result.some(e => e.c == c)) {
+                        cache.set(x, result.find(e => e.c == c), 5)
+                    }
                     return c
                 } else {
-                    cache.set(x, result.find(e => e.c == x), 5)
+                    if (result.some(e => e.c == x)) {
+                        cache.set(x, result.find(e => e.c == x), 5)
+                    }
                     return x
                 }
             })

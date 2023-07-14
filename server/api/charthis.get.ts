@@ -18,7 +18,45 @@ export default defineEventHandler(async (event) => {
             return ff
         }
 
-        const url = `https://query2.finance.yahoo.com/v8/finance/chart/${symbol}?symbol=${symbol}&period1=0&period2=9999999999&interval=${interval}`
+        var period1 = 0
+        var period2 = 9999999999
+
+        switch (interval) {
+            case '1m': //7天
+                period2 = Math.round(new Date().getTime() / 1000)
+                period1 = period2 - (60 * 60 * 24 * 7)
+                break;
+            case '2m': //60天
+                period2 = Math.round(new Date().getTime() / 1000)
+                period1 = period2 - (60 * 60 * 24 * 60)
+                break;
+            case '5m': //60天
+                period2 = Math.round(new Date().getTime() / 1000)
+                period1 = period2 - (60 * 60 * 24 * 60)
+                break;
+            case '15m': //60天
+                period2 = Math.round(new Date().getTime() / 1000)
+                period1 = period2 - (60 * 60 * 24 * 60)
+                break;
+            case '30m': //60天
+                period2 = Math.round(new Date().getTime() / 1000)
+                period1 = period2 - (60 * 60 * 24 * 60)
+                break;
+            case '60m': //60天
+                period2 = Math.round(new Date().getTime() / 1000)
+                period1 = period2 - (60 * 60 * 24 * 60)
+                break;
+            case '90m': //60天
+                period2 = Math.round(new Date().getTime() / 1000)
+                period1 = period2 - (60 * 60 * 24 * 60)
+                break;
+            case '1h': //730天
+                period2 = Math.round(new Date().getTime() / 1000)
+                period1 = period2 - (60 * 60 * 24 * 730)
+                break;
+        }
+
+        const url = `https://query2.finance.yahoo.com/v8/finance/chart/${symbol}?symbol=${symbol}&period1=${period1}&period2=${period2}&interval=${interval}`
         const headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'
         };

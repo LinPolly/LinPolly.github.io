@@ -1,13 +1,57 @@
 <template>
     <client-only>
-        <v-btn-toggle v-model="showMode">
-            <v-btn :class="{ 'bg-primary': showMode == 0 }">成交量</v-btn>
-            <v-btn :class="{ 'bg-primary': showMode == 1 }">KD,J</v-btn>
-        </v-btn-toggle>
-        <hr>
-        <highcharts :constructor-type="'stockChart'"
-            :options="chartOptions"
-            style="height: 750px;width: 100%;" />
+        <div style="width: 100%;margin-left: 32px;margin-top: 8px;padding-right: 64px;">
+            <v-row>
+                <v-select v-model="dataMode"
+                    :items="['1分線', '2分線', '5分線', '15分線', '30分線', '60分線', '90分線', '時線', '日線', '5日線', '周線', '月線', '3月線']"></v-select>
+                <div style="width: 8px;"></div>
+                <v-select v-model="showMode"
+                    :items="['成交量', 'KD,J']"></v-select>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-checkbox label="MA5"
+                        color="blue"
+                        v-model="chartOptions.series[chartOptions.series.findIndex(x => x.name == 'MA5')].visible"
+                        hide-details></v-checkbox>
+                </v-col>
+                <v-col>
+                    <v-checkbox label="MA10"
+                        color="red"
+                        v-model="chartOptions.series[chartOptions.series.findIndex(x => x.name == 'MA10')].visible"
+                        hide-details></v-checkbox>
+                </v-col>
+                <v-col>
+                    <v-checkbox label="MA20"
+                        color="orange"
+                        v-model="chartOptions.series[chartOptions.series.findIndex(x => x.name == 'MA20')].visible"
+                        hide-details></v-checkbox>
+                </v-col>
+                <v-col>
+                    <v-checkbox label="MA60"
+                        color="green"
+                        v-model="chartOptions.series[chartOptions.series.findIndex(x => x.name == 'MA60')].visible"
+                        hide-details></v-checkbox>
+                </v-col>
+                <v-col>
+                    <v-checkbox label="MA120"
+                        color="purple"
+                        v-model="chartOptions.series[chartOptions.series.findIndex(x => x.name == 'MA120')].visible"
+                        hide-details></v-checkbox>
+                </v-col>
+                <v-col>
+                    <v-checkbox label="MA240"
+                        color="brown"
+                        v-model="chartOptions.series[chartOptions.series.findIndex(x => x.name == 'MA240')].visible"
+                        hide-details></v-checkbox>
+                </v-col>
+            </v-row>
+            <v-row>
+                <highcharts :constructor-type="'stockChart'"
+                    :options="chartOptions"
+                    style="height: 750px;width: 100%;" />
+            </v-row>
+        </div>
     </client-only>
 </template>
 
@@ -71,9 +115,26 @@ AccessibilityModule(Highcharts)
 StockModule(Highcharts)
 exporting(Highcharts)
 
+Highcharts.seriesTypes.column.prototype.pointAttribs = (function (func) {
+    return function (point, state) {
+        var attribs = func.apply(this, arguments);
+
+        var candleSeries = this.chart.series[0]; // Probably you'll need to change the index
+        var candlePoint = candleSeries.points.filter(function (p) {
+            return p.index === point.index;
+        })[0];
+
+        var color = candlePoint.open < candlePoint.close ? "rgb(223, 63, 63)" : "rgb(51, 139, 72)"; // Replace with your colors
+        attribs.fill = color;
+
+        return attribs;
+    };
+})(Highcharts.seriesTypes.column.prototype.pointAttribs);
+
 export default {
     data: () => ({
-        showMode: 0,
+        dataMode: '日線',
+        showMode: '成交量',
         chartOptions: {
             chart: {
                 events: {
@@ -81,7 +142,7 @@ export default {
                         const chart = this,
                             startDate = Date.UTC(2020, 2, 26),
                             endDate = Date.UTC(2020, 8, 26)
-
+                        // @ts-ignore
                         chart.xAxis[0].setExtremes(startDate, endDate)
                     }
                 },
@@ -138,7 +199,9 @@ export default {
                 borderWidth: 0,
                 shadow: false,
                 formatter: null as unknown as Function,
+                // @ts-ignore
                 positioner: function (width, height, point) {
+                    // @ts-ignore
                     const chart = this.chart;
                     let position;
 
@@ -227,6 +290,7 @@ export default {
                     },
                     color: 'blue',
                     yAxis: 0,
+                    visible: true,
                 },
                 {
                     name: 'MA10',
@@ -236,6 +300,7 @@ export default {
                     },
                     color: 'red',
                     yAxis: 0,
+                    visible: true,
                 },
                 {
                     name: 'MA20',
@@ -245,15 +310,7 @@ export default {
                     },
                     color: 'orange',
                     yAxis: 0,
-                },
-                {
-                    name: 'MA120',
-                    data: [] as number[][],
-                    marker: {
-                        enabled: false
-                    },
-                    color: 'green',
-                    yAxis: 0,
+                    visible: true,
                 },
                 {
                     name: 'MA60',
@@ -261,8 +318,19 @@ export default {
                     marker: {
                         enabled: false
                     },
+                    color: 'green',
+                    yAxis: 0,
+                    visible: true,
+                },
+                {
+                    name: 'MA120',
+                    data: [] as number[][],
+                    marker: {
+                        enabled: false
+                    },
                     color: 'purple',
                     yAxis: 0,
+                    visible: true,
                 },
                 {
                     name: 'MA240',
@@ -272,6 +340,7 @@ export default {
                     },
                     color: 'brown',
                     yAxis: 0,
+                    visible: true,
                 }
             ],
         },
@@ -286,7 +355,51 @@ export default {
     },
     methods: {
         async init() {
-            const { data } = await useFetch(`/api/charthis?code=${this.symbol.c}`)
+            var interval = '1d'
+            switch (this.dataMode) {
+                //1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo
+                case '1分線':
+                    interval = '1m'
+                    break;
+                case '2分線':
+                    interval = '2m'
+                    break;
+                case '5分線':
+                    interval = '5m'
+                    break;
+                case '15分線':
+                    interval = '15m'
+                    break;
+                case '30分線':
+                    interval = '30m'
+                    break;
+                case '60分線':
+                    interval = '60m'
+                    break;
+                case '90分線':
+                    interval = '90m'
+                    break;
+                case '時線':
+                    interval = '1h'
+                    break;
+                case '日線':
+                    interval = '1d'
+                    break;
+                case '5日線':
+                    interval = '5d'
+                    break;
+                case '周線':
+                    interval = '1wk'
+                    break;
+                case '月線':
+                    interval = '1mo'
+                    break;
+                case '3月線':
+                    interval = '3mo'
+                    break;
+            }
+
+            const { data } = await useFetch(`/api/charthis?code=${this.symbol.c}&interval=${interval}`)
             const me = this
 
             this.chartRawData = data.value
@@ -333,32 +446,43 @@ export default {
             }
 
             this.chartOptions.xAxis.labels.formatter = function () {
+                // @ts-ignore
                 return me.timestampToTime(this.value / 1000)
             }
 
             this.chartOptions.tooltip.formatter = function () {
+                // @ts-ignore
                 var dateStr = me.timestampToTime(this.point.x / 1000)
 
+                // @ts-ignore
                 const volume = this.points[this.points.findIndex(x => x.series.name == '成交量')]?.y ?? ''
 
+                // @ts-ignore
                 const ma5 = this.points[this.points.findIndex(x => x.series.name == 'MA5')]?.y ?? ''
+                // @ts-ignore
                 const ma10 = this.points[this.points.findIndex(x => x.series.name == 'MA10')]?.y ?? ''
+                // @ts-ignore
                 const ma20 = this.points[this.points.findIndex(x => x.series.name == 'MA20')]?.y ?? ''
+                // @ts-ignore
                 const ma60 = this.points[this.points.findIndex(x => x.series.name == 'MA60')]?.y ?? ''
+                // @ts-ignore
                 const ma120 = this.points[this.points.findIndex(x => x.series.name == 'MA120')]?.y ?? ''
+                // @ts-ignore
                 const ma240 = this.points[this.points.findIndex(x => x.series.name == 'MA240')]?.y ?? ''
 
+                // @ts-ignore
                 const k = this.points[this.points.findIndex(x => x.series.name == 'K')]?.y ?? ''
+                // @ts-ignore
                 const d = this.points[this.points.findIndex(x => x.series.name == 'D')]?.y ?? ''
+                // @ts-ignore
                 const j = this.points[this.points.findIndex(x => x.series.name == 'J')]?.y ?? ''
 
-                if (this.point?.open == null
-                    || this.point?.high == null
-                    || this.point?.low == null
-                    || this.point?.close == null) {
+                // @ts-ignore
+                if (this.point?.open == null || this.point?.high == null || this.point?.low == null || this.point?.close == null) {
                     return ''
                 }
 
+                // @ts-ignore
                 var str = `${dateStr} 開${parseFloat(this.point.open.toString()).toFixed(2)} 高${parseFloat(this.point.high.toString()).toFixed(2)} 低${parseFloat(this.point.low.toString()).toFixed(2)} 收${parseFloat(this.point.close.toString()).toFixed(2)}`
 
                 if (volume) {
@@ -419,7 +543,51 @@ export default {
             var Y = date.getFullYear();
             var M = date.getMonth() + 1;
             var D = date.getDate();
-            return `${Y}/${M}/${D}`;
+            var H = date.getHours()
+            var m = date.getMinutes()
+
+            switch (this.dataMode) {
+                //1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo
+                case '1分線':
+                    return `${Y}/${M}/${D} ${H}:${m}`;
+                    break;
+                case '2分線':
+                    return `${Y}/${M}/${D} ${H}:${m}`;
+                    break;
+                case '5分線':
+                    return `${Y}/${M}/${D} ${H}:${m}`;
+                    break;
+                case '15分線':
+                    return `${Y}/${M}/${D} ${H}:${m}`;
+                    break;
+                case '30分線':
+                    return `${Y}/${M}/${D} ${H}:${m}`;
+                    break;
+                case '60分線':
+                    return `${Y}/${M}/${D} ${H}`;
+                    break;
+                case '90分線':
+                    return `${Y}/${M}/${D} ${H}`;
+                    break;
+                case '時線':
+                    return `${Y}/${M}/${D} ${H}`;
+                    break;
+                case '日線':
+                    return `${Y}/${M}/${D}`;
+                    break;
+                case '5日線':
+                    return `${Y}/${M}/${D}`;
+                    break;
+                case '周線':
+                    return `${Y}/${M}/${D}`;
+                    break;
+                case '月線':
+                    return `${Y}/${M}/${D}`;
+                    break;
+                case '3月線':
+                    return `${Y}/${M}/${D}`;
+                    break;
+            }
         },
         sequenceGenerator(minVal: number, maxVal: number, step = 1) {
             let currVal = minVal;
@@ -506,16 +674,23 @@ export default {
             y2.forEach(x => x.visible = false)
 
             switch (newValue) {
-                case 0:
+                case '成交量':
+                    // @ts-ignore
                     y2.find(x => x.name == '成交量').visible = true
                     return;
-                case 1:
+                case 'KD,J':
+                    // @ts-ignore
                     y2.find(x => x.name == 'K').visible = true
+                    // @ts-ignore
                     y2.find(x => x.name == 'D').visible = true
+                    // @ts-ignore
                     y2.find(x => x.name == 'J').visible = true
                     return;
             }
-        }
+        },
+        'dataMode': function () {
+            this.init()
+        },
     },
     components: {
         highcharts: Chart

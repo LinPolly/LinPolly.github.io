@@ -1,4 +1,5 @@
 <template>
+    <stocksearch></stocksearch>
     <v-row>
         <v-col v-if="realtimeData?.main"
             cols="12"
@@ -158,7 +159,7 @@ export default {
             }
         }
     },
-    methods: {
+    methods: {      
         targetOdd(c: string) {
             c = this.$route.path
             if (!c.endsWith('_odd')) {
