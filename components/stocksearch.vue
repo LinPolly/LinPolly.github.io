@@ -13,7 +13,7 @@ import * as ETF from '~~/lib/ETF'
                 @click="selectedstock"></v-icon>
             <nuxt-link v-else
                 :to="(inputfollow.length > 0 && (上市.has(inputfollow) || 上櫃.has(inputfollow) || ETF.has(inputfollow))) ? `/stock/${inputfollow}` : null">
-                <v-icon icon="mdi-plus"></v-icon>
+                <v-icon icon="mdi-arrow-right"></v-icon>
             </nuxt-link>
         </template>
     </v-text-field>
