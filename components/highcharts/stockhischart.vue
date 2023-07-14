@@ -8,7 +8,7 @@
                 <v-select v-model="showMode"
                     :items="['成交量', 'KD,J']"></v-select>
             </v-row>
-            <v-row>
+            <v-row class="row-cols-3 row-cols-sm-4 row-cols-md-6">
                 <v-col>
                     <v-checkbox label="MA5"
                         color="blue"
@@ -54,6 +54,27 @@
         </div>
     </client-only>
 </template>
+
+<style>
+.row-cols-3>* {
+    flex: 0 0 auto;
+    width: 33.3333333333%;
+}
+
+@media (min-width: 576px) {
+    .row-cols-sm-4>* {
+        flex: 0 0 auto;
+        width: 25%;
+    }
+}
+
+@media (min-width: 768px) {
+    .row-cols-md-6>* {
+        flex: 0 0 auto;
+        width: 16.6666666667%;
+    }
+}
+</style>
 
 <script lang="ts">
 import { MsgArray } from '~/models/stock/twse'
