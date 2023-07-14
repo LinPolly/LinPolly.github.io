@@ -1,6 +1,6 @@
 <template>
     <client-only>
-        <div style="width: 100%;margin-left: 32px;margin-top: 8px;padding-right: 40px;">
+        <div style="width: 100%;margin-top: 8px">
             <v-row>
                 <v-select v-model="dataMode"
                     :items="['1分線', '2分線', '5分線', '15分線', '30分線', '60分線', '90分線', '時線', '日線', '5日線', '周線', '月線', '3月線']"></v-select>
