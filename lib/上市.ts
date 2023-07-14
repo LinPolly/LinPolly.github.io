@@ -1,8 +1,8 @@
 export const has = function (code: string) {
-  return 上市.some(x => x["公司代號"].toString() === code.toString())
+  return list.some(x => x["公司代號"].toString() === code.toString())
 }
 
-const 上市 = [
+export const list = [
   {
     "公司代號": 1101,
     "公司名稱": "臺灣水泥股份有限公司",

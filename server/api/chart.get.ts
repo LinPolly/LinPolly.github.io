@@ -50,6 +50,7 @@ export default defineEventHandler(async (event) => {
 
         var data = await req.json()
 
+        // @ts-ignore
         var r = data.data.find(x => x.symbol == symbol)
         cache.set(`chart_${symbol}_1m`, r, 30)
 

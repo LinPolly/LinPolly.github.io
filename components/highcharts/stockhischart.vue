@@ -12,25 +12,12 @@
 </template>
 
 <script lang="ts">
-import {
-    sma
-} from 'moving-averages'
-
-import {
-    sub,
-    div,
-    mul
-} from 'math-array'
-
-import {
-    hhv,
-    llv
-} from 'hhv-llv'
 import { MsgArray } from '~/models/stock/twse'
 import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
 import 'highcharts/css/stocktools/gui.css'
 import 'highcharts/css/annotations/popup.css'
 
+// @ts-ignore
 import Highcharts from 'highcharts'
 import { Chart } from 'highcharts-vue'
 
@@ -119,6 +106,7 @@ export default {
             xAxis: { // 
                 labels: {
                     format: "",
+                    formatter: null as unknown as Function,
                 },
                 crosshair: true,
             },
@@ -149,6 +137,7 @@ export default {
                 headerShape: 'callout',
                 borderWidth: 0,
                 shadow: false,
+                formatter: null as unknown as Function,
                 positioner: function (width, height, point) {
                     const chart = this.chart;
                     let position;
@@ -184,7 +173,7 @@ export default {
                     type: 'candlestick',
                     id: 'main-series',
                     name: 'K線',
-                    data: [],
+                    data: [] as number[][],
                     yAxis: 0,
                     upColor: 'rgb(223, 63, 63)',
                     upLineColor: 'rgb(223, 63, 63)',
@@ -195,7 +184,7 @@ export default {
                     yAxis: 1,
                     name: 'K',
                     linkedTo: 'main-series',
-                    data: [],
+                    data: [] as number[][],
                     color: "#1947A3",
                     visible: true
                 },
@@ -203,7 +192,7 @@ export default {
                     yAxis: 1,
                     name: 'D',
                     linkedTo: 'main-series',
-                    data: [],
+                    data: [] as number[][],
                     color: "#F56F0A",
                     visible: true,
                 },
@@ -211,7 +200,7 @@ export default {
                     yAxis: 1,
                     name: 'J',
                     linkedTo: 'main-series',
-                    data: [],
+                    data: [] as number[][],
                     color: "green",
                     visible: true,
                     dashStyle: 'Dash',
@@ -220,19 +209,19 @@ export default {
                     yAxis: 1,
                     name: 'RSV',
                     linkedTo: 'main-series',
-                    data: [],
+                    data: [] as number[][],
                     color: "green",
                     visible: true,
                 },
                 {
                     type: 'column',
                     name: '成交量',
-                    data: [],
+                    data: [] as number[][],
                     yAxis: 1,
                 },
                 {
                     name: 'MA5',
-                    data: [],
+                    data: [] as number[][],
                     marker: {
                         enabled: false
                     },
@@ -241,7 +230,7 @@ export default {
                 },
                 {
                     name: 'MA10',
-                    data: [],
+                    data: [] as number[][],
                     marker: {
                         enabled: false
                     },
@@ -250,7 +239,7 @@ export default {
                 },
                 {
                     name: 'MA20',
-                    data: [],
+                    data: [] as number[][],
                     marker: {
                         enabled: false
                     },
@@ -259,7 +248,7 @@ export default {
                 },
                 {
                     name: 'MA120',
-                    data: [],
+                    data: [] as number[][],
                     marker: {
                         enabled: false
                     },
@@ -268,7 +257,7 @@ export default {
                 },
                 {
                     name: 'MA60',
-                    data: [],
+                    data: [] as number[][],
                     marker: {
                         enabled: false
                     },
@@ -277,7 +266,7 @@ export default {
                 },
                 {
                     name: 'MA240',
-                    data: [],
+                    data: [] as number[][],
                     marker: {
                         enabled: false
                     },
@@ -287,7 +276,7 @@ export default {
             ],
         },
         loaded: false,
-        chartRawData: null,
+        chartRawData: null as any,
     }),
     props: {
         symbol: {

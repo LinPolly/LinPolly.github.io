@@ -1,7 +1,7 @@
 import { GetStockInfo, MsgArray } from "~/models/stock/twse";
-import * as 上市 from '~~/server/static/上市';
-import * as 上櫃 from '~~/server/static/上櫃';
-import * as ETF from '~~/server/static/ETF';
+import * as 上市 from '~~/lib/上市';
+import * as 上櫃 from '~~/lib/上櫃';
+import * as ETF from '~~/lib/ETF';
 import * as cache from '~~/server/cache/stock';
 
 export default defineEventHandler(async (event) => {
@@ -50,9 +50,9 @@ export default defineEventHandler(async (event) => {
                     ex_chodd = `tse_${c}.tw`
                 }
             } else {
-                if (ETF.has(code)) {
+                if (ETF.has(code as string)) {
                     ex_ch = `tse_${code}.tw`
-                } else if (上櫃.has(code)) {
+                } else if (上櫃.has(code as string)) {
                     ex_ch = `otc_${code}.tw`
                 } else {
                     ex_ch = `tse_${code}.tw`

@@ -32,7 +32,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(27, 27, 27, 0.4);
+  background-color: 'white';
   border-radius: 3px;
 }
 

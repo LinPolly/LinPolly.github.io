@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
+import * as 上市 from '~~/lib/上市'
+import * as 上櫃 from '~~/lib/上櫃'
+import * as ETF from '~~/lib/ETF'
 </script>
 
 <template>
@@ -9,15 +12,15 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
         @click:append-inner="followstock"></v-text-field>
     <v-card v-if="inputfollow.length > 0">
         <v-card-title
-            v-if="infos.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
+            v-if="上市.list.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
             上市股
         </v-card-title>
         <v-row
-            v-if="infos.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
+            v-if="上市.list.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)">
             <v-col
-                v-for="(s, i) in infos.filter(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)"
+                v-for="(s, i) in 上市.list.filter(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1 || x.公司名稱.toString().indexOf(inputfollow) > -1)"
                 :key="i">
-                <v-btn @click="inputfollow = s.公司代號">
+                <v-btn @click="inputfollow = s.公司代號.toString()">
                     <v-card-title>
                         {{ s.公司簡稱 }} {{ s.公司代號 }}
                     </v-card-title>
@@ -27,13 +30,31 @@ import { trimEnd, formatAsCurrency, diff, diffp, isNumeric } from '~/lib/string'
         <div style="height: 8px;"></div>
         <hr>
         <v-card-title
-            v-if="etf.some(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
+            v-if="上櫃.list.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1)">
+            上櫃
+        </v-card-title>
+        <v-row
+            v-if="上櫃.list.some(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1)">
+            <v-col
+                v-for="(s, i) in 上櫃.list.filter(x => x.公司代號.toString().indexOf(inputfollow) > -1 || x.公司簡稱.toString().indexOf(inputfollow) > -1)"
+                :key="i">
+                <v-btn @click="inputfollow = s.公司代號.toString()">
+                    <v-card-title>
+                        {{ s.公司簡稱 }} {{ s.公司代號 }}
+                    </v-card-title>
+                </v-btn>
+            </v-col>
+        </v-row>
+        <div style="height: 8px;"></div>
+        <hr>
+        <v-card-title
+            v-if="ETF.list.some(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
             ETF
         </v-card-title>
         <v-row
-            v-if="etf.some(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
+            v-if="ETF.list.some(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)">
             <v-col
-                v-for="(s, i) in etf.filter(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)"
+                v-for="(s, i) in ETF.list.filter(x => x.證券代號.toString().indexOf(inputfollow) > -1 || x.證券簡稱.toString().indexOf(inputfollow) > -1)"
                 :key="i">
                 <v-btn @click="inputfollow = s.證券代號">
                     <v-card-title>
@@ -211,8 +232,6 @@ export default {
             toggle_exclusive: 0,
             inputfollow: '',
             follow: new Array<string>(),
-            infos: new Array<Info>(),
-            etf: new Array<ETF>(),
             realtimeData: {
                 isdatareload: false,
                 headers: [
@@ -246,7 +265,7 @@ export default {
         async loadRealTimeData() {
             this.realtimeData.isdatareload = true
 
-            if (this.infos && this.follow.length > 0) {
+            if (this.follow.length > 0) {
                 var labels = this.follow
                 if (labels.length > 0) {
                     const batchSize = 20
@@ -322,18 +341,6 @@ export default {
             this.realtimeData.isdatareload = false
         },
         async loadInfo() {
-            {
-                // @ts-ignore
-                const { data } = await useAsyncData('18419', () => $fetch(`/stock/18419.json`), { server: false })
-                // @ts-ignore
-                this.infos = data.value
-            }
-            {
-                // @ts-ignore
-                const { data } = await useAsyncData('etf', () => $fetch(`/stock/etf.json`), { server: false })
-                // @ts-ignore
-                this.etf = data.value
-            }
             var f = localStorage.getItem('follow')
             if (f != null && f != '') {
                 this.follow = f?.split('|').filter(x => x != '')
@@ -366,7 +373,7 @@ export default {
                 this.timer.lastudt = new Date()
             }
 
-            setTimeout(this.repeat, 1000 / 60);        
+            setTimeout(this.repeat, 1000 / 60);
         },
         async followstock() {
             if (this.follow.some(x => x == this.inputfollow)) {

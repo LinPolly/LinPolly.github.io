@@ -1,8 +1,8 @@
 export const has = function (code: string) {
-  return ETF.some(x => x["證券代號"].toString() === code.toString())
+  return list.some(x => x["證券代號"].toString() === code.toString())
 }
 
-export const ETF = [
+export const list = [
   {
     "證券代號": "0050",
     "證券簡稱": "元大台灣50",

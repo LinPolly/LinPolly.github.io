@@ -1,10 +1,10 @@
 import * as cache from '~~/server/cache/stock';
-import * as 上櫃 from '~~/server/static/上櫃'
+import * as 上櫃 from '~~/lib/上櫃'
 
 export default defineEventHandler(async (event) => {
     try {
         const query = getQuery(event)
-        const code = query.code
+        const code = query.code as string
         let controller = new AbortController();
         var symbol = `${code}.TW`
 
@@ -51,6 +51,7 @@ export default defineEventHandler(async (event) => {
             });
 
         var result = await req.json()
+        // @ts-ignore
         var stock = result.data.find(x => x.symbol == symbol)
         var p = stock.price
         cache.set(`price_${code}`, p, 5)

@@ -1,10 +1,10 @@
 import * as cache from '~~/server/cache/stock';
-import * as 上櫃 from '~~/server/static/上櫃'
+import * as 上櫃 from '~~/lib/上櫃'
 
 export default defineEventHandler(async (event) => {
     try {
         const query = getQuery(event)
-        const code = query.code
+        const code = query.code as string
         const interval = query.interval ?? '1d'
         let controller = new AbortController();
         var symbol = `${code}.TW`
@@ -54,6 +54,7 @@ export default defineEventHandler(async (event) => {
 
         var data = await req.json()
 
+        // @ts-ignore
         var r = data.chart.result.find(x => x.meta.symbol == symbol)
         cache.set(`chart_his_${symbol}_1m`, r, 3600)
 
