@@ -159,7 +159,7 @@ export default {
             }
         }
     },
-    methods: {      
+    methods: {
         targetOdd(c: string) {
             c = this.$route.path
             if (!c.endsWith('_odd')) {
