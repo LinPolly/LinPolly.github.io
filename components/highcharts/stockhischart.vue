@@ -320,7 +320,7 @@ export default {
                     },
                     color: 'green',
                     yAxis: 0,
-                    visible: true,
+                    visible: false,
                 },
                 {
                     name: 'MA120',
@@ -330,7 +330,7 @@ export default {
                     },
                     color: 'purple',
                     yAxis: 0,
-                    visible: true,
+                    visible: false,
                 },
                 {
                     name: 'MA240',
@@ -340,7 +340,7 @@ export default {
                     },
                     color: 'brown',
                     yAxis: 0,
-                    visible: true,
+                    visible: false,
                 }
             ],
         },
